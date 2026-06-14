@@ -1,0 +1,2113 @@
+{
+  "teams": [
+    {
+      "id": "NAT_KOR",
+      "name": "대한민국",
+      "abbr": "KOR",
+      "colors": {
+        "bg": "#FFFFFF",
+        "text": "#0000FF"
+      },
+      "elo_rating": 2094,
+      "tier": "S",
+      "stats": {
+        "MAC": 86,
+        "DRF": 84,
+        "TMF": 86,
+        "LAN": 86,
+        "MEC": 92
+      },
+      "preferred_combos": [
+        "D",
+        "B",
+        "C"
+      ],
+      "region": "APAC"
+    },
+    {
+      "id": "NAT_CHN",
+      "name": "중국",
+      "abbr": "CHN",
+      "colors": {
+        "bg": "#EE1C25",
+        "text": "#FFFF00"
+      },
+      "elo_rating": 2086,
+      "tier": "S",
+      "stats": {
+        "MAC": 86,
+        "DRF": 82,
+        "TMF": 91,
+        "LAN": 91,
+        "MEC": 93
+      },
+      "preferred_combos": [
+        "C",
+        "B",
+        "D"
+      ],
+      "region": "APAC"
+    },
+    {
+      "id": "NAT_USA",
+      "name": "미국",
+      "abbr": "USA",
+      "colors": {
+        "bg": "#B31942",
+        "text": "#0A3161"
+      },
+      "elo_rating": 2064,
+      "tier": "S",
+      "stats": {
+        "MAC": 81,
+        "DRF": 87,
+        "TMF": 88,
+        "LAN": 87,
+        "MEC": 88
+      },
+      "preferred_combos": [
+        "B",
+        "D",
+        "E"
+      ],
+      "region": "AMERICA"
+    },
+    {
+      "id": "NAT_RUS",
+      "name": "러시아",
+      "abbr": "RUS",
+      "colors": {
+        "bg": "#B22222",
+        "text": "#EFBF04"
+      },
+      "elo_rating": 2059,
+      "tier": "A+",
+      "stats": {
+        "MAC": 82,
+        "DRF": 83,
+        "TMF": 79,
+        "LAN": 87,
+        "MEC": 87
+      },
+      "preferred_combos": [
+        "A",
+        "G",
+        "C"
+      ],
+      "region": "EU"
+    },
+    {
+      "id": "NAT_FRA",
+      "name": "프랑스",
+      "abbr": "FRA",
+      "colors": {
+        "bg": "#000091",
+        "text": "#E1000F"
+      },
+      "elo_rating": 2051,
+      "tier": "A+",
+      "stats": {
+        "MAC": 85,
+        "DRF": 87,
+        "TMF": 82,
+        "LAN": 88,
+        "MEC": 79
+      },
+      "preferred_combos": [
+        "F",
+        "B",
+        "A",
+        "C"
+      ],
+      "region": "EU"
+    },
+    {
+      "id": "NAT_GER",
+      "name": "독일",
+      "abbr": "GER",
+      "colors": {
+        "bg": "#000000",
+        "text": "#F7D046"
+      },
+      "elo_rating": 2027,
+      "tier": "A+",
+      "stats": {
+        "MAC": 81,
+        "DRF": 76,
+        "TMF": 85,
+        "LAN": 86,
+        "MEC": 86
+      },
+      "preferred_combos": [
+        "B",
+        "G",
+        "F"
+      ],
+      "region": "EU"
+    },
+    {
+      "id": "NAT_SWE",
+      "name": "스웨덴",
+      "abbr": "SWE",
+      "colors": {
+        "bg": "#006AA7",
+        "text": "#FFCC02"
+      },
+      "elo_rating": 2023,
+      "tier": "A+",
+      "stats": {
+        "MAC": 81,
+        "DRF": 82,
+        "TMF": 89,
+        "LAN": 75,
+        "MEC": 87
+      },
+      "preferred_combos": [
+        "B",
+        "D",
+        "G",
+        "E"
+      ],
+      "region": "EU"
+    },
+    {
+      "id": "NAT_BRA",
+      "name": "브라질",
+      "abbr": "BRA",
+      "colors": {
+        "bg": "#F9E04B",
+        "text": "#429545"
+      },
+      "elo_rating": 2014,
+      "tier": "A",
+      "stats": {
+        "MAC": 86,
+        "DRF": 76,
+        "TMF": 83,
+        "LAN": 80,
+        "MEC": 85
+      },
+      "preferred_combos": [
+        "C",
+        "G",
+        "E"
+      ],
+      "region": "AMERICA"
+    },
+    {
+      "id": "NAT_UKR",
+      "name": "우크라이나",
+      "abbr": "UKR",
+      "colors": {
+        "bg": "#0057B7",
+        "text": "#FFDD00"
+      },
+      "elo_rating": 1995,
+      "tier": "A+",
+      "stats": {
+        "MAC": 79,
+        "DRF": 79,
+        "TMF": 82,
+        "LAN": 77,
+        "MEC": 84
+      },
+      "preferred_combos": [
+        "B",
+        "G",
+        "C"
+      ],
+      "region": "EU"
+    },
+    {
+      "id": "NAT_DEN",
+      "name": "덴마크",
+      "abbr": "DEN",
+      "colors": {
+        "bg": "#C8102E",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1991,
+      "tier": "A",
+      "stats": {
+        "MAC": 78,
+        "DRF": 75,
+        "TMF": 82,
+        "LAN": 80,
+        "MEC": 84
+      },
+      "preferred_combos": [
+        "E",
+        "G",
+        "F",
+        "B"
+      ],
+      "region": "EU"
+    },
+    {
+      "id": "NAT_FIN",
+      "name": "핀란드",
+      "abbr": "FIN",
+      "colors": {
+        "bg": "#FFFFFF",
+        "text": "#0557F0"
+      },
+      "elo_rating": 1989,
+      "tier": "A-",
+      "stats": {
+        "MAC": 82,
+        "DRF": 79,
+        "TMF": 74,
+        "LAN": 76,
+        "MEC": 76
+      },
+      "preferred_combos": [
+        "D",
+        "E",
+        "G"
+      ],
+      "region": "EU"
+    },
+    {
+      "id": "NAT_CTP",
+      "name": "중화민국",
+      "abbr": "CTP",
+      "colors": {
+        "bg": "#000095",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1967,
+      "tier": "A-",
+      "stats": {
+        "MAC": 73,
+        "DRF": 65,
+        "TMF": 80,
+        "LAN": 79,
+        "MEC": 81
+      },
+      "preferred_combos": [
+        "E",
+        "G",
+        "F",
+        "A"
+      ],
+      "region": "APAC"
+    },
+    {
+      "id": "NAT_ESP",
+      "name": "스페인",
+      "abbr": "ESP",
+      "colors": {
+        "bg": "#C60D25",
+        "text": "#FFCC00"
+      },
+      "elo_rating": 1970,
+      "tier": "A-",
+      "stats": {
+        "MAC": 68,
+        "DRF": 82,
+        "TMF": 81,
+        "LAN": 77,
+        "MEC": 81
+      },
+      "preferred_combos": [
+        "G",
+        "F",
+        "E"
+      ],
+      "region": "EU"
+    },
+    {
+      "id": "NAT_CAN",
+      "name": "캐나다",
+      "abbr": "CAN",
+      "colors": {
+        "bg": "#FF0000",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1940,
+      "tier": "A-",
+      "stats": {
+        "MAC": 80,
+        "DRF": 70,
+        "TMF": 76,
+        "LAN": 71,
+        "MEC": 84
+      },
+      "preferred_combos": [
+        "G",
+        "D",
+        "B"
+      ],
+      "region": "AMERICA"
+    },
+    {
+      "id": "NAT_GBR",
+      "name": "영국",
+      "abbr": "GBR",
+      "colors": {
+        "bg": "#012169",
+        "text": "#C8102E"
+      },
+      "elo_rating": 1949,
+      "tier": "B+",
+      "stats": {
+        "MAC": 73,
+        "DRF": 71,
+        "TMF": 74,
+        "LAN": 78,
+        "MEC": 81
+      },
+      "preferred_combos": [
+        "D",
+        "F",
+        "G"
+      ],
+      "region": "EU"
+    },
+    {
+      "id": "NAT_ARG",
+      "name": "아르헨티나",
+      "abbr": "ARG",
+      "colors": {
+        "bg": "#6CACE4",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1910,
+      "tier": "B",
+      "stats": {
+        "MAC": 69,
+        "DRF": 68,
+        "TMF": 77,
+        "LAN": 84,
+        "MEC": 83
+      },
+      "preferred_combos": [
+        "A",
+        "E"
+      ],
+      "region": "AMERICA"
+    },
+    {
+      "id": "NAT_VIE",
+      "name": "베트남",
+      "abbr": "VIE",
+      "colors": {
+        "bg": "#C8102E",
+        "text": "#FFCD00"
+      },
+      "elo_rating": 1907,
+      "tier": "B+",
+      "stats": {
+        "MAC": 73,
+        "DRF": 70,
+        "TMF": 74,
+        "LAN": 73,
+        "MEC": 82
+      },
+      "preferred_combos": [
+        "B",
+        "D"
+      ],
+      "region": "APAC"
+    },
+    {
+      "id": "NAT_JPN",
+      "name": "일본",
+      "abbr": "JPN",
+      "colors": {
+        "bg": "#000000",
+        "text": "#E5352C"
+      },
+      "elo_rating": 1911,
+      "tier": "B",
+      "stats": {
+        "MAC": 60,
+        "DRF": 73,
+        "TMF": 77,
+        "LAN": 76,
+        "MEC": 80
+      },
+      "preferred_combos": [
+        "E",
+        "A",
+        "F"
+      ],
+      "region": "APAC"
+    },
+    {
+      "id": "NAT_MEX",
+      "name": "멕시코",
+      "abbr": "MEX",
+      "colors": {
+        "bg": "#006341",
+        "text": "#C8102E"
+      },
+      "elo_rating": 1891,
+      "tier": "B",
+      "stats": {
+        "MAC": 68,
+        "DRF": 65,
+        "TMF": 76,
+        "LAN": 76,
+        "MEC": 80
+      },
+      "preferred_combos": [
+        "D",
+        "A"
+      ],
+      "region": "AMERICA"
+    },
+    {
+      "id": "NAT_AUS",
+      "name": "호주",
+      "abbr": "AUS",
+      "colors": {
+        "bg": "#00205B",
+        "text": "#FFCD00"
+      },
+      "elo_rating": 1875,
+      "tier": "B",
+      "stats": {
+        "MAC": 72,
+        "DRF": 72,
+        "TMF": 72,
+        "LAN": 68,
+        "MEC": 77
+      },
+      "preferred_combos": [
+        "G",
+        "E"
+      ],
+      "region": "APAC"
+    },
+    {
+      "id": "NAT_TUR",
+      "name": "터키",
+      "abbr": "TUR",
+      "colors": {
+        "bg": "#E30A17",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1882,
+      "tier": "B+",
+      "stats": {
+        "MAC": 70,
+        "DRF": 67,
+        "TMF": 69,
+        "LAN": 74,
+        "MEC": 76
+      },
+      "preferred_combos": [
+        "C",
+        "G"
+      ],
+      "region": "EU"
+    },
+    {
+      "id": "NAT_POL",
+      "name": "폴란드",
+      "abbr": "POL",
+      "colors": {
+        "bg": "#FFFFFF",
+        "text": "#DC143C"
+      },
+      "elo_rating": 1882,
+      "tier": "B+",
+      "stats": {
+        "MAC": 63,
+        "DRF": 66,
+        "TMF": 68,
+        "LAN": 74,
+        "MEC": 81
+      },
+      "preferred_combos": [
+        "C",
+        "D"
+      ],
+      "region": "EU"
+    },
+    {
+      "id": "NAT_THA",
+      "name": "태국",
+      "abbr": "THA",
+      "colors": {
+        "bg": "#00247D",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1855,
+      "tier": "B-",
+      "stats": {
+        "MAC": 56,
+        "DRF": 67,
+        "TMF": 72,
+        "LAN": 76,
+        "MEC": 79
+      },
+      "preferred_combos": [
+        "G",
+        "A"
+      ],
+      "region": "APAC"
+    },
+    {
+      "id": "NAT_NED",
+      "name": "네덜란드",
+      "abbr": "NED",
+      "colors": {
+        "bg": "#FF6700",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1870,
+      "tier": "B",
+      "stats": {
+        "MAC": 66,
+        "DRF": 59,
+        "TMF": 76,
+        "LAN": 74,
+        "MEC": 80
+      },
+      "preferred_combos": [
+        "C",
+        "F"
+      ],
+      "region": "EU"
+    },
+    {
+      "id": "NAT_RUM",
+      "name": "루마니아",
+      "abbr": "RUM",
+      "colors": {
+        "bg": "#002B7F",
+        "text": "#FCD116"
+      },
+      "elo_rating": 1837,
+      "tier": "B-",
+      "stats": {
+        "MAC": 54,
+        "DRF": 64,
+        "TMF": 71,
+        "LAN": 75,
+        "MEC": 75
+      },
+      "preferred_combos": [
+        "B",
+        "F"
+      ],
+      "region": "EU"
+    },
+    {
+      "id": "NAT_CZE",
+      "name": "체코",
+      "abbr": "CZE",
+      "colors": {
+        "bg": "#11457E",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1820,
+      "tier": "B-",
+      "stats": {
+        "MAC": 65,
+        "DRF": 63,
+        "TMF": 68,
+        "LAN": 63,
+        "MEC": 72
+      },
+      "preferred_combos": [
+        "A",
+        "G"
+      ],
+      "region": "EU"
+    },
+    {
+      "id": "NAT_CHI",
+      "name": "칠레",
+      "abbr": "CHI",
+      "colors": {
+        "bg": "#DA291C",
+        "text": "#0032A0"
+      },
+      "elo_rating": 1827,
+      "tier": "B-",
+      "stats": {
+        "MAC": 60,
+        "DRF": 62,
+        "TMF": 70,
+        "LAN": 73,
+        "MEC": 81
+      },
+      "preferred_combos": [
+        "A",
+        "C",
+        "E"
+      ],
+      "region": "AMERICA"
+    },
+    {
+      "id": "NAT_HKG",
+      "name": "홍콩",
+      "abbr": "HKG",
+      "colors": {
+        "bg": "#D7098D",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1824,
+      "tier": "B-",
+      "stats": {
+        "MAC": 56,
+        "DRF": 61,
+        "TMF": 63,
+        "LAN": 71,
+        "MEC": 77
+      },
+      "preferred_combos": [
+        "G",
+        "E"
+      ],
+      "region": "APAC"
+    },
+    {
+      "id": "NAT_NOR",
+      "name": "노르웨이",
+      "abbr": "NOR",
+      "colors": {
+        "bg": "#BA0C2F",
+        "text": "#00205B"
+      },
+      "elo_rating": 1823,
+      "tier": "B",
+      "stats": {
+        "MAC": 55,
+        "DRF": 59,
+        "TMF": 70,
+        "LAN": 77,
+        "MEC": 77
+      },
+      "preferred_combos": [
+        "F",
+        "C"
+      ],
+      "region": "EU"
+    },
+    {
+      "id": "NAT_PHI",
+      "name": "필리핀",
+      "abbr": "PHI",
+      "colors": {
+        "bg": "#0038A8",
+        "text": "#CE1126"
+      },
+      "elo_rating": 1806,
+      "tier": "C+",
+      "stats": {
+        "MAC": 59,
+        "DRF": 59,
+        "TMF": 64,
+        "LAN": 69,
+        "MEC": 71
+      },
+      "preferred_combos": [
+        "D"
+      ],
+      "region": "APAC"
+    },
+    {
+      "id": "NAT_MAL",
+      "name": "말레이시아",
+      "abbr": "MAL",
+      "colors": {
+        "bg": "#FFD100",
+        "text": "#0032A0"
+      },
+      "elo_rating": 1793,
+      "tier": "C+",
+      "stats": {
+        "MAC": 58,
+        "DRF": 56,
+        "TMF": 72,
+        "LAN": 66,
+        "MEC": 74
+      },
+      "preferred_combos": [
+        "F",
+        "C"
+      ],
+      "region": "APAC"
+    },
+    {
+      "id": "NAT_KSA",
+      "name": "사우디아라비아",
+      "abbr": "KSA",
+      "colors": {
+        "bg": "#006A4E",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1773,
+      "tier": "B-",
+      "stats": {
+        "MAC": 58,
+        "DRF": 60,
+        "TMF": 59,
+        "LAN": 71,
+        "MEC": 75
+      },
+      "preferred_combos": [
+        "G",
+        "D",
+        "A"
+      ],
+      "region": "MEAF"
+    },
+    {
+      "id": "NAT_SGP",
+      "name": "싱가포르",
+      "abbr": "SGP",
+      "colors": {
+        "bg": "#FA7676",
+        "text": "#F1DD4D"
+      },
+      "elo_rating": 1762,
+      "tier": "C+",
+      "stats": {
+        "MAC": 61,
+        "DRF": 52,
+        "TMF": 61,
+        "LAN": 69,
+        "MEC": 69
+      },
+      "preferred_combos": [
+        "G"
+      ],
+      "region": "APAC"
+    },
+    {
+      "id": "NAT_SVK",
+      "name": "슬로바키아",
+      "abbr": "SVK",
+      "colors": {
+        "bg": "#FF0000",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1764,
+      "tier": "C+",
+      "stats": {
+        "MAC": 60,
+        "DRF": 52,
+        "TMF": 64,
+        "LAN": 64,
+        "MEC": 69
+      },
+      "preferred_combos": [
+        "E",
+        "A"
+      ],
+      "region": "EU"
+    },
+    {
+      "id": "NAT_POR",
+      "name": "포르투갈",
+      "abbr": "POR",
+      "colors": {
+        "bg": "#006633",
+        "text": "#CE1126"
+      },
+      "elo_rating": 1739,
+      "tier": "C",
+      "stats": {
+        "MAC": 57,
+        "DRF": 58,
+        "TMF": 63,
+        "LAN": 61,
+        "MEC": 69
+      },
+      "preferred_combos": [
+        "E"
+      ],
+      "region": "EU"
+    },
+    {
+      "id": "NAT_BEL",
+      "name": "벨기에",
+      "abbr": "BEL",
+      "colors": {
+        "bg": "#000000",
+        "text": "#CE1126"
+      },
+      "elo_rating": 1757,
+      "tier": "C",
+      "stats": {
+        "MAC": 53,
+        "DRF": 57,
+        "TMF": 62,
+        "LAN": 71,
+        "MEC": 75
+      },
+      "preferred_combos": [
+        "D"
+      ],
+      "region": "EU"
+    },
+    {
+      "id": "NAT_PER",
+      "name": "페루",
+      "abbr": "PER",
+      "colors": {
+        "bg": "#FFFFFF",
+        "text": "#CE1126"
+      },
+      "elo_rating": 1734,
+      "tier": "C-",
+      "stats": {
+        "MAC": 50,
+        "DRF": 54,
+        "TMF": 52,
+        "LAN": 66,
+        "MEC": 73
+      },
+      "preferred_combos": [
+        "F"
+      ],
+      "region": "AMERICA"
+    },
+    {
+      "id": "NAT_SER",
+      "name": "세르비아",
+      "abbr": "SER",
+      "colors": {
+        "bg": "#CE1126",
+        "text": "#0038A8"
+      },
+      "elo_rating": 1715,
+      "tier": "C-",
+      "stats": {
+        "MAC": 49,
+        "DRF": 60,
+        "TMF": 61,
+        "LAN": 59,
+        "MEC": 69
+      },
+      "preferred_combos": [
+        "D",
+        "G"
+      ],
+      "region": "EU"
+    },
+    {
+      "id": "NAT_IDN",
+      "name": "인도네시아",
+      "abbr": "IDN",
+      "colors": {
+        "bg": "#FFFFFF",
+        "text": "#CE1126"
+      },
+      "elo_rating": 1727,
+      "tier": "C",
+      "stats": {
+        "MAC": 50,
+        "DRF": 46,
+        "TMF": 60,
+        "LAN": 60,
+        "MEC": 67
+      },
+      "preferred_combos": [
+        "A",
+        "B"
+      ],
+      "region": "APAC"
+    },
+    {
+      "id": "NAT_ITA",
+      "name": "이탈리아",
+      "abbr": "ITA",
+      "colors": {
+        "bg": "#009999",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1701,
+      "tier": "C",
+      "stats": {
+        "MAC": 45,
+        "DRF": 49,
+        "TMF": 54,
+        "LAN": 67,
+        "MEC": 69
+      },
+      "preferred_combos": [
+        "D"
+      ],
+      "region": "EU"
+    },
+    {
+      "id": "NAT_SWI",
+      "name": "스위스",
+      "abbr": "SWI",
+      "colors": {
+        "bg": "#DA291C",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1704,
+      "tier": "C",
+      "stats": {
+        "MAC": 46,
+        "DRF": 54,
+        "TMF": 53,
+        "LAN": 69,
+        "MEC": 64
+      },
+      "preferred_combos": [
+        "A"
+      ],
+      "region": "EU"
+    },
+    {
+      "id": "NAT_GRE",
+      "name": "그리스",
+      "abbr": "GRE",
+      "colors": {
+        "bg": "#0D5EAF",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1693,
+      "tier": "C-",
+      "stats": {
+        "MAC": 46,
+        "DRF": 42,
+        "TMF": 54,
+        "LAN": 66,
+        "MEC": 71
+      },
+      "preferred_combos": [
+        "F",
+        "G"
+      ],
+      "region": "EU"
+    },
+    {
+      "id": "NAT_BUL",
+      "name": "불가리아",
+      "abbr": "BUL",
+      "colors": {
+        "bg": "#CE1126",
+        "text": "#007934"
+      },
+      "elo_rating": 1687,
+      "tier": "C-",
+      "stats": {
+        "MAC": 39,
+        "DRF": 49,
+        "TMF": 52,
+        "LAN": 66,
+        "MEC": 66
+      },
+      "preferred_combos": [
+        "B",
+        "C"
+      ],
+      "region": "EU"
+    },
+    {
+      "id": "NAT_AUT",
+      "name": "오스트리아",
+      "abbr": "AUT",
+      "colors": {
+        "bg": "#000000",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1667,
+      "tier": "C-",
+      "stats": {
+        "MAC": 48,
+        "DRF": 54,
+        "TMF": 58,
+        "LAN": 62,
+        "MEC": 70
+      },
+      "preferred_combos": [
+        "F",
+        "E"
+      ],
+      "region": "EU"
+    },
+    {
+      "id": "NAT_CRO",
+      "name": "크로아티아",
+      "abbr": "CRO",
+      "colors": {
+        "bg": "#FF0000",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1654,
+      "tier": "C",
+      "stats": {
+        "MAC": 48,
+        "DRF": 52,
+        "TMF": 53,
+        "LAN": 69,
+        "MEC": 59
+      },
+      "preferred_combos": [
+        "C",
+        "D"
+      ],
+      "region": "EU"
+    },
+    {
+      "id": "NAT_IND",
+      "name": "인도",
+      "abbr": "IND",
+      "colors": {
+        "bg": "#FF9933",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1648,
+      "tier": "C-",
+      "stats": {
+        "MAC": 45,
+        "DRF": 44,
+        "TMF": 61,
+        "LAN": 58,
+        "MEC": 63
+      },
+      "preferred_combos": [
+        "D"
+      ],
+      "region": "APAC"
+    },
+    {
+      "id": "NAT_RSA",
+      "name": "남아공",
+      "abbr": "RSA",
+      "colors": {
+        "bg": "#007749",
+        "text": "#FFB300"
+      },
+      "elo_rating": 1649,
+      "tier": "C",
+      "stats": {
+        "MAC": 40,
+        "DRF": 45,
+        "TMF": 56,
+        "LAN": 62,
+        "MEC": 63
+      },
+      "preferred_combos": [
+        "A",
+        "F"
+      ],
+      "region": "MEAF"
+    },
+    {
+      "id": "NAT_SVN",
+      "name": "슬로베니아",
+      "abbr": "SVN",
+      "colors": {
+        "bg": "#003DA5",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1637,
+      "tier": "D+",
+      "stats": {
+        "MAC": 42,
+        "DRF": 54,
+        "TMF": 49,
+        "LAN": 52,
+        "MEC": 62
+      },
+      "preferred_combos": [
+        "E"
+      ],
+      "region": "EU"
+    },
+    {
+      "id": "NAT_UAE",
+      "name": "아랍에미리트",
+      "abbr": "UAE",
+      "colors": {
+        "bg": "#30D5C8",
+        "text": "#143B79"
+      },
+      "elo_rating": 1635,
+      "tier": "D+",
+      "stats": {
+        "MAC": 41,
+        "DRF": 46,
+        "TMF": 53,
+        "LAN": 60,
+        "MEC": 63
+      },
+      "preferred_combos": [
+        "G",
+        "A"
+      ],
+      "region": "MEAF"
+    },
+    {
+      "id": "NAT_NZL",
+      "name": "뉴질랜드",
+      "abbr": "NZL",
+      "colors": {
+        "bg": "#000000",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1623,
+      "tier": "D+",
+      "stats": {
+        "MAC": 42,
+        "DRF": 37,
+        "TMF": 47,
+        "LAN": 62,
+        "MEC": 70
+      },
+      "preferred_combos": [
+        "E"
+      ],
+      "region": "APAC"
+    },
+    {
+      "id": "NAT_HUN",
+      "name": "헝가리",
+      "abbr": "HUN",
+      "colors": {
+        "bg": "#008638",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1623,
+      "tier": "C-",
+      "stats": {
+        "MAC": 37,
+        "DRF": 39,
+        "TMF": 51,
+        "LAN": 63,
+        "MEC": 68
+      },
+      "preferred_combos": [
+        "A"
+      ],
+      "region": "EU"
+    },
+    {
+      "id": "NAT_KAZ",
+      "name": "카자흐스탄",
+      "abbr": "KAZ",
+      "colors": {
+        "bg": "#00ADEF",
+        "text": "#FCD116"
+      },
+      "elo_rating": 1598,
+      "tier": "D+",
+      "stats": {
+        "MAC": 34,
+        "DRF": 46,
+        "TMF": 48,
+        "LAN": 55,
+        "MEC": 65
+      },
+      "preferred_combos": [
+        "C"
+      ],
+      "region": "APAC"
+    },
+    {
+      "id": "NAT_BAL",
+      "name": "발트해 연합",
+      "abbr": "BAL",
+      "colors": {
+        "bg": "#2C5264",
+        "text": "#FFBF00"
+      },
+      "elo_rating": 1574,
+      "tier": "D+",
+      "stats": {
+        "MAC": 34,
+        "DRF": 35,
+        "TMF": 53,
+        "LAN": 53,
+        "MEC": 65
+      },
+      "preferred_combos": [
+        "G",
+        "F"
+      ],
+      "region": "EU"
+    },
+    {
+      "id": "NAT_TUN",
+      "name": "튀니지",
+      "abbr": "TUN",
+      "colors": {
+        "bg": "#CE1126",
+        "text": "#C0C0C0"
+      },
+      "elo_rating": 1571,
+      "tier": "D",
+      "stats": {
+        "MAC": 40,
+        "DRF": 38,
+        "TMF": 50,
+        "LAN": 52,
+        "MEC": 62
+      },
+      "preferred_combos": [
+        "G"
+      ],
+      "region": "MEAF"
+    },
+    {
+      "id": "NAT_COL",
+      "name": "콜롬비아",
+      "abbr": "COL",
+      "colors": {
+        "bg": "#FCD116",
+        "text": "#0038A8"
+      },
+      "elo_rating": 1559,
+      "tier": "D",
+      "stats": {
+        "MAC": 39,
+        "DRF": 40,
+        "TMF": 50,
+        "LAN": 58,
+        "MEC": 59
+      },
+      "preferred_combos": [
+        "F"
+      ],
+      "region": "AMERICA"
+    },
+    {
+      "id": "NAT_QAT",
+      "name": "카타르",
+      "abbr": "QAT",
+      "colors": {
+        "bg": "#800040",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1552,
+      "tier": "D",
+      "stats": {
+        "MAC": 30,
+        "DRF": 41,
+        "TMF": 44,
+        "LAN": 52,
+        "MEC": 69
+      },
+      "preferred_combos": [
+        "C"
+      ],
+      "region": "MEAF"
+    },
+    {
+      "id": "NAT_ADR",
+      "name": "아드리아해 연합",
+      "abbr": "ADR",
+      "colors": {
+        "bg": "#1B5E7F",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1540,
+      "tier": "D",
+      "stats": {
+        "MAC": 36,
+        "DRF": 31,
+        "TMF": 50,
+        "LAN": 56,
+        "MEC": 65
+      },
+      "preferred_combos": [
+        "C"
+      ],
+      "region": "EU"
+    },
+    {
+      "id": "NAT_EGY",
+      "name": "이집트",
+      "abbr": "EGY",
+      "colors": {
+        "bg": "#CE1126",
+        "text": "#D4AF37"
+      },
+      "elo_rating": 1536,
+      "tier": "D",
+      "stats": {
+        "MAC": 34,
+        "DRF": 40,
+        "TMF": 38,
+        "LAN": 59,
+        "MEC": 62
+      },
+      "preferred_combos": [
+        "G"
+      ],
+      "region": "MEAF"
+    },
+    {
+      "id": "NAT_PAK",
+      "name": "파키스탄",
+      "abbr": "PAK",
+      "colors": {
+        "bg": "#006633",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1545,
+      "tier": "D",
+      "stats": {
+        "MAC": 37,
+        "DRF": 34,
+        "TMF": 43,
+        "LAN": 52,
+        "MEC": 56
+      },
+      "preferred_combos": [
+        "A"
+      ],
+      "region": "APAC"
+    },
+    {
+      "id": "NAT_URU",
+      "name": "우루과이",
+      "abbr": "URU",
+      "colors": {
+        "bg": "#8FD1EC",
+        "text": "#000000"
+      },
+      "elo_rating": 1516,
+      "tier": "D",
+      "stats": {
+        "MAC": 34,
+        "DRF": 29,
+        "TMF": 46,
+        "LAN": 57,
+        "MEC": 66
+      },
+      "preferred_combos": [
+        "G"
+      ],
+      "region": "AMERICA"
+    },
+    {
+      "id": "NAT_PUE",
+      "name": "푸에르토리코",
+      "abbr": "PUE",
+      "colors": {
+        "bg": "#0038A8",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1504,
+      "tier": "D-",
+      "stats": {
+        "MAC": 36,
+        "DRF": 31,
+        "TMF": 39,
+        "LAN": 53,
+        "MEC": 63
+      },
+      "preferred_combos": [
+        "B"
+      ],
+      "region": "AMERICA"
+    },
+    {
+      "id": "NAT_MNG",
+      "name": "몽골",
+      "abbr": "MNG",
+      "colors": {
+        "bg": "#0066B3",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1506,
+      "tier": "D",
+      "stats": {
+        "MAC": 33,
+        "DRF": 32,
+        "TMF": 39,
+        "LAN": 52,
+        "MEC": 51
+      },
+      "preferred_combos": [
+        "D"
+      ],
+      "region": "APAC"
+    },
+    {
+      "id": "NAT_ISR",
+      "name": "이스라엘",
+      "abbr": "ISR",
+      "colors": {
+        "bg": "#0038B8",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1507,
+      "tier": "D",
+      "stats": {
+        "MAC": 20,
+        "DRF": 38,
+        "TMF": 38,
+        "LAN": 52,
+        "MEC": 57
+      },
+      "preferred_combos": [
+        "D"
+      ],
+      "region": "EU"
+    },
+    {
+      "id": "NAT_MAR",
+      "name": "모로코",
+      "abbr": "MAR",
+      "colors": {
+        "bg": "#C68642",
+        "text": "#007A3D"
+      },
+      "elo_rating": 1489,
+      "tier": "D",
+      "stats": {
+        "MAC": 24,
+        "DRF": 24,
+        "TMF": 41,
+        "LAN": 55,
+        "MEC": 63
+      },
+      "preferred_combos": [
+        "D"
+      ],
+      "region": "MEAF"
+    },
+    {
+      "id": "NAT_UZB",
+      "name": "우즈베키스탄",
+      "abbr": "UZB",
+      "colors": {
+        "bg": "#00AFEF",
+        "text": "#009933"
+      },
+      "elo_rating": 1472,
+      "tier": "D",
+      "stats": {
+        "MAC": 30,
+        "DRF": 33,
+        "TMF": 39,
+        "LAN": 52,
+        "MEC": 65
+      },
+      "preferred_combos": [
+        "F"
+      ],
+      "region": "APAC"
+    },
+    {
+      "id": "NAT_PAN",
+      "name": "파나마",
+      "abbr": "PAN",
+      "colors": {
+        "bg": "#CE1126",
+        "text": "#0038A8"
+      },
+      "elo_rating": 1458,
+      "tier": "D-",
+      "stats": {
+        "MAC": 22,
+        "DRF": 38,
+        "TMF": 40,
+        "LAN": 48,
+        "MEC": 50
+      },
+      "preferred_combos": [
+        "D"
+      ],
+      "region": "AMERICA"
+    },
+    {
+      "id": "NAT_MAC",
+      "name": "마카오",
+      "abbr": "MAC",
+      "colors": {
+        "bg": "#007A5E",
+        "text": "#FFC72C"
+      },
+      "elo_rating": 1451,
+      "tier": "D-",
+      "stats": {
+        "MAC": 29,
+        "DRF": 36,
+        "TMF": 37,
+        "LAN": 53,
+        "MEC": 56
+      },
+      "preferred_combos": [
+        "F"
+      ],
+      "region": "APAC"
+    },
+    {
+      "id": "NAT_PAR",
+      "name": "파라과이",
+      "abbr": "PAR",
+      "colors": {
+        "bg": "#CE1126",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1452,
+      "tier": "D-",
+      "stats": {
+        "MAC": 28,
+        "DRF": 34,
+        "TMF": 34,
+        "LAN": 46,
+        "MEC": 62
+      },
+      "preferred_combos": [
+        "G"
+      ],
+      "region": "AMERICA"
+    },
+    {
+      "id": "NAT_ECU",
+      "name": "에콰도르",
+      "abbr": "ECU",
+      "colors": {
+        "bg": "#FCD116",
+        "text": "#0038A8"
+      },
+      "elo_rating": 1447,
+      "tier": "E+",
+      "stats": {
+        "MAC": 19,
+        "DRF": 30,
+        "TMF": 37,
+        "LAN": 54,
+        "MEC": 54
+      },
+      "preferred_combos": [
+        "D"
+      ],
+      "region": "AMERICA"
+    },
+    {
+      "id": "NAT_COS",
+      "name": "코스타리카",
+      "abbr": "COS",
+      "colors": {
+        "bg": "#0038A8",
+        "text": "#CE1126"
+      },
+      "elo_rating": 1417,
+      "tier": "E+",
+      "stats": {
+        "MAC": 26,
+        "DRF": 31,
+        "TMF": 27,
+        "LAN": 48,
+        "MEC": 54
+      },
+      "preferred_combos": [
+        "C"
+      ],
+      "region": "AMERICA"
+    },
+    {
+      "id": "NAT_DOM",
+      "name": "도미니카 공화국",
+      "abbr": "DOM",
+      "colors": {
+        "bg": "#00205B",
+        "text": "#CE1126"
+      },
+      "elo_rating": 1402,
+      "tier": "E",
+      "stats": {
+        "MAC": 23,
+        "DRF": 30,
+        "TMF": 41,
+        "LAN": 46,
+        "MEC": 51
+      },
+      "preferred_combos": [
+        "D"
+      ],
+      "region": "AMERICA"
+    },
+    {
+      "id": "NAT_IRE",
+      "name": "아일랜드",
+      "abbr": "IRE",
+      "colors": {
+        "bg": "#08A04B",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1406,
+      "tier": "E+",
+      "stats": {
+        "MAC": 16,
+        "DRF": 30,
+        "TMF": 33,
+        "LAN": 39,
+        "MEC": 59
+      },
+      "preferred_combos": [
+        "D"
+      ],
+      "region": "EU"
+    },
+    {
+      "id": "NAT_NIG",
+      "name": "나이지리아",
+      "abbr": "NIG",
+      "colors": {
+        "bg": "#009900",
+        "text": "#333333"
+      },
+      "elo_rating": 1418,
+      "tier": "E+",
+      "stats": {
+        "MAC": 23,
+        "DRF": 25,
+        "TMF": 36,
+        "LAN": 45,
+        "MEC": 57
+      },
+      "preferred_combos": [
+        "F"
+      ],
+      "region": "MEAF"
+    },
+    {
+      "id": "NAT_ALG",
+      "name": "알제리",
+      "abbr": "ALG",
+      "colors": {
+        "bg": "#007A3D",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1396,
+      "tier": "E+",
+      "stats": {
+        "MAC": 17,
+        "DRF": 29,
+        "TMF": 34,
+        "LAN": 37,
+        "MEC": 56
+      },
+      "preferred_combos": [
+        "B"
+      ],
+      "region": "MEAF"
+    },
+    {
+      "id": "NAT_SEN",
+      "name": "세네갈",
+      "abbr": "SEN",
+      "colors": {
+        "bg": "#009900",
+        "text": "#FFCC00"
+      },
+      "elo_rating": 1372,
+      "tier": "E",
+      "stats": {
+        "MAC": 13,
+        "DRF": 31,
+        "TMF": 30,
+        "LAN": 42,
+        "MEC": 50
+      },
+      "preferred_combos": [
+        "G"
+      ],
+      "region": "MEAF"
+    },
+    {
+      "id": "NAT_IRN",
+      "name": "이란",
+      "abbr": "IRN",
+      "colors": {
+        "bg": "#239F40",
+        "text": "#DA0000"
+      },
+      "elo_rating": 1364,
+      "tier": "E+",
+      "stats": {
+        "MAC": 15,
+        "DRF": 22,
+        "TMF": 31,
+        "LAN": 44,
+        "MEC": 57
+      },
+      "preferred_combos": [
+        "F"
+      ],
+      "region": "APAC"
+    },
+    {
+      "id": "NAT_GHA",
+      "name": "가나",
+      "abbr": "GHA",
+      "colors": {
+        "bg": "#CE1126",
+        "text": "#FCD116"
+      },
+      "elo_rating": 1352,
+      "tier": "E",
+      "stats": {
+        "MAC": 16,
+        "DRF": 18,
+        "TMF": 32,
+        "LAN": 48,
+        "MEC": 53
+      },
+      "preferred_combos": [
+        "E"
+      ],
+      "region": "MEAF"
+    },
+    {
+      "id": "NAT_KEN",
+      "name": "케냐",
+      "abbr": "KEN",
+      "colors": {
+        "bg": "#000000",
+        "text": "#CE1126"
+      },
+      "elo_rating": 1352,
+      "tier": "E",
+      "stats": {
+        "MAC": 17,
+        "DRF": 20,
+        "TMF": 28,
+        "LAN": 39,
+        "MEC": 54
+      },
+      "preferred_combos": [
+        "G"
+      ],
+      "region": "MEAF"
+    },
+    {
+      "id": "NAT_JOR",
+      "name": "요르단",
+      "abbr": "JOR",
+      "colors": {
+        "bg": "#CE1126",
+        "text": "#007A3D"
+      },
+      "elo_rating": 1347,
+      "tier": "F+",
+      "stats": {
+        "MAC": 9,
+        "DRF": 16,
+        "TMF": 34,
+        "LAN": 39,
+        "MEC": 46
+      },
+      "preferred_combos": [
+        "B"
+      ],
+      "region": "MEAF"
+    },
+    {
+      "id": "NAT_PAL",
+      "name": "팔레스타인",
+      "abbr": "PAL",
+      "colors": {
+        "bg": "#000000",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1329,
+      "tier": "E-",
+      "stats": {
+        "MAC": 16,
+        "DRF": 22,
+        "TMF": 32,
+        "LAN": 37,
+        "MEC": 52
+      },
+      "preferred_combos": [
+        "B"
+      ],
+      "region": "MEAF"
+    },
+    {
+      "id": "NAT_LUX",
+      "name": "룩셈부르크",
+      "abbr": "LUX",
+      "colors": {
+        "bg": "#51ADDA",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1335,
+      "tier": "E-",
+      "stats": {
+        "MAC": 14,
+        "DRF": 16,
+        "TMF": 30,
+        "LAN": 43,
+        "MEC": 52
+      },
+      "preferred_combos": [
+        "C"
+      ],
+      "region": "EU"
+    },
+    {
+      "id": "NAT_UGA",
+      "name": "우간다",
+      "abbr": "UGA",
+      "colors": {
+        "bg": "#000000",
+        "text": "#FFD300"
+      },
+      "elo_rating": 1306,
+      "tier": "F",
+      "stats": {
+        "MAC": 6,
+        "DRF": 16,
+        "TMF": 19,
+        "LAN": 40,
+        "MEC": 46
+      },
+      "preferred_combos": [
+        "E"
+      ],
+      "region": "MEAF"
+    },
+    {
+      "id": "NAT_LEB",
+      "name": "레바논",
+      "abbr": "LEB",
+      "colors": {
+        "bg": "#CE1126",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1296,
+      "tier": "F-",
+      "stats": {
+        "MAC": 8,
+        "DRF": 13,
+        "TMF": 28,
+        "LAN": 37,
+        "MEC": 44
+      },
+      "preferred_combos": [
+        "A"
+      ],
+      "region": "MEAF"
+    },
+    {
+      "id": "NAT_BAN",
+      "name": "방글라데시",
+      "abbr": "BAN",
+      "colors": {
+        "bg": "#006A4E",
+        "text": "#D22630"
+      },
+      "elo_rating": 1300,
+      "tier": "F",
+      "stats": {
+        "MAC": 8,
+        "DRF": 7,
+        "TMF": 22,
+        "LAN": 43,
+        "MEC": 45
+      },
+      "preferred_combos": [
+        "G"
+      ],
+      "region": "APAC"
+    },
+    {
+      "id": "NAT_VEN",
+      "name": "베네수엘라",
+      "abbr": "VEN",
+      "colors": {
+        "bg": "#730026",
+        "text": "#FFC72C"
+      },
+      "elo_rating": 1290,
+      "tier": "F+",
+      "stats": {
+        "MAC": 7,
+        "DRF": 16,
+        "TMF": 22,
+        "LAN": 42,
+        "MEC": 48
+      },
+      "preferred_combos": [
+        "B"
+      ],
+      "region": "AMERICA"
+    },
+    {
+      "id": "NAT_WIN",
+      "name": "서인도 연합",
+      "abbr": "WIN",
+      "colors": {
+        "bg": "#660033",
+        "text": "#009999"
+      },
+      "elo_rating": 1262,
+      "tier": "F-",
+      "stats": {
+        "MAC": 7,
+        "DRF": 15,
+        "TMF": 27,
+        "LAN": 37,
+        "MEC": 50
+      },
+      "preferred_combos": [
+        "B"
+      ],
+      "region": "AMERICA"
+    },
+    {
+      "id": "NAT_BHR",
+      "name": "바레인",
+      "abbr": "BHR",
+      "colors": {
+        "bg": "#CE1126",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1261,
+      "tier": "F",
+      "stats": {
+        "MAC": 5,
+        "DRF": 4,
+        "TMF": 24,
+        "LAN": 38,
+        "MEC": 47
+      },
+      "preferred_combos": [
+        "C"
+      ],
+      "region": "MEAF"
+    },
+    {
+      "id": "NAT_IRQ",
+      "name": "이라크",
+      "abbr": "IRQ",
+      "colors": {
+        "bg": "#FFFFFF",
+        "text": "#007A3D"
+      },
+      "elo_rating": 1267,
+      "tier": "F",
+      "stats": {
+        "MAC": 6,
+        "DRF": 10,
+        "TMF": 18,
+        "LAN": 39,
+        "MEC": 44
+      },
+      "preferred_combos": [
+        "F"
+      ],
+      "region": "MEAF"
+    },
+    {
+      "id": "NAT_CAM",
+      "name": "캄보디아",
+      "abbr": "CAM",
+      "colors": {
+        "bg": "#0038A8",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1256,
+      "tier": "F",
+      "stats": {
+        "MAC": 4,
+        "DRF": 8,
+        "TMF": 29,
+        "LAN": 33,
+        "MEC": 46
+      },
+      "preferred_combos": [
+        "C"
+      ],
+      "region": "APAC"
+    },
+    {
+      "id": "NAT_MYA",
+      "name": "미얀마",
+      "abbr": "MYA",
+      "colors": {
+        "bg": "#FFCC00",
+        "text": "#009900"
+      },
+      "elo_rating": 1219,
+      "tier": "F-",
+      "stats": {
+        "MAC": 1,
+        "DRF": 10,
+        "TMF": 24,
+        "LAN": 34,
+        "MEC": 42
+      },
+      "preferred_combos": [
+        "G"
+      ],
+      "region": "APAC"
+    },
+    {
+      "id": "NAT_CIV",
+      "name": "코트디부아르",
+      "abbr": "CIV",
+      "colors": {
+        "bg": "#FF7900",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1218,
+      "tier": "F-",
+      "stats": {
+        "MAC": 3,
+        "DRF": 5,
+        "TMF": 23,
+        "LAN": 34,
+        "MEC": 42
+      },
+      "preferred_combos": [
+        "B"
+      ],
+      "region": "MEAF"
+    },
+    {
+      "id": "NAT_KYR",
+      "name": "키르기스스탄",
+      "abbr": "KYR",
+      "colors": {
+        "bg": "#FF0000",
+        "text": "#FFFF00"
+      },
+      "elo_rating": 1201,
+      "tier": "F-",
+      "stats": {
+        "MAC": 4,
+        "DRF": 12,
+        "TMF": 16,
+        "LAN": 28,
+        "MEC": 51
+      },
+      "preferred_combos": [
+        "A"
+      ],
+      "region": "APAC"
+    },
+    {
+      "id": "NAT_KUW",
+      "name": "쿠웨이트",
+      "abbr": "KUW",
+      "colors": {
+        "bg": "#000000",
+        "text": "#007A3D"
+      },
+      "elo_rating": 1206,
+      "tier": "F",
+      "stats": {
+        "MAC": 3,
+        "DRF": 8,
+        "TMF": 16,
+        "LAN": 26,
+        "MEC": 46
+      },
+      "preferred_combos": [
+        "D"
+      ],
+      "region": "MEAF"
+    }
+  ]
+}

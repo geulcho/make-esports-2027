@@ -1,0 +1,248 @@
+{
+  "version": "1.0",
+  "title": "MAKE Esports UI Spec",
+  "framework": "React 18 + TypeScript + Vite + Tailwind CSS v3",
+
+  "layout": {
+    "root": "flex h-screen overflow-hidden",
+    "sidebar_width": "w-48",
+    "topbar_height": "h-12",
+    "phase_strip_height": "h-11",
+    "main": "flex-1 overflow-auto"
+  },
+
+  "colors": {
+    "tier_s": "#00FFCC",
+    "tier_a": "#FFD700",
+    "tier_b": "#FFFFFF",
+    "tier_c": "#666666",
+    "accent_blue": "#4A90E2",
+    "status_up": "#22c55e",
+    "status_down": "#ef4444",
+    "bg_base": "dark base",
+    "bg_panel": "slightly lighter panel",
+    "bg_card": "card surface",
+    "bg_hover": "hover state",
+    "bg_border": "border color"
+  },
+
+  "tier_thresholds": {
+    "S": { "min_pct": 80 },
+    "A": { "min_pct": 55 },
+    "B": { "min_pct": 30 },
+    "C": { "min_pct": 0 }
+  },
+
+  "navigation": [
+    { "path": "/",            "label": "Home",            "icon": "Home" },
+    { "path": "/players",     "label": "Players",         "icon": "Users" },
+    { "path": "/teams",       "label": "Teams & Leagues", "icon": "Globe" },
+    { "path": "/intermatch",  "label": "Intermatch",      "icon": "Flag" },
+    { "path": "/ratings",     "label": "Ratings",         "icon": "TrendingUp" },
+    { "path": "/meta",        "label": "Meta",            "icon": "BarChart2" },
+    { "path": "/tournaments", "label": "Tournaments",     "icon": "Trophy" },
+    { "path": "/schedule",    "label": "Schedule",        "icon": "Calendar" },
+    { "path": "/history",     "label": "History",         "icon": "BookOpen" }
+  ],
+
+  "phase_strip": {
+    "location": "Layout (global, all pages)",
+    "note": "Moved from Home page to Layout per user request",
+    "block_size": 4,
+    "dot_count": 4,
+    "simulate_button": {
+      "always_enabled": true,
+      "note": "No phase cap — unlimited progression per season redesign"
+    },
+    "display": {
+      "phase_label": "Phase {N} · Block {B} ({P}/4)",
+      "meta_badges": 2,
+      "reset_button": true
+    }
+  },
+
+  "shared_components": {
+    "TierBadge": {
+      "props": ["tier: S|A|B|C"],
+      "variants": {
+        "S": "bg-tier-s/10 text-tier-s border-tier-s/30",
+        "A": "bg-tier-a/10 text-tier-a border-tier-a/30",
+        "B": "bg-white/5 text-white border-white/20",
+        "C": "bg-slate-800 text-slate-500 border-slate-700"
+      }
+    },
+    "StatBadge": {
+      "props": ["value: number", "max?: number (default 100)"],
+      "behavior": "colors value by tier threshold"
+    },
+    "StatBar": {
+      "props": ["value: number", "max?: number", "label?: string"],
+      "layout": "label | progress_bar | value"
+    },
+    "FormBadge": {
+      "props": ["form: number (0-10)"],
+      "display": "{form}/10 with tier color"
+    },
+    "RadarChart": {
+      "props": ["stats: { MAC, DRF, TMF, LAN, MEC }"],
+      "shape": "pentagon"
+    },
+    "TabPanel": {
+      "props": ["tabs: {id, label}[]", "children: (tab) => ReactNode", "className?"],
+      "pattern": "render prop"
+    },
+    "SeriesScore": {
+      "props": ["log: MatchLog"],
+      "display": "setsA–setsB (winner bolded in tier-s)",
+      "tooltip": "Set 1: momA–momB | Set 2: ... (on hover)",
+      "safety": "log.sets ?? [] guard for stale localStorage data"
+    }
+  },
+
+  "pages": {
+    "home": {
+      "route": "/",
+      "layout": "3-column",
+      "columns": {
+        "left": { "width": "w-64", "content": "News & Events (scrollable cards)" },
+        "center": {
+          "width": "flex-1",
+          "content": "League Standings TabPanel",
+          "featured_leagues": ["L_KR", "L_WEU", "L_SEA", "L_BR"],
+          "table_columns": ["#", "Team", "W", "L", "SD", "ScD", "ELO", "Tier"]
+        },
+        "right": {
+          "width": "w-72",
+          "tabs": ["Results", "Upcoming"],
+          "results": "Followed teams/leagues match logs, SeriesScore, reverse chronological",
+          "upcoming": "Next phase matches with decimal odds per team"
+        }
+      },
+      "data_source": "useStore (live simulation)",
+      "implemented": true
+    },
+
+    "players": {
+      "route": "/players",
+      "filters": ["search_text", "position (TOP|JGL|MID|BOT|SUP)", "league"],
+      "sortable_columns": ["nickname", "position", "age", "kda", "win_rate", "form", "tier", "LAN", "MEC", "TMF"],
+      "table_columns": ["★", "POS", "Nickname", "Name", "Nat", "Age", "Tier", "Form", "KDA", "WR%", "LAN", "MEC", "TMF"],
+      "row_action": "navigate to /players/:id",
+      "data_source": "mockPlayers",
+      "implemented": true
+    },
+
+    "player_profile": {
+      "route": "/players/:id",
+      "header": ["position_badge", "nickname", "full_name", "nationality", "age", "tier_badge", "team_name", "follow_star"],
+      "tabs": ["Stats", "Career", "Matches"],
+      "stats_tab": {
+        "left": "RadarChart (MAC/DRF/TMF/LAN/MEC)",
+        "right": "StatBar list + FormBadge"
+      },
+      "data_source": "mockPlayers",
+      "implemented": true
+    },
+
+    "teams_leagues": {
+      "route": "/teams",
+      "layout": "sidebar + main",
+      "sidebar": {
+        "width": "w-52",
+        "groups_by": "conference (C_APAC, C_AMER, C_EMEA)",
+        "per_league": "name + team count + rank + follow star"
+      },
+      "tabs": ["Standings", "Results", "Teams", "Playoffs", "Past Champions"],
+      "standings_columns": ["#", "★", "Team(dot+abbr+name)", "MP", "W", "L", "SD", "ScD"],
+      "standings_note": "ELO/Stats/Tier columns removed per user request",
+      "results_columns": ["Team A", "SeriesScore", "Team B", "Odds A", "Odds B"],
+      "teams_layout": "4-column grid cards (name, ELO, tier)",
+      "playoffs": "placeholder",
+      "past_champions_columns": ["Year", "Season", "Champion"],
+      "data_source": "useStore (live standings/results) + static (past champions)",
+      "implemented": true
+    },
+
+    "team_profile": {
+      "route": "/teams/:id",
+      "header": ["back_button", "team_logo_abbr", "team_name", "abbr_badge", "elo", "league_link", "follow_star"],
+      "tier_removed": true,
+      "note": "Tier display removed from header per user request",
+      "tabs": ["Roster", "Team Stats", "ELO History"],
+      "roster_columns": ["POS", "Nickname", "Name", "Nat", "Age", "Tier", "KDA", "WR%"],
+      "stats_tab": {
+        "left": "RadarChart",
+        "right": "StatBar × 5 + preferred_combos badges"
+      },
+      "history_tab": "LineChart (5yr ELO, recharts)",
+      "data_source": "clubById (static) + mockPlayers (roster)",
+      "implemented": true
+    },
+
+    "intermatch": {
+      "route": "/intermatch",
+      "layout": "section_nav + content",
+      "sections": [
+        "eu_qual", "apac_qual", "amer_qual", "mea_qual",
+        "iq", "we_group", "we_knockout"
+      ],
+      "status_values": ["locked", "pending", "in_progress", "complete"],
+      "status_colors": {
+        "in_progress": "status-up",
+        "complete": "tier-s",
+        "pending": "tier-a",
+        "locked": "slate-600"
+      },
+      "data_source": "none (shell only)",
+      "implemented": false
+    },
+
+    "ratings": {
+      "route": "/ratings",
+      "tabs": ["Clubs", "Nations"],
+      "clubs_filters": ["region: ALL|KR|WEU|SEA|..."],
+      "sortable_columns": ["elo", "MAC", "DRF", "TMF", "LAN", "MEC"],
+      "stat_cell_colors": {
+        "gte_90": "tier-s (#00FFCC)",
+        "gte_75": "tier-a (#FFD700)",
+        "gte_55": "#ffffff",
+        "else": "#666666"
+      },
+      "data_source": "allClubs, allNations (static JSON)",
+      "implemented": true
+    },
+
+    "meta": {
+      "route": "/meta",
+      "trend_cards": 6,
+      "champion_sort_options": ["presence", "win_rate", "ban_rate", "pick_rate"],
+      "chart": "BarChart (recharts)",
+      "data_source": "mockChampions (mock)",
+      "implemented": "partial (shell)"
+    },
+
+    "tournaments": {
+      "route": "/tournaments",
+      "tabs": ["MM", "Cup", "WT", "WE"],
+      "types_defined": ["MMState", "CupState", "WTState", "WEState", "CompetitionStatus"],
+      "data_source": "none (shell only)",
+      "implemented": false
+    },
+
+    "schedule": {
+      "route": "/schedule",
+      "features": ["week_navigator (←/→)", "week_date_range", "league_activity_per_week"],
+      "icons": ["Calendar", "Zap", "Trophy", "Globe", "Shield", "Star"],
+      "data_source": "seasonCalendar.ts (needs update to new 52-week structure)",
+      "implemented": "partial (old calendar)"
+    },
+
+    "history": {
+      "route": "/history",
+      "features": ["player_search", "worlds_history_table", "hall_of_fame"],
+      "worlds_columns": ["Year", "Winner", "Region", "Runner-up"],
+      "data_source": "static hardcoded + mockPlayers",
+      "implemented": "partial (mock)"
+    }
+  }
+}

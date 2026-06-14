@@ -1,0 +1,4587 @@
+{
+  "clubs": [
+    {
+      "id": "CLUB_IX",
+      "name": "Inex 9",
+      "abbr": "IX",
+      "colors": {
+        "bg": "#D9D9D9",
+        "text": "#000000"
+      },
+      "elo_rating": 1916,
+      "tier": "S",
+      "stats": {
+        "MAC": 99,
+        "DRF": 89,
+        "TMF": 98,
+        "LAN": 98,
+        "MEC": 99
+      },
+      "preferred_combos": [
+        "F",
+        "C",
+        "B",
+        "G",
+        "E"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_KR",
+      "division": null
+    },
+    {
+      "id": "CLUB_RT",
+      "name": "Rising Tempest",
+      "abbr": "RT",
+      "colors": {
+        "bg": "#000000",
+        "text": "#FF0000"
+      },
+      "elo_rating": 1906,
+      "tier": "S",
+      "stats": {
+        "MAC": 100,
+        "DRF": 95,
+        "TMF": 98,
+        "LAN": 86,
+        "MEC": 95
+      },
+      "preferred_combos": [
+        "D",
+        "B",
+        "F",
+        "E",
+        "G"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_NEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_CON",
+      "name": "Concordants",
+      "abbr": "CON",
+      "colors": {
+        "bg": "#FFFFFF",
+        "text": "#0066FF"
+      },
+      "elo_rating": 1886,
+      "tier": "S",
+      "stats": {
+        "MAC": 94,
+        "DRF": 94,
+        "TMF": 94,
+        "LAN": 99,
+        "MEC": 99
+      },
+      "preferred_combos": [
+        "C",
+        "E",
+        "D",
+        "G",
+        "F"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_CN",
+      "division": "DRAGON"
+    },
+    {
+      "id": "CLUB_AWK",
+      "name": "Awkward Gaming",
+      "abbr": "AWK",
+      "colors": {
+        "bg": "#000000",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1827,
+      "tier": "A++",
+      "stats": {
+        "MAC": 100,
+        "DRF": 96,
+        "TMF": 88,
+        "LAN": 94,
+        "MEC": 98
+      },
+      "preferred_combos": [
+        "A",
+        "C",
+        "G",
+        "E"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_CN",
+      "division": "PHOENIX"
+    },
+    {
+      "id": "CLUB_RYZ",
+      "name": "RuYiZhu Esports",
+      "abbr": "RYZ",
+      "colors": {
+        "bg": "#B4926A",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1813,
+      "tier": "A++",
+      "stats": {
+        "MAC": 89,
+        "DRF": 100,
+        "TMF": 90,
+        "LAN": 96,
+        "MEC": 94
+      },
+      "preferred_combos": [
+        "F",
+        "B",
+        "C"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_CN",
+      "division": "PHOENIX"
+    },
+    {
+      "id": "CLUB_CNP",
+      "name": "Cnter Polaris",
+      "abbr": "CNP",
+      "colors": {
+        "bg": "#CCCCFF",
+        "text": "#CCFFFF"
+      },
+      "elo_rating": 1856,
+      "tier": "S-",
+      "stats": {
+        "MAC": 98,
+        "DRF": 86,
+        "TMF": 96,
+        "LAN": 93,
+        "MEC": 97
+      },
+      "preferred_combos": [
+        "C",
+        "D",
+        "G",
+        "E",
+        "A"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_KR",
+      "division": null
+    },
+    {
+      "id": "CLUB_FZ",
+      "name": "Fengzu Celestials",
+      "abbr": "FZ",
+      "colors": {
+        "bg": "#4997D0",
+        "text": "#FFFFCC"
+      },
+      "elo_rating": 1780,
+      "tier": "A+",
+      "stats": {
+        "MAC": 90,
+        "DRF": 85,
+        "TMF": 96,
+        "LAN": 90,
+        "MEC": 98
+      },
+      "preferred_combos": [
+        "B",
+        "F",
+        "D"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_CN",
+      "division": "DRAGON"
+    },
+    {
+      "id": "CLUB_PNS",
+      "name": "Paris Never Sinks",
+      "abbr": "PNS",
+      "colors": {
+        "bg": "#000099",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1827,
+      "tier": "A++",
+      "stats": {
+        "MAC": 96,
+        "DRF": 87,
+        "TMF": 96,
+        "LAN": 92,
+        "MEC": 97
+      },
+      "preferred_combos": [
+        "D",
+        "F",
+        "E",
+        "B"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_WEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_XIN",
+      "name": "Xinbada",
+      "abbr": "XIN",
+      "colors": {
+        "bg": "#5C9933",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1691,
+      "tier": "A",
+      "stats": {
+        "MAC": 80,
+        "DRF": 86,
+        "TMF": 92,
+        "LAN": 85,
+        "MEC": 97
+      },
+      "preferred_combos": [
+        "F",
+        "A",
+        "E"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_CN",
+      "division": "DRAGON"
+    },
+    {
+      "id": "CLUB_PGI",
+      "name": "PGI Bigshot",
+      "abbr": "PGI",
+      "colors": {
+        "bg": "#FF9966",
+        "text": "#000000"
+      },
+      "elo_rating": 1671,
+      "tier": "A-",
+      "stats": {
+        "MAC": 86,
+        "DRF": 79,
+        "TMF": 82,
+        "LAN": 90,
+        "MEC": 94
+      },
+      "preferred_combos": [
+        "G",
+        "C",
+        "D"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_CN",
+      "division": "PHOENIX"
+    },
+    {
+      "id": "CLUB_CY",
+      "name": "Cyberserker",
+      "abbr": "CY",
+      "colors": {
+        "bg": "#66FFFF",
+        "text": "#000000"
+      },
+      "elo_rating": 1810,
+      "tier": "A++",
+      "stats": {
+        "MAC": 97,
+        "DRF": 94,
+        "TMF": 92,
+        "LAN": 91,
+        "MEC": 94
+      },
+      "preferred_combos": [
+        "G",
+        "C",
+        "E",
+        "D"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_NEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_SIG",
+      "name": "Sai Intl. Gaming",
+      "abbr": "SIG",
+      "colors": {
+        "bg": "#53C6FF",
+        "text": "#000000"
+      },
+      "elo_rating": 1801,
+      "tier": "A++",
+      "stats": {
+        "MAC": 88,
+        "DRF": 98,
+        "TMF": 98,
+        "LAN": 95,
+        "MEC": 95
+      },
+      "preferred_combos": [
+        "E",
+        "F",
+        "C",
+        "B"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_KR",
+      "division": null
+    },
+    {
+      "id": "CLUB_HQ",
+      "name": "Hanqing Gaming",
+      "abbr": "HQ",
+      "colors": {
+        "bg": "#000000",
+        "text": "#FF0000"
+      },
+      "elo_rating": 1624,
+      "tier": "B++",
+      "stats": {
+        "MAC": 82,
+        "DRF": 82,
+        "TMF": 86,
+        "LAN": 87,
+        "MEC": 93
+      },
+      "preferred_combos": [
+        "D",
+        "A",
+        "E"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_CN",
+      "division": "DRAGON"
+    },
+    {
+      "id": "CLUB_SZP",
+      "name": "Shenzhen Peony Esports",
+      "abbr": "SZP",
+      "colors": {
+        "bg": "#FF99FF",
+        "text": "#FF0000"
+      },
+      "elo_rating": 1589,
+      "tier": "B+",
+      "stats": {
+        "MAC": 67,
+        "DRF": 80,
+        "TMF": 81,
+        "LAN": 82,
+        "MEC": 97
+      },
+      "preferred_combos": [
+        "C",
+        "G",
+        "A"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_CN",
+      "division": "DRAGON"
+    },
+    {
+      "id": "CLUB_DR",
+      "name": "Dragon Roar",
+      "abbr": "DR",
+      "colors": {
+        "bg": "#3366FF",
+        "text": "#002060"
+      },
+      "elo_rating": 1579,
+      "tier": "B+",
+      "stats": {
+        "MAC": 71,
+        "DRF": 79,
+        "TMF": 79,
+        "LAN": 83,
+        "MEC": 89
+      },
+      "preferred_combos": [
+        "C",
+        "E",
+        "D"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_CN",
+      "division": "PHOENIX"
+    },
+    {
+      "id": "CLUB_YTX",
+      "name": "YETIX",
+      "abbr": "YTX",
+      "colors": {
+        "bg": "#DDEBF7",
+        "text": "#808080"
+      },
+      "elo_rating": 1771,
+      "tier": "A+",
+      "stats": {
+        "MAC": 89,
+        "DRF": 96,
+        "TMF": 88,
+        "LAN": 94,
+        "MEC": 94
+      },
+      "preferred_combos": [
+        "E",
+        "D",
+        "G",
+        "A"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_RU",
+      "division": null
+    },
+    {
+      "id": "CLUB_BD",
+      "name": "Berlin Dunkelpferd",
+      "abbr": "BD",
+      "colors": {
+        "bg": "#000000",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1770,
+      "tier": "A+",
+      "stats": {
+        "MAC": 89,
+        "DRF": 95,
+        "TMF": 96,
+        "LAN": 79,
+        "MEC": 96
+      },
+      "preferred_combos": [
+        "E",
+        "B",
+        "D",
+        "G"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_DE",
+      "division": null
+    },
+    {
+      "id": "CLUB_SSR",
+      "name": "Sinsan SR",
+      "abbr": "SSR",
+      "colors": {
+        "bg": "#7FFF00",
+        "text": "#00B0F0"
+      },
+      "elo_rating": 1759,
+      "tier": "A+",
+      "stats": {
+        "MAC": 90,
+        "DRF": 98,
+        "TMF": 93,
+        "LAN": 96,
+        "MEC": 90
+      },
+      "preferred_combos": [
+        "E",
+        "A",
+        "C",
+        "F"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_KR",
+      "division": null
+    },
+    {
+      "id": "CLUB_TW",
+      "name": "Taibei Wonders",
+      "abbr": "TW",
+      "colors": {
+        "bg": "#00CED1",
+        "text": "#E6E6FA"
+      },
+      "elo_rating": 1748,
+      "tier": "A0",
+      "stats": {
+        "MAC": 90,
+        "DRF": 86,
+        "TMF": 91,
+        "LAN": 90,
+        "MEC": 89
+      },
+      "preferred_combos": [
+        "C",
+        "E",
+        "G",
+        "A"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_TW",
+      "division": null
+    },
+    {
+      "id": "CLUB_MYS",
+      "name": "Mystique",
+      "abbr": "MYS",
+      "colors": {
+        "bg": "#33CCCC",
+        "text": "#000000"
+      },
+      "elo_rating": 1746,
+      "tier": "A0",
+      "stats": {
+        "MAC": 93,
+        "DRF": 89,
+        "TMF": 83,
+        "LAN": 97,
+        "MEC": 96
+      },
+      "preferred_combos": [
+        "E",
+        "F",
+        "C"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_WEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_CG",
+      "name": "Cockney Gaming",
+      "abbr": "CG",
+      "colors": {
+        "bg": "#F5F5DC",
+        "text": "#000000"
+      },
+      "elo_rating": 1742,
+      "tier": "A0",
+      "stats": {
+        "MAC": 87,
+        "DRF": 92,
+        "TMF": 85,
+        "LAN": 96,
+        "MEC": 95
+      },
+      "preferred_combos": [
+        "E",
+        "A",
+        "B",
+        "C"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_NEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_GUS",
+      "name": "Gustav Gaming",
+      "abbr": "GUS",
+      "colors": {
+        "bg": "#BF8F00",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1738,
+      "tier": "A0",
+      "stats": {
+        "MAC": 90,
+        "DRF": 91,
+        "TMF": 84,
+        "LAN": 84,
+        "MEC": 88
+      },
+      "preferred_combos": [
+        "A",
+        "F",
+        "B",
+        "E"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_NEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_MD",
+      "name": "Moscow Diamonds",
+      "abbr": "MD",
+      "colors": {
+        "bg": "#FF0000",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1733,
+      "tier": "A0",
+      "stats": {
+        "MAC": 83,
+        "DRF": 87,
+        "TMF": 92,
+        "LAN": 90,
+        "MEC": 90
+      },
+      "preferred_combos": [
+        "D",
+        "G",
+        "F",
+        "A"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_RU",
+      "division": null
+    },
+    {
+      "id": "CLUB_BAD",
+      "name": "Berlin Ärgerdrache",
+      "abbr": "BAD",
+      "colors": {
+        "bg": "#FF5050",
+        "text": "#000000"
+      },
+      "elo_rating": 1715,
+      "tier": "A",
+      "stats": {
+        "MAC": 83,
+        "DRF": 82,
+        "TMF": 87,
+        "LAN": 94,
+        "MEC": 90
+      },
+      "preferred_combos": [
+        "F",
+        "E",
+        "B"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_DE",
+      "division": null
+    },
+    {
+      "id": "CLUB_NP",
+      "name": "NEXT Plaznix",
+      "abbr": "NP",
+      "colors": {
+        "bg": "#FF00FF",
+        "text": "#000000"
+      },
+      "elo_rating": 1710,
+      "tier": "A",
+      "stats": {
+        "MAC": 80,
+        "DRF": 87,
+        "TMF": 90,
+        "LAN": 83,
+        "MEC": 95
+      },
+      "preferred_combos": [
+        "F",
+        "E",
+        "C"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_KR",
+      "division": null
+    },
+    {
+      "id": "CLUB_IFS",
+      "name": "Ignis Fatuus",
+      "abbr": "IFS",
+      "colors": {
+        "bg": "#66FFFF",
+        "text": "#FFFF99"
+      },
+      "elo_rating": 1709,
+      "tier": "A",
+      "stats": {
+        "MAC": 85,
+        "DRF": 92,
+        "TMF": 92,
+        "LAN": 91,
+        "MEC": 91
+      },
+      "preferred_combos": [
+        "D",
+        "G",
+        "C",
+        "A"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_TW",
+      "division": null
+    },
+    {
+      "id": "CLUB_S21",
+      "name": "Siglo 21",
+      "abbr": "S21",
+      "colors": {
+        "bg": "#00C49A",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1707,
+      "tier": "A",
+      "stats": {
+        "MAC": 89,
+        "DRF": 87,
+        "TMF": 83,
+        "LAN": 88,
+        "MEC": 90
+      },
+      "preferred_combos": [
+        "D",
+        "B",
+        "F",
+        "A"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_SEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_HI5",
+      "name": "High 5",
+      "abbr": "HI5",
+      "colors": {
+        "bg": "#FFD700",
+        "text": "#FF69B4"
+      },
+      "elo_rating": 1699,
+      "tier": "A",
+      "stats": {
+        "MAC": 85,
+        "DRF": 90,
+        "TMF": 86,
+        "LAN": 88,
+        "MEC": 96
+      },
+      "preferred_combos": [
+        "F",
+        "A",
+        "E",
+        "B"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_TW",
+      "division": null
+    },
+    {
+      "id": "CLUB_SER",
+      "name": "Serendipia",
+      "abbr": "SER",
+      "colors": {
+        "bg": "#FF66CC",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1698,
+      "tier": "A",
+      "stats": {
+        "MAC": 88,
+        "DRF": 83,
+        "TMF": 90,
+        "LAN": 90,
+        "MEC": 87
+      },
+      "preferred_combos": [
+        "G",
+        "B",
+        "E"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_SEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_BA",
+      "name": "Bei'an Elephant",
+      "abbr": "BA",
+      "colors": {
+        "bg": "#A6A6A6",
+        "text": "#4472C4"
+      },
+      "elo_rating": 1576,
+      "tier": "B+",
+      "stats": {
+        "MAC": 67,
+        "DRF": 78,
+        "TMF": 87,
+        "LAN": 77,
+        "MEC": 87
+      },
+      "preferred_combos": [
+        "F",
+        "C",
+        "G"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_CN",
+      "division": "PHOENIX"
+    },
+    {
+      "id": "CLUB_CDV",
+      "name": "Chateau de Violette",
+      "abbr": "CDV",
+      "colors": {
+        "bg": "#9966FF",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1693,
+      "tier": "A",
+      "stats": {
+        "MAC": 85,
+        "DRF": 89,
+        "TMF": 99,
+        "LAN": 84,
+        "MEC": 85
+      },
+      "preferred_combos": [
+        "D",
+        "G",
+        "A",
+        "F"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_WEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_CEE",
+      "name": "Canaria Esports",
+      "abbr": "CEE",
+      "colors": {
+        "bg": "#FFFF00",
+        "text": "#000000"
+      },
+      "elo_rating": 1692,
+      "tier": "A",
+      "stats": {
+        "MAC": 81,
+        "DRF": 83,
+        "TMF": 88,
+        "LAN": 93,
+        "MEC": 90
+      },
+      "preferred_combos": [
+        "F",
+        "C",
+        "D",
+        "G"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_BR",
+      "division": null
+    },
+    {
+      "id": "CLUB_HPT",
+      "name": "Haptik Imperial",
+      "abbr": "HPT",
+      "colors": {
+        "bg": "#7030A0",
+        "text": "#A5A5A5"
+      },
+      "elo_rating": 1554,
+      "tier": "B0",
+      "stats": {
+        "MAC": 70,
+        "DRF": 69,
+        "TMF": 81,
+        "LAN": 76,
+        "MEC": 89
+      },
+      "preferred_combos": [
+        "F",
+        "D",
+        "E"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_CN",
+      "division": "PHOENIX"
+    },
+    {
+      "id": "CLUB_AMO",
+      "name": "Amoy Skippers",
+      "abbr": "AMO",
+      "colors": {
+        "bg": "#0070C0",
+        "text": "#000000"
+      },
+      "elo_rating": 1529,
+      "tier": "B0",
+      "stats": {
+        "MAC": 66,
+        "DRF": 69,
+        "TMF": 74,
+        "LAN": 70,
+        "MEC": 84
+      },
+      "preferred_combos": [
+        "A",
+        "B"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_CN",
+      "division": "PHOENIX"
+    },
+    {
+      "id": "CLUB_LF",
+      "name": "Lunatic Fringe",
+      "abbr": "LF",
+      "colors": {
+        "bg": "#FF0000",
+        "text": "#FFC000"
+      },
+      "elo_rating": 1677,
+      "tier": "A",
+      "stats": {
+        "MAC": 85,
+        "DRF": 88,
+        "TMF": 82,
+        "LAN": 84,
+        "MEC": 92
+      },
+      "preferred_combos": [
+        "D",
+        "G",
+        "F",
+        "C"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_NEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_KIL",
+      "name": "Kilburnside FC Esports",
+      "abbr": "KIL",
+      "colors": {
+        "bg": "#70AD47",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1676,
+      "tier": "A",
+      "stats": {
+        "MAC": 89,
+        "DRF": 85,
+        "TMF": 84,
+        "LAN": 85,
+        "MEC": 92
+      },
+      "preferred_combos": [
+        "G",
+        "F",
+        "A",
+        "D"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_NEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_AAC",
+      "name": "Aachensis Esports",
+      "abbr": "AAC",
+      "colors": {
+        "bg": "#000000",
+        "text": "#FFC000"
+      },
+      "elo_rating": 1675,
+      "tier": "A-",
+      "stats": {
+        "MAC": 84,
+        "DRF": 81,
+        "TMF": 82,
+        "LAN": 82,
+        "MEC": 94
+      },
+      "preferred_combos": [
+        "B",
+        "D",
+        "A"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_DE",
+      "division": null
+    },
+    {
+      "id": "CLUB_QZQ",
+      "name": "QzQ eSports",
+      "abbr": "QZQ",
+      "colors": {
+        "bg": "#00FF00",
+        "text": "#000000"
+      },
+      "elo_rating": 1500,
+      "tier": "B",
+      "stats": {
+        "MAC": 66,
+        "DRF": 66,
+        "TMF": 73,
+        "LAN": 84,
+        "MEC": 83
+      },
+      "preferred_combos": [
+        "B",
+        "A"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_CN",
+      "division": "DRAGON"
+    },
+    {
+      "id": "CLUB_ST",
+      "name": "Skytemplars HANBIT",
+      "abbr": "ST",
+      "colors": {
+        "bg": "#5B9BD5",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1669,
+      "tier": "A-",
+      "stats": {
+        "MAC": 79,
+        "DRF": 74,
+        "TMF": 88,
+        "LAN": 94,
+        "MEC": 90
+      },
+      "preferred_combos": [
+        "A",
+        "F",
+        "D",
+        "B"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_KR",
+      "division": null
+    },
+    {
+      "id": "CLUB_EI",
+      "name": "Eternal Inferno",
+      "abbr": "EI",
+      "colors": {
+        "bg": "#FF3300",
+        "text": "#FFC000"
+      },
+      "elo_rating": 1476,
+      "tier": "B",
+      "stats": {
+        "MAC": 64,
+        "DRF": 58,
+        "TMF": 66,
+        "LAN": 78,
+        "MEC": 83
+      },
+      "preferred_combos": [
+        "B",
+        "F",
+        "E"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_CN",
+      "division": "DRAGON"
+    },
+    {
+      "id": "CLUB_SL",
+      "name": "Stockholm Leets",
+      "abbr": "SL",
+      "colors": {
+        "bg": "#33CCFF",
+        "text": "#FFFF00"
+      },
+      "elo_rating": 1663,
+      "tier": "A-",
+      "stats": {
+        "MAC": 80,
+        "DRF": 88,
+        "TMF": 88,
+        "LAN": 86,
+        "MEC": 92
+      },
+      "preferred_combos": [
+        "A",
+        "B",
+        "F"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_NEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_VES",
+      "name": "Vesper",
+      "abbr": "VES",
+      "colors": {
+        "bg": "#4B0082",
+        "text": "#E6E6FA"
+      },
+      "elo_rating": 1663,
+      "tier": "A-",
+      "stats": {
+        "MAC": 83,
+        "DRF": 80,
+        "TMF": 82,
+        "LAN": 82,
+        "MEC": 89
+      },
+      "preferred_combos": [
+        "E",
+        "D",
+        "A",
+        "B"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_EEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_DOV",
+      "name": "Demons of Virtue",
+      "abbr": "DOV",
+      "colors": {
+        "bg": "#FF0000",
+        "text": "#FFFF00"
+      },
+      "elo_rating": 1652,
+      "tier": "A-",
+      "stats": {
+        "MAC": 83,
+        "DRF": 86,
+        "TMF": 81,
+        "LAN": 93,
+        "MEC": 94
+      },
+      "preferred_combos": [
+        "C",
+        "F",
+        "D",
+        "B"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_SEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_KWE",
+      "name": "Köln Wacht Esports",
+      "abbr": "KWE",
+      "colors": {
+        "bg": "#FF0000",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1639,
+      "tier": "A-",
+      "stats": {
+        "MAC": 79,
+        "DRF": 83,
+        "TMF": 92,
+        "LAN": 81,
+        "MEC": 91
+      },
+      "preferred_combos": [
+        "C",
+        "G",
+        "A",
+        "B"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_DE",
+      "division": null
+    },
+    {
+      "id": "CLUB_VTS",
+      "name": "VT Sharks",
+      "abbr": "VTS",
+      "colors": {
+        "bg": "#336699",
+        "text": "#BFBFBF"
+      },
+      "elo_rating": 1637,
+      "tier": "A-",
+      "stats": {
+        "MAC": 80,
+        "DRF": 80,
+        "TMF": 81,
+        "LAN": 82,
+        "MEC": 86
+      },
+      "preferred_combos": [
+        "C",
+        "A",
+        "G",
+        "E"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_RU",
+      "division": null
+    },
+    {
+      "id": "CLUB_EE",
+      "name": "Extreme Esports",
+      "abbr": "EE",
+      "colors": {
+        "bg": "#FFFF00",
+        "text": "#66CCFF"
+      },
+      "elo_rating": 1636,
+      "tier": "A-",
+      "stats": {
+        "MAC": 80,
+        "DRF": 80,
+        "TMF": 83,
+        "LAN": 82,
+        "MEC": 94
+      },
+      "preferred_combos": [
+        "D",
+        "G",
+        "B",
+        "F"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_WEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_GIN",
+      "name": "Gingham AFC Esports",
+      "abbr": "GIN",
+      "colors": {
+        "bg": "#CC8AB1",
+        "text": "#000000"
+      },
+      "elo_rating": 1636,
+      "tier": "B++",
+      "stats": {
+        "MAC": 87,
+        "DRF": 84,
+        "TMF": 84,
+        "LAN": 83,
+        "MEC": 91
+      },
+      "preferred_combos": [
+        "E",
+        "D",
+        "G"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_NEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_HCM",
+      "name": "HCM City Esports",
+      "abbr": "HCM",
+      "colors": {
+        "bg": "#D62828",
+        "text": "#FFD700"
+      },
+      "elo_rating": 1635,
+      "tier": "B++",
+      "stats": {
+        "MAC": 83,
+        "DRF": 75,
+        "TMF": 83,
+        "LAN": 88,
+        "MEC": 96
+      },
+      "preferred_combos": [
+        "E",
+        "A"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_SEA",
+      "division": null
+    },
+    {
+      "id": "CLUB_MEW",
+      "name": "MEW",
+      "abbr": "MEW",
+      "colors": {
+        "bg": "#F0CEFE",
+        "text": "#000000"
+      },
+      "elo_rating": 1419,
+      "tier": "C++",
+      "stats": {
+        "MAC": 53,
+        "DRF": 68,
+        "TMF": 65,
+        "LAN": 72,
+        "MEC": 82
+      },
+      "preferred_combos": [
+        "G"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_CN",
+      "division": "DRAGON"
+    },
+    {
+      "id": "CLUB_AB",
+      "name": "Alianca Brazileiro",
+      "abbr": "AB",
+      "colors": {
+        "bg": "#008000",
+        "text": "#FFFF00"
+      },
+      "elo_rating": 1630,
+      "tier": "B++",
+      "stats": {
+        "MAC": 81,
+        "DRF": 78,
+        "TMF": 86,
+        "LAN": 79,
+        "MEC": 96
+      },
+      "preferred_combos": [
+        "D",
+        "G",
+        "A"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_BR",
+      "division": null
+    },
+    {
+      "id": "CLUB_7S",
+      "name": "7 Shinobiz",
+      "abbr": "7S",
+      "colors": {
+        "bg": "#C80ABA",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1628,
+      "tier": "B++",
+      "stats": {
+        "MAC": 82,
+        "DRF": 84,
+        "TMF": 80,
+        "LAN": 83,
+        "MEC": 92
+      },
+      "preferred_combos": [
+        "A",
+        "E"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_JP",
+      "division": null
+    },
+    {
+      "id": "CLUB_SN",
+      "name": "SuperNova",
+      "abbr": "SN",
+      "colors": {
+        "bg": "#66FFFF",
+        "text": "#000000"
+      },
+      "elo_rating": 1409,
+      "tier": "C++",
+      "stats": {
+        "MAC": 59,
+        "DRF": 62,
+        "TMF": 70,
+        "LAN": 71,
+        "MEC": 73
+      },
+      "preferred_combos": [
+        "D",
+        "B"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_CN",
+      "division": "PHOENIX"
+    },
+    {
+      "id": "CLUB_TC",
+      "name": "Tri-cheese Esports",
+      "abbr": "TC",
+      "colors": {
+        "bg": "#FFD700",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1624,
+      "tier": "B++",
+      "stats": {
+        "MAC": 84,
+        "DRF": 86,
+        "TMF": 85,
+        "LAN": 87,
+        "MEC": 91
+      },
+      "preferred_combos": [
+        "G",
+        "A",
+        "B"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_SEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_NYH",
+      "name": "New York Happyface",
+      "abbr": "NYH",
+      "colors": {
+        "bg": "#FFFF00",
+        "text": "#000000"
+      },
+      "elo_rating": 1858,
+      "tier": "S-",
+      "stats": {
+        "MAC": 99,
+        "DRF": 92,
+        "TMF": 93,
+        "LAN": 98,
+        "MEC": 100
+      },
+      "preferred_combos": [
+        "B",
+        "F",
+        "G",
+        "A",
+        "E"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_NA",
+      "division": "EAST"
+    },
+    {
+      "id": "CLUB_KRA",
+      "name": "SubnUp Krakens",
+      "abbr": "KRA",
+      "colors": {
+        "bg": "#002060",
+        "text": "#70AD47"
+      },
+      "elo_rating": 1616,
+      "tier": "B++",
+      "stats": {
+        "MAC": 77,
+        "DRF": 81,
+        "TMF": 93,
+        "LAN": 87,
+        "MEC": 82
+      },
+      "preferred_combos": [
+        "C",
+        "B"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_NEU",
+      "division": "W"
+    },
+    {
+      "id": "CLUB_LAP",
+      "name": "Los Angeles Pseudos",
+      "abbr": "LAP",
+      "colors": {
+        "bg": "#000000",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1856,
+      "tier": "S-",
+      "stats": {
+        "MAC": 98,
+        "DRF": 98,
+        "TMF": 100,
+        "LAN": 95,
+        "MEC": 96
+      },
+      "preferred_combos": [
+        "E",
+        "A",
+        "D",
+        "G",
+        "B"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_NA",
+      "division": "WEST"
+    },
+    {
+      "id": "CLUB_DTE",
+      "name": "Daesan Titans Esports",
+      "abbr": "DTE",
+      "colors": {
+        "bg": "#000000",
+        "text": "#FF0000"
+      },
+      "elo_rating": 1607,
+      "tier": "B++",
+      "stats": {
+        "MAC": 79,
+        "DRF": 78,
+        "TMF": 89,
+        "LAN": 78,
+        "MEC": 88
+      },
+      "preferred_combos": [
+        "B",
+        "G",
+        "C"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_KR",
+      "division": "E"
+    },
+    {
+      "id": "CLUB_IER",
+      "name": "Ruckus! of Inland Empire",
+      "abbr": "IER",
+      "colors": {
+        "bg": "#0000FF",
+        "text": "#FF0000"
+      },
+      "elo_rating": 1835,
+      "tier": "A++",
+      "stats": {
+        "MAC": 91,
+        "DRF": 94,
+        "TMF": 100,
+        "LAN": 91,
+        "MEC": 93
+      },
+      "preferred_combos": [
+        "B",
+        "E",
+        "F"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_NA",
+      "division": "WEST"
+    },
+    {
+      "id": "CLUB_KAR",
+      "name": "Karadeniz AIR",
+      "abbr": "KAR",
+      "colors": {
+        "bg": "#003366",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1592,
+      "tier": "B+",
+      "stats": {
+        "MAC": 73,
+        "DRF": 78,
+        "TMF": 76,
+        "LAN": 87,
+        "MEC": 84
+      },
+      "preferred_combos": [
+        "B",
+        "C",
+        "E"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_TR",
+      "division": "E"
+    },
+    {
+      "id": "CLUB_KSE",
+      "name": "King Slime Esports",
+      "abbr": "KSE",
+      "colors": {
+        "bg": "#66FF33",
+        "text": "#000000"
+      },
+      "elo_rating": 1592,
+      "tier": "B+",
+      "stats": {
+        "MAC": 67,
+        "DRF": 80,
+        "TMF": 79,
+        "LAN": 88,
+        "MEC": 92
+      },
+      "preferred_combos": [
+        "F",
+        "D"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_DE",
+      "division": "W"
+    },
+    {
+      "id": "CLUB_ATL",
+      "name": "Atlanta Lovey",
+      "abbr": "ATL",
+      "colors": {
+        "bg": "#FF99FF",
+        "text": "#FFFF00"
+      },
+      "elo_rating": 1782,
+      "tier": "A+",
+      "stats": {
+        "MAC": 87,
+        "DRF": 91,
+        "TMF": 95,
+        "LAN": 98,
+        "MEC": 99
+      },
+      "preferred_combos": [
+        "E",
+        "C",
+        "A"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_NA",
+      "division": "EAST"
+    },
+    {
+      "id": "CLUB_VNL",
+      "name": "VINYL",
+      "abbr": "VNL",
+      "colors": {
+        "bg": "#40E0D0",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1591,
+      "tier": "B+",
+      "stats": {
+        "MAC": 81,
+        "DRF": 72,
+        "TMF": 87,
+        "LAN": 81,
+        "MEC": 83
+      },
+      "preferred_combos": [
+        "G",
+        "E",
+        "A"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_SEA",
+      "division": "W"
+    },
+    {
+      "id": "CLUB_NAS",
+      "name": "Nashville Polkadots",
+      "abbr": "NAS",
+      "colors": {
+        "bg": "#3399FF",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1775,
+      "tier": "A+",
+      "stats": {
+        "MAC": 90,
+        "DRF": 96,
+        "TMF": 88,
+        "LAN": 95,
+        "MEC": 93
+      },
+      "preferred_combos": [
+        "C",
+        "F",
+        "D",
+        "E"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_NA",
+      "division": "EAST"
+    },
+    {
+      "id": "CLUB_AXX",
+      "name": "Axxion SENY",
+      "abbr": "AXX",
+      "colors": {
+        "bg": "#4682B4",
+        "text": "#FF4500"
+      },
+      "elo_rating": 1587,
+      "tier": "B+",
+      "stats": {
+        "MAC": 71,
+        "DRF": 80,
+        "TMF": 83,
+        "LAN": 80,
+        "MEC": 82
+      },
+      "preferred_combos": [
+        "C",
+        "A"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_SEU",
+      "division": "W"
+    },
+    {
+      "id": "CLUB_PSC",
+      "name": "PSC Rafale",
+      "abbr": "PSC",
+      "colors": {
+        "bg": "#66FF99",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1587,
+      "tier": "B+",
+      "stats": {
+        "MAC": 67,
+        "DRF": 79,
+        "TMF": 77,
+        "LAN": 87,
+        "MEC": 93
+      },
+      "preferred_combos": [
+        "D",
+        "G",
+        "A"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_WEU",
+      "division": "W"
+    },
+    {
+      "id": "CLUB_FLZ",
+      "name": "Felizao",
+      "abbr": "FLZ",
+      "colors": {
+        "bg": "#FFFF66",
+        "text": "#ED7D31"
+      },
+      "elo_rating": 1581,
+      "tier": "B+",
+      "stats": {
+        "MAC": 70,
+        "DRF": 73,
+        "TMF": 87,
+        "LAN": 83,
+        "MEC": 87
+      },
+      "preferred_combos": [
+        "C",
+        "B",
+        "D"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_BR",
+      "division": "E"
+    },
+    {
+      "id": "CLUB_PHY",
+      "name": "Philadelphia Young",
+      "abbr": "PHY",
+      "colors": {
+        "bg": "#FFFFFF",
+        "text": "#FF0000"
+      },
+      "elo_rating": 1696,
+      "tier": "A",
+      "stats": {
+        "MAC": 86,
+        "DRF": 93,
+        "TMF": 81,
+        "LAN": 92,
+        "MEC": 97
+      },
+      "preferred_combos": [
+        "C",
+        "B",
+        "A"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_NA",
+      "division": "EAST"
+    },
+    {
+      "id": "CLUB_NEC",
+      "name": "Nordic Esports Club",
+      "abbr": "NEC",
+      "colors": {
+        "bg": "#FFFFFF",
+        "text": "#8EA9DB"
+      },
+      "elo_rating": 1577,
+      "tier": "B+",
+      "stats": {
+        "MAC": 80,
+        "DRF": 80,
+        "TMF": 75,
+        "LAN": 76,
+        "MEC": 85
+      },
+      "preferred_combos": [
+        "C",
+        "B",
+        "F"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_NEU",
+      "division": "E"
+    },
+    {
+      "id": "CLUB_TXA",
+      "name": "Texas Axolotls",
+      "abbr": "TXA",
+      "colors": {
+        "bg": "#FFCCFF",
+        "text": "#FF5050"
+      },
+      "elo_rating": 1680,
+      "tier": "A",
+      "stats": {
+        "MAC": 88,
+        "DRF": 89,
+        "TMF": 80,
+        "LAN": 85,
+        "MEC": 90
+      },
+      "preferred_combos": [
+        "A",
+        "D",
+        "C"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_NA",
+      "division": "WEST"
+    },
+    {
+      "id": "CLUB_SQ",
+      "name": "Strange Quark",
+      "abbr": "SQ",
+      "colors": {
+        "bg": "#9D00FF",
+        "text": "#000000"
+      },
+      "elo_rating": 1572,
+      "tier": "B+",
+      "stats": {
+        "MAC": 77,
+        "DRF": 74,
+        "TMF": 82,
+        "LAN": 80,
+        "MEC": 91
+      },
+      "preferred_combos": [
+        "B",
+        "A",
+        "G"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_SA",
+      "division": "W"
+    },
+    {
+      "id": "CLUB_OMS",
+      "name": "Olimpia Moskva Stars",
+      "abbr": "OMS",
+      "colors": {
+        "bg": "#3366FF",
+        "text": "#BF8F00"
+      },
+      "elo_rating": 1567,
+      "tier": "B+",
+      "stats": {
+        "MAC": 71,
+        "DRF": 72,
+        "TMF": 76,
+        "LAN": 71,
+        "MEC": 87
+      },
+      "preferred_combos": [
+        "B",
+        "A",
+        "F"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_RU",
+      "division": "E"
+    },
+    {
+      "id": "CLUB_SUR",
+      "name": "Surreal",
+      "abbr": "SUR",
+      "colors": {
+        "bg": "#CC99FF",
+        "text": "#CCFF99"
+      },
+      "elo_rating": 1566,
+      "tier": "B+",
+      "stats": {
+        "MAC": 71,
+        "DRF": 71,
+        "TMF": 79,
+        "LAN": 75,
+        "MEC": 86
+      },
+      "preferred_combos": [
+        "E",
+        "B"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_WEU",
+      "division": "E"
+    },
+    {
+      "id": "CLUB_BUG",
+      "name": "Bern United Gaming",
+      "abbr": "BUG",
+      "colors": {
+        "bg": "#FFC000",
+        "text": "#000000"
+      },
+      "elo_rating": 1566,
+      "tier": "B+",
+      "stats": {
+        "MAC": 77,
+        "DRF": 75,
+        "TMF": 75,
+        "LAN": 70,
+        "MEC": 83
+      },
+      "preferred_combos": [
+        "C",
+        "E"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_DE",
+      "division": "W"
+    },
+    {
+      "id": "CLUB_URO",
+      "name": "Team URO",
+      "abbr": "URO",
+      "colors": {
+        "bg": "#BFBFBF",
+        "text": "#70AD47"
+      },
+      "elo_rating": 1563,
+      "tier": "B+",
+      "stats": {
+        "MAC": 82,
+        "DRF": 72,
+        "TMF": 85,
+        "LAN": 83,
+        "MEC": 87
+      },
+      "preferred_combos": [
+        "F",
+        "E"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_JP",
+      "division": "W"
+    },
+    {
+      "id": "CLUB_TD",
+      "name": "TODA Elites",
+      "abbr": "TD",
+      "colors": {
+        "bg": "#00B050",
+        "text": "#E6E6FA"
+      },
+      "elo_rating": 1561,
+      "tier": "B+",
+      "stats": {
+        "MAC": 71,
+        "DRF": 72,
+        "TMF": 79,
+        "LAN": 83,
+        "MEC": 91
+      },
+      "preferred_combos": [
+        "F",
+        "A",
+        "D"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_TW",
+      "division": "E"
+    },
+    {
+      "id": "CLUB_NYT",
+      "name": "New York Temerity",
+      "abbr": "NYT",
+      "colors": {
+        "bg": "#9933FF",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1663,
+      "tier": "A-",
+      "stats": {
+        "MAC": 81,
+        "DRF": 82,
+        "TMF": 86,
+        "LAN": 91,
+        "MEC": 95
+      },
+      "preferred_combos": [
+        "F",
+        "E",
+        "G",
+        "D"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_NA",
+      "division": "EAST"
+    },
+    {
+      "id": "CLUB_SVC",
+      "name": "Sao Vicente Corvos",
+      "abbr": "SVC",
+      "colors": {
+        "bg": "#000000",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1557,
+      "tier": "B+",
+      "stats": {
+        "MAC": 62,
+        "DRF": 73,
+        "TMF": 76,
+        "LAN": 77,
+        "MEC": 83
+      },
+      "preferred_combos": [
+        "E",
+        "D"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_SEU",
+      "division": "W"
+    },
+    {
+      "id": "CLUB_SFH",
+      "name": "San Francisco Helluva",
+      "abbr": "SFH",
+      "colors": {
+        "bg": "#FF0066",
+        "text": "#FFFF00"
+      },
+      "elo_rating": 1632,
+      "tier": "B++",
+      "stats": {
+        "MAC": 86,
+        "DRF": 80,
+        "TMF": 83,
+        "LAN": 78,
+        "MEC": 90
+      },
+      "preferred_combos": [
+        "F",
+        "E"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_NA",
+      "division": "WEST"
+    },
+    {
+      "id": "CLUB_WCC",
+      "name": "Western Canada Conifers",
+      "abbr": "WCC",
+      "colors": {
+        "bg": "#008000",
+        "text": "#663300"
+      },
+      "elo_rating": 1621,
+      "tier": "B++",
+      "stats": {
+        "MAC": 85,
+        "DRF": 79,
+        "TMF": 91,
+        "LAN": 80,
+        "MEC": 94
+      },
+      "preferred_combos": [
+        "A",
+        "G"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_NA",
+      "division": "WEST"
+    },
+    {
+      "id": "CLUB_DAL",
+      "name": "Dallas Spirits",
+      "abbr": "DAL",
+      "colors": {
+        "bg": "#000000",
+        "text": "#CC9966"
+      },
+      "elo_rating": 1610,
+      "tier": "B++",
+      "stats": {
+        "MAC": 84,
+        "DRF": 82,
+        "TMF": 80,
+        "LAN": 81,
+        "MEC": 83
+      },
+      "preferred_combos": [
+        "G",
+        "F",
+        "B"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_NA",
+      "division": "WEST"
+    },
+    {
+      "id": "CLUB_EXP",
+      "name": "EXP Neo",
+      "abbr": "EXP",
+      "colors": {
+        "bg": "#0070C0",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1539,
+      "tier": "B0",
+      "stats": {
+        "MAC": 67,
+        "DRF": 75,
+        "TMF": 78,
+        "LAN": 86,
+        "MEC": 87
+      },
+      "preferred_combos": [
+        "F",
+        "D",
+        "G"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_KR",
+      "division": null
+    },
+    {
+      "id": "CLUB_GDP",
+      "name": "Goldpish",
+      "abbr": "GDP",
+      "colors": {
+        "bg": "#CC9900",
+        "text": "#000000"
+      },
+      "elo_rating": 1538,
+      "tier": "B0",
+      "stats": {
+        "MAC": 76,
+        "DRF": 73,
+        "TMF": 79,
+        "LAN": 73,
+        "MEC": 73
+      },
+      "preferred_combos": [
+        "A",
+        "G",
+        "E"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_KR",
+      "division": null
+    },
+    {
+      "id": "CLUB_DLS",
+      "name": "Denver Light Saviors",
+      "abbr": "DLS",
+      "colors": {
+        "bg": "#66FFFF",
+        "text": "#FFF2CC"
+      },
+      "elo_rating": 1600,
+      "tier": "B++",
+      "stats": {
+        "MAC": 80,
+        "DRF": 78,
+        "TMF": 80,
+        "LAN": 77,
+        "MEC": 90
+      },
+      "preferred_combos": [
+        "G",
+        "F",
+        "B"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_NA",
+      "division": "WEST"
+    },
+    {
+      "id": "CLUB_WAS",
+      "name": "Washington Paragon",
+      "abbr": "WAS",
+      "colors": {
+        "bg": "#FFFFFF",
+        "text": "#44546A"
+      },
+      "elo_rating": 1591,
+      "tier": "B+",
+      "stats": {
+        "MAC": 70,
+        "DRF": 76,
+        "TMF": 82,
+        "LAN": 87,
+        "MEC": 87
+      },
+      "preferred_combos": [
+        "D",
+        "C"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_NA",
+      "division": "EAST"
+    },
+    {
+      "id": "CLUB_SWN",
+      "name": "Seowon Ninetails",
+      "abbr": "SWN",
+      "colors": {
+        "bg": "#9CEEFE",
+        "text": "#FF0000"
+      },
+      "elo_rating": 1534,
+      "tier": "B0",
+      "stats": {
+        "MAC": 64,
+        "DRF": 72,
+        "TMF": 82,
+        "LAN": 80,
+        "MEC": 86
+      },
+      "preferred_combos": [
+        "A",
+        "E"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_KR",
+      "division": null
+    },
+    {
+      "id": "CLUB_MIN",
+      "name": "Minesota Hellions",
+      "abbr": "MIN",
+      "colors": {
+        "bg": "#000000",
+        "text": "#0066FF"
+      },
+      "elo_rating": 1558,
+      "tier": "B+",
+      "stats": {
+        "MAC": 70,
+        "DRF": 75,
+        "TMF": 81,
+        "LAN": 84,
+        "MEC": 82
+      },
+      "preferred_combos": [
+        "F",
+        "A",
+        "E"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_NA",
+      "division": "WEST"
+    },
+    {
+      "id": "CLUB_ZYX",
+      "name": "ZYX Gaming",
+      "abbr": "ZYX",
+      "colors": {
+        "bg": "#3366FF",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1533,
+      "tier": "B0",
+      "stats": {
+        "MAC": 73,
+        "DRF": 73,
+        "TMF": 70,
+        "LAN": 79,
+        "MEC": 85
+      },
+      "preferred_combos": [
+        "C",
+        "A",
+        "G"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_DE",
+      "division": null
+    },
+    {
+      "id": "CLUB_MET",
+      "name": "METTA",
+      "abbr": "MET",
+      "colors": {
+        "bg": "#0000FF",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1531,
+      "tier": "B0",
+      "stats": {
+        "MAC": 60,
+        "DRF": 66,
+        "TMF": 86,
+        "LAN": 82,
+        "MEC": 80
+      },
+      "preferred_combos": [
+        "F",
+        "B",
+        "D"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_SEA",
+      "division": null
+    },
+    {
+      "id": "CLUB_BOS",
+      "name": "Boston Hellkites",
+      "abbr": "BOS",
+      "colors": {
+        "bg": "#6666FF",
+        "text": "#00CC99"
+      },
+      "elo_rating": 1545,
+      "tier": "B0",
+      "stats": {
+        "MAC": 72,
+        "DRF": 70,
+        "TMF": 78,
+        "LAN": 81,
+        "MEC": 86
+      },
+      "preferred_combos": [
+        "A",
+        "D"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_NA",
+      "division": "EAST"
+    },
+    {
+      "id": "CLUB_WK",
+      "name": "Wien Kaliban Esports",
+      "abbr": "WK",
+      "colors": {
+        "bg": "#FFFFFF",
+        "text": "#FF0000"
+      },
+      "elo_rating": 1527,
+      "tier": "B0",
+      "stats": {
+        "MAC": 71,
+        "DRF": 68,
+        "TMF": 80,
+        "LAN": 85,
+        "MEC": 84
+      },
+      "preferred_combos": [
+        "B",
+        "C"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_DE",
+      "division": null
+    },
+    {
+      "id": "CLUB_MTL",
+      "name": "Flamboyants de Montreal",
+      "abbr": "MTL",
+      "colors": {
+        "bg": "#C00000",
+        "text": "#FFD966"
+      },
+      "elo_rating": 1540,
+      "tier": "B0",
+      "stats": {
+        "MAC": 76,
+        "DRF": 70,
+        "TMF": 84,
+        "LAN": 75,
+        "MEC": 88
+      },
+      "preferred_combos": [
+        "D",
+        "C"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_NA",
+      "division": "EAST"
+    },
+    {
+      "id": "CLUB_ORE",
+      "name": "Oregon Haloes",
+      "abbr": "ORE",
+      "colors": {
+        "bg": "#FFFFCC",
+        "text": "#99CCFF"
+      },
+      "elo_rating": 1538,
+      "tier": "B0",
+      "stats": {
+        "MAC": 70,
+        "DRF": 68,
+        "TMF": 80,
+        "LAN": 78,
+        "MEC": 84
+      },
+      "preferred_combos": [
+        "C",
+        "G",
+        "F"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_NA",
+      "division": "WEST"
+    },
+    {
+      "id": "CLUB_BCT",
+      "name": "beta club toronto",
+      "abbr": "BCT",
+      "colors": {
+        "bg": "#00CC99",
+        "text": "#FFFF00"
+      },
+      "elo_rating": 1535,
+      "tier": "B0",
+      "stats": {
+        "MAC": 68,
+        "DRF": 64,
+        "TMF": 82,
+        "LAN": 84,
+        "MEC": 88
+      },
+      "preferred_combos": [
+        "G",
+        "B"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_NA",
+      "division": "EAST"
+    },
+    {
+      "id": "CLUB_TM",
+      "name": "Team Metelyk",
+      "abbr": "TM",
+      "colors": {
+        "bg": "#6A5ACD",
+        "text": "#00CED1"
+      },
+      "elo_rating": 1520,
+      "tier": "B0",
+      "stats": {
+        "MAC": 62,
+        "DRF": 66,
+        "TMF": 74,
+        "LAN": 79,
+        "MEC": 78
+      },
+      "preferred_combos": [
+        "B",
+        "A"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_EEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_VW",
+      "name": "Valiant Warriors",
+      "abbr": "VW",
+      "colors": {
+        "bg": "#4628B4",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1520,
+      "tier": "B0",
+      "stats": {
+        "MAC": 63,
+        "DRF": 64,
+        "TMF": 67,
+        "LAN": 80,
+        "MEC": 91
+      },
+      "preferred_combos": [
+        "B",
+        "E",
+        "D"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_TW",
+      "division": null
+    },
+    {
+      "id": "CLUB_SHO",
+      "name": "Shokers",
+      "abbr": "SHO",
+      "colors": {
+        "bg": "#FF33CC",
+        "text": "#000000"
+      },
+      "elo_rating": 1518,
+      "tier": "B0",
+      "stats": {
+        "MAC": 61,
+        "DRF": 68,
+        "TMF": 76,
+        "LAN": 67,
+        "MEC": 84
+      },
+      "preferred_combos": [
+        "E",
+        "G",
+        "A"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_RU",
+      "division": null
+    },
+    {
+      "id": "CLUB_WT",
+      "name": "Winning Tree",
+      "abbr": "WT",
+      "colors": {
+        "bg": "#663300",
+        "text": "#008000"
+      },
+      "elo_rating": 1517,
+      "tier": "B0",
+      "stats": {
+        "MAC": 67,
+        "DRF": 66,
+        "TMF": 83,
+        "LAN": 71,
+        "MEC": 83
+      },
+      "preferred_combos": [
+        "D",
+        "E",
+        "C"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_BR",
+      "division": null
+    },
+    {
+      "id": "CLUB_LUX",
+      "name": "Team Lux",
+      "abbr": "LUX",
+      "colors": {
+        "bg": "#93DBFF",
+        "text": "#FF0000"
+      },
+      "elo_rating": 1515,
+      "tier": "B",
+      "stats": {
+        "MAC": 61,
+        "DRF": 70,
+        "TMF": 74,
+        "LAN": 72,
+        "MEC": 90
+      },
+      "preferred_combos": [
+        "F",
+        "A",
+        "D"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_WEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_FGS",
+      "name": "FreshGarden Sunflowers",
+      "abbr": "FGS",
+      "colors": {
+        "bg": "#FFFF00",
+        "text": "#663300"
+      },
+      "elo_rating": 1515,
+      "tier": "B0",
+      "stats": {
+        "MAC": 59,
+        "DRF": 73,
+        "TMF": 69,
+        "LAN": 75,
+        "MEC": 91
+      },
+      "preferred_combos": [
+        "A",
+        "C",
+        "B"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_KR",
+      "division": null
+    },
+    {
+      "id": "CLUB_ES",
+      "name": "Evil Spirits",
+      "abbr": "ES",
+      "colors": {
+        "bg": "#3333CC",
+        "text": "#CC0000"
+      },
+      "elo_rating": 1508,
+      "tier": "B",
+      "stats": {
+        "MAC": 64,
+        "DRF": 69,
+        "TMF": 68,
+        "LAN": 72,
+        "MEC": 84
+      },
+      "preferred_combos": [
+        "F",
+        "A",
+        "D"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_WEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_KR",
+      "name": "KOID Ronin",
+      "abbr": "KR",
+      "colors": {
+        "bg": "#0F2AF1",
+        "text": "#FF0000"
+      },
+      "elo_rating": 1505,
+      "tier": "B",
+      "stats": {
+        "MAC": 56,
+        "DRF": 71,
+        "TMF": 72,
+        "LAN": 78,
+        "MEC": 78
+      },
+      "preferred_combos": [
+        "F",
+        "B"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_SA",
+      "division": null
+    },
+    {
+      "id": "CLUB_CHI",
+      "name": "Chicago Goats",
+      "abbr": "CHI",
+      "colors": {
+        "bg": "#D9D9D9",
+        "text": "#000000"
+      },
+      "elo_rating": 1533,
+      "tier": "B0",
+      "stats": {
+        "MAC": 65,
+        "DRF": 77,
+        "TMF": 69,
+        "LAN": 79,
+        "MEC": 89
+      },
+      "preferred_combos": [
+        "G",
+        "C"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_NA",
+      "division": "EAST"
+    },
+    {
+      "id": "CLUB_AMU",
+      "name": "Amuletters",
+      "abbr": "AMU",
+      "colors": {
+        "bg": "#FF0000",
+        "text": "#FFC000"
+      },
+      "elo_rating": 1499,
+      "tier": "B",
+      "stats": {
+        "MAC": 61,
+        "DRF": 63,
+        "TMF": 70,
+        "LAN": 67,
+        "MEC": 84
+      },
+      "preferred_combos": [
+        "G",
+        "E"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_WEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_BS",
+      "name": "Bozen Stars",
+      "abbr": "BS",
+      "colors": {
+        "bg": "#FF0000",
+        "text": "#FFFF00"
+      },
+      "elo_rating": 1492,
+      "tier": "B",
+      "stats": {
+        "MAC": 63,
+        "DRF": 70,
+        "TMF": 74,
+        "LAN": 65,
+        "MEC": 80
+      },
+      "preferred_combos": [
+        "G",
+        "D",
+        "E"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_SEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_BUB",
+      "name": "Bubblast Bohemia",
+      "abbr": "BUB",
+      "colors": {
+        "bg": "#FF69B4",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1488,
+      "tier": "B",
+      "stats": {
+        "MAC": 60,
+        "DRF": 59,
+        "TMF": 67,
+        "LAN": 70,
+        "MEC": 84
+      },
+      "preferred_combos": [
+        "G",
+        "C",
+        "D"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_EEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_CL",
+      "name": "Copenhagen Lions",
+      "abbr": "CL",
+      "colors": {
+        "bg": "#CC0066",
+        "text": "#FFD966"
+      },
+      "elo_rating": 1486,
+      "tier": "B",
+      "stats": {
+        "MAC": 63,
+        "DRF": 66,
+        "TMF": 69,
+        "LAN": 80,
+        "MEC": 77
+      },
+      "preferred_combos": [
+        "D",
+        "A"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_NEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_GO",
+      "name": "Go-Go Rangers",
+      "abbr": "GO",
+      "colors": {
+        "bg": "#FF0000",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1485,
+      "tier": "B",
+      "stats": {
+        "MAC": 63,
+        "DRF": 70,
+        "TMF": 69,
+        "LAN": 71,
+        "MEC": 80
+      },
+      "preferred_combos": [
+        "D",
+        "A"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_JP",
+      "division": null
+    },
+    {
+      "id": "CLUB_247",
+      "name": "247 Daynights",
+      "abbr": "247",
+      "colors": {
+        "bg": "#191970",
+        "text": "#FF0000"
+      },
+      "elo_rating": 1481,
+      "tier": "B",
+      "stats": {
+        "MAC": 62,
+        "DRF": 55,
+        "TMF": 67,
+        "LAN": 70,
+        "MEC": 76
+      },
+      "preferred_combos": [
+        "A",
+        "D",
+        "G"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_JP",
+      "division": null
+    },
+    {
+      "id": "CLUB_101",
+      "name": "101 Toxics",
+      "abbr": "101",
+      "colors": {
+        "bg": "#6600FF",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1479,
+      "tier": "B",
+      "stats": {
+        "MAC": 60,
+        "DRF": 61,
+        "TMF": 70,
+        "LAN": 79,
+        "MEC": 80
+      },
+      "preferred_combos": [
+        "E",
+        "G"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_WEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_VEG",
+      "name": "Vegas Enthusers",
+      "abbr": "VEG",
+      "colors": {
+        "bg": "#000000",
+        "text": "#00FF00"
+      },
+      "elo_rating": 1523,
+      "tier": "B0",
+      "stats": {
+        "MAC": 69,
+        "DRF": 70,
+        "TMF": 74,
+        "LAN": 81,
+        "MEC": 88
+      },
+      "preferred_combos": [
+        "E",
+        "D"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_NA",
+      "division": "WEST"
+    },
+    {
+      "id": "CLUB_BDU",
+      "name": "Bangkok Dare Us",
+      "abbr": "BDU",
+      "colors": {
+        "bg": "#305496",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1471,
+      "tier": "B-",
+      "stats": {
+        "MAC": 66,
+        "DRF": 65,
+        "TMF": 59,
+        "LAN": 70,
+        "MEC": 80
+      },
+      "preferred_combos": [
+        "A",
+        "G"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_SEA",
+      "division": null
+    },
+    {
+      "id": "CLUB_REC",
+      "name": "Recco Eroica",
+      "abbr": "REC",
+      "colors": {
+        "bg": "#7B3F00",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1460,
+      "tier": "B-",
+      "stats": {
+        "MAC": 56,
+        "DRF": 57,
+        "TMF": 73,
+        "LAN": 82,
+        "MEC": 82
+      },
+      "preferred_combos": [
+        "E",
+        "D"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_SEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_RKG",
+      "name": "Royal Krut Gaming",
+      "abbr": "RKG",
+      "colors": {
+        "bg": "#4169E1",
+        "text": "#D6AF4E"
+      },
+      "elo_rating": 1453,
+      "tier": "B-",
+      "stats": {
+        "MAC": 66,
+        "DRF": 65,
+        "TMF": 64,
+        "LAN": 79,
+        "MEC": 83
+      },
+      "preferred_combos": [
+        "C",
+        "A"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_SEA",
+      "division": null
+    },
+    {
+      "id": "CLUB_TSC",
+      "name": "Tolle SC Gaming",
+      "abbr": "TSC",
+      "colors": {
+        "bg": "#006400",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1451,
+      "tier": "B-",
+      "stats": {
+        "MAC": 63,
+        "DRF": 67,
+        "TMF": 75,
+        "LAN": 74,
+        "MEC": 76
+      },
+      "preferred_combos": [
+        "A",
+        "C"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_EEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_CH",
+      "name": "Cyberhound",
+      "abbr": "CH",
+      "colors": {
+        "bg": "#C0C0C0",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1448,
+      "tier": "B-",
+      "stats": {
+        "MAC": 58,
+        "DRF": 69,
+        "TMF": 76,
+        "LAN": 68,
+        "MEC": 79
+      },
+      "preferred_combos": [
+        "F",
+        "E"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_DE",
+      "division": null
+    },
+    {
+      "id": "CLUB_G3",
+      "name": "Geo3",
+      "abbr": "G3",
+      "colors": {
+        "bg": "#50C878",
+        "text": "#000000"
+      },
+      "elo_rating": 1446,
+      "tier": "B-",
+      "stats": {
+        "MAC": 57,
+        "DRF": 62,
+        "TMF": 73,
+        "LAN": 72,
+        "MEC": 86
+      },
+      "preferred_combos": [
+        "A",
+        "F",
+        "E"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_SA",
+      "division": null
+    },
+    {
+      "id": "CLUB_GBS",
+      "name": "GBS Fantoms",
+      "abbr": "GBS",
+      "colors": {
+        "bg": "#E7FF01",
+        "text": "#000000"
+      },
+      "elo_rating": 1436,
+      "tier": "C++",
+      "stats": {
+        "MAC": 60,
+        "DRF": 60,
+        "TMF": 77,
+        "LAN": 81,
+        "MEC": 76
+      },
+      "preferred_combos": [
+        "D",
+        "C"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_KR",
+      "division": null
+    },
+    {
+      "id": "CLUB_SEA",
+      "name": "Seattle Cascaders",
+      "abbr": "SEA",
+      "colors": {
+        "bg": "#A7FFDB",
+        "text": "#000000"
+      },
+      "elo_rating": 1523,
+      "tier": "B0",
+      "stats": {
+        "MAC": 66,
+        "DRF": 60,
+        "TMF": 79,
+        "LAN": 83,
+        "MEC": 86
+      },
+      "preferred_combos": [
+        "F",
+        "A",
+        "G"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_NA",
+      "division": "WEST"
+    },
+    {
+      "id": "CLUB_MIA",
+      "name": "Miami Tropics",
+      "abbr": "MIA",
+      "colors": {
+        "bg": "#66CCFF",
+        "text": "#FFC000"
+      },
+      "elo_rating": 1520,
+      "tier": "B0",
+      "stats": {
+        "MAC": 62,
+        "DRF": 69,
+        "TMF": 80,
+        "LAN": 70,
+        "MEC": 86
+      },
+      "preferred_combos": [
+        "C",
+        "A",
+        "F"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_NA",
+      "division": "EAST"
+    },
+    {
+      "id": "CLUB_NCP",
+      "name": "North Carolina Parakeets",
+      "abbr": "NCP",
+      "colors": {
+        "bg": "#92D050",
+        "text": "#FFC000"
+      },
+      "elo_rating": 1424,
+      "tier": "C++",
+      "stats": {
+        "MAC": 63,
+        "DRF": 68,
+        "TMF": 69,
+        "LAN": 69,
+        "MEC": 82
+      },
+      "preferred_combos": [
+        "E",
+        "F"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_NA",
+      "division": "EAST"
+    },
+    {
+      "id": "CLUB_STA",
+      "name": "STARK Esports",
+      "abbr": "STA",
+      "colors": {
+        "bg": "#D9D9D9",
+        "text": "#1F4E78"
+      },
+      "elo_rating": 1415,
+      "tier": "C++",
+      "stats": {
+        "MAC": 62,
+        "DRF": 69,
+        "TMF": 68,
+        "LAN": 68,
+        "MEC": 75
+      },
+      "preferred_combos": [
+        "C"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_DE",
+      "division": null
+    },
+    {
+      "id": "CLUB_PHO",
+      "name": "Phoenix Phoenices",
+      "abbr": "PHO",
+      "colors": {
+        "bg": "#FF0000",
+        "text": "#000000"
+      },
+      "elo_rating": 1420,
+      "tier": "C++",
+      "stats": {
+        "MAC": 67,
+        "DRF": 62,
+        "TMF": 69,
+        "LAN": 68,
+        "MEC": 83
+      },
+      "preferred_combos": [
+        "G"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_NA",
+      "division": "WEST"
+    },
+    {
+      "id": "CLUB_RR",
+      "name": "RR Vitorioso",
+      "abbr": "RR",
+      "colors": {
+        "bg": "#FF0000",
+        "text": "#000000"
+      },
+      "elo_rating": 1398,
+      "tier": "C++",
+      "stats": {
+        "MAC": 54,
+        "DRF": 60,
+        "TMF": 70,
+        "LAN": 76,
+        "MEC": 81
+      },
+      "preferred_combos": [
+        "E"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_BR",
+      "division": null
+    },
+    {
+      "id": "CLUB_CA",
+      "name": "Cosmic Arraia",
+      "abbr": "CA",
+      "colors": {
+        "bg": "#203764",
+        "text": "#DDEBF7"
+      },
+      "elo_rating": 1396,
+      "tier": "C+",
+      "stats": {
+        "MAC": 57,
+        "DRF": 60,
+        "TMF": 69,
+        "LAN": 66,
+        "MEC": 78
+      },
+      "preferred_combos": [
+        "G",
+        "B"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_BR",
+      "division": null
+    },
+    {
+      "id": "CLUB_AA",
+      "name": "Ayturk Astronots",
+      "abbr": "AA",
+      "colors": {
+        "bg": "#000080",
+        "text": "#C800C8"
+      },
+      "elo_rating": 1394,
+      "tier": "C+",
+      "stats": {
+        "MAC": 59,
+        "DRF": 65,
+        "TMF": 72,
+        "LAN": 74,
+        "MEC": 72
+      },
+      "preferred_combos": [
+        "A"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_TR",
+      "division": null
+    },
+    {
+      "id": "CLUB_Z36",
+      "name": "Zbirna 36",
+      "abbr": "Z36",
+      "colors": {
+        "bg": "#8FDAFF",
+        "text": "#FFFF99"
+      },
+      "elo_rating": 1374,
+      "tier": "C+",
+      "stats": {
+        "MAC": 57,
+        "DRF": 63,
+        "TMF": 69,
+        "LAN": 70,
+        "MEC": 71
+      },
+      "preferred_combos": [
+        "A"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_EEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_OTV",
+      "name": "OttoTV Whitegulls",
+      "abbr": "OTV",
+      "colors": {
+        "bg": "#FFFFFF",
+        "text": "#00FFFF"
+      },
+      "elo_rating": 1373,
+      "tier": "C+",
+      "stats": {
+        "MAC": 60,
+        "DRF": 60,
+        "TMF": 68,
+        "LAN": 72,
+        "MEC": 78
+      },
+      "preferred_combos": [
+        "E"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_TR",
+      "division": null
+    },
+    {
+      "id": "CLUB_ABV",
+      "name": "Above Gaming",
+      "abbr": "ABV",
+      "colors": {
+        "bg": "#F09510",
+        "text": "#000000"
+      },
+      "elo_rating": 1373,
+      "tier": "C+",
+      "stats": {
+        "MAC": 54,
+        "DRF": 61,
+        "TMF": 68,
+        "LAN": 77,
+        "MEC": 79
+      },
+      "preferred_combos": [
+        "F"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_SEA",
+      "division": null
+    },
+    {
+      "id": "CLUB_BOX",
+      "name": "BOX Gaming",
+      "abbr": "BOX",
+      "colors": {
+        "bg": "#808080",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1372,
+      "tier": "C+",
+      "stats": {
+        "MAC": 56,
+        "DRF": 65,
+        "TMF": 65,
+        "LAN": 71,
+        "MEC": 76
+      },
+      "preferred_combos": [
+        "B"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_TW",
+      "division": null
+    },
+    {
+      "id": "CLUB_EMU",
+      "name": "East Malbourne United",
+      "abbr": "EMU",
+      "colors": {
+        "bg": "#FFFFFF",
+        "text": "#FF6161"
+      },
+      "elo_rating": 1372,
+      "tier": "C+",
+      "stats": {
+        "MAC": 60,
+        "DRF": 63,
+        "TMF": 70,
+        "LAN": 69,
+        "MEC": 76
+      },
+      "preferred_combos": [
+        "A"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_SEA",
+      "division": null
+    },
+    {
+      "id": "CLUB_RYD",
+      "name": "Riyadh Simooms",
+      "abbr": "RYD",
+      "colors": {
+        "bg": "#EDC9AF",
+        "text": "#203764"
+      },
+      "elo_rating": 1371,
+      "tier": "C+",
+      "stats": {
+        "MAC": 54,
+        "DRF": 61,
+        "TMF": 74,
+        "LAN": 67,
+        "MEC": 74
+      },
+      "preferred_combos": [
+        "C"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_MEAF",
+      "division": null
+    },
+    {
+      "id": "CLUB_SRC",
+      "name": "Sirocco Gaming",
+      "abbr": "SRC",
+      "colors": {
+        "bg": "#DEB887",
+        "text": "#FF8C00"
+      },
+      "elo_rating": 1370,
+      "tier": "C+",
+      "stats": {
+        "MAC": 52,
+        "DRF": 60,
+        "TMF": 67,
+        "LAN": 66,
+        "MEC": 76
+      },
+      "preferred_combos": [
+        "E",
+        "B"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_MEAF",
+      "division": null
+    },
+    {
+      "id": "CLUB_SAL",
+      "name": "SA Locos",
+      "abbr": "SAL",
+      "colors": {
+        "bg": "#D80000",
+        "text": "#000000"
+      },
+      "elo_rating": 1368,
+      "tier": "C+",
+      "stats": {
+        "MAC": 61,
+        "DRF": 59,
+        "TMF": 72,
+        "LAN": 74,
+        "MEC": 81
+      },
+      "preferred_combos": [
+        "A"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_SA",
+      "division": null
+    },
+    {
+      "id": "CLUB_PNY",
+      "name": "Pinoy Gaming",
+      "abbr": "PNY",
+      "colors": {
+        "bg": "#D62828",
+        "text": "#0033A0"
+      },
+      "elo_rating": 1358,
+      "tier": "C+",
+      "stats": {
+        "MAC": 56,
+        "DRF": 56,
+        "TMF": 69,
+        "LAN": 79,
+        "MEC": 73
+      },
+      "preferred_combos": [
+        "E"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_SEA",
+      "division": null
+    },
+    {
+      "id": "CLUB_TB",
+      "name": "Team Battlica",
+      "abbr": "TB",
+      "colors": {
+        "bg": "#8B0000",
+        "text": "#000000"
+      },
+      "elo_rating": 1356,
+      "tier": "C+",
+      "stats": {
+        "MAC": 56,
+        "DRF": 60,
+        "TMF": 63,
+        "LAN": 63,
+        "MEC": 86
+      },
+      "preferred_combos": [
+        "C",
+        "G"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_JP",
+      "division": null
+    },
+    {
+      "id": "CLUB_WIE",
+      "name": "Wierdo ODM",
+      "abbr": "WIE",
+      "colors": {
+        "bg": "#FF69B4",
+        "text": "#000000"
+      },
+      "elo_rating": 1356,
+      "tier": "C0",
+      "stats": {
+        "MAC": 53,
+        "DRF": 61,
+        "TMF": 63,
+        "LAN": 60,
+        "MEC": 75
+      },
+      "preferred_combos": [
+        "B"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_SA",
+      "division": null
+    },
+    {
+      "id": "CLUB_KMG",
+      "name": "Kalung Media Gaming",
+      "abbr": "KMG",
+      "colors": {
+        "bg": "#FF7F50",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1356,
+      "tier": "C0",
+      "stats": {
+        "MAC": 52,
+        "DRF": 54,
+        "TMF": 63,
+        "LAN": 77,
+        "MEC": 78
+      },
+      "preferred_combos": [
+        "C"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_MEAF",
+      "division": null
+    },
+    {
+      "id": "CLUB_KH",
+      "name": "Kobura Hunters",
+      "abbr": "KH",
+      "colors": {
+        "bg": "#228B22",
+        "text": "#000000"
+      },
+      "elo_rating": 1355,
+      "tier": "C+",
+      "stats": {
+        "MAC": 55,
+        "DRF": 51,
+        "TMF": 64,
+        "LAN": 73,
+        "MEC": 80
+      },
+      "preferred_combos": [
+        "F",
+        "B"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_JP",
+      "division": null
+    },
+    {
+      "id": "CLUB_RDJ",
+      "name": "FCRDJ eSports",
+      "abbr": "RDJ",
+      "colors": {
+        "bg": "#66CCFF",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1354,
+      "tier": "C0",
+      "stats": {
+        "MAC": 48,
+        "DRF": 50,
+        "TMF": 66,
+        "LAN": 63,
+        "MEC": 81
+      },
+      "preferred_combos": [
+        "B"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_BR",
+      "division": null
+    },
+    {
+      "id": "CLUB_UNI",
+      "name": "Unigaming",
+      "abbr": "UNI",
+      "colors": {
+        "bg": "#0047AB",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1351,
+      "tier": "C0",
+      "stats": {
+        "MAC": 48,
+        "DRF": 55,
+        "TMF": 63,
+        "LAN": 74,
+        "MEC": 74
+      },
+      "preferred_combos": [
+        "E"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_RU",
+      "division": null
+    },
+    {
+      "id": "CLUB_SHR",
+      "name": "Shroom Esports",
+      "abbr": "SHR",
+      "colors": {
+        "bg": "#800080",
+        "text": "#CCFF00"
+      },
+      "elo_rating": 1339,
+      "tier": "C0",
+      "stats": {
+        "MAC": 47,
+        "DRF": 58,
+        "TMF": 65,
+        "LAN": 71,
+        "MEC": 81
+      },
+      "preferred_combos": [
+        "F",
+        "A"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_SEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_BM",
+      "name": "Brassmonkeys",
+      "abbr": "BM",
+      "colors": {
+        "bg": "#CD7F32",
+        "text": "#FFD966"
+      },
+      "elo_rating": 1331,
+      "tier": "C0",
+      "stats": {
+        "MAC": 47,
+        "DRF": 53,
+        "TMF": 65,
+        "LAN": 76,
+        "MEC": 78
+      },
+      "preferred_combos": [
+        "D",
+        "G"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_NEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_CAP",
+      "name": "Capuchinho Esports",
+      "abbr": "CAP",
+      "colors": {
+        "bg": "#800000",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1323,
+      "tier": "C0",
+      "stats": {
+        "MAC": 51,
+        "DRF": 58,
+        "TMF": 66,
+        "LAN": 64,
+        "MEC": 77
+      },
+      "preferred_combos": [
+        "E"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_BR",
+      "division": null
+    },
+    {
+      "id": "CLUB_MR",
+      "name": "Maharaja",
+      "abbr": "MR",
+      "colors": {
+        "bg": "#6A0DAD",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1315,
+      "tier": "C",
+      "stats": {
+        "MAC": 54,
+        "DRF": 58,
+        "TMF": 58,
+        "LAN": 67,
+        "MEC": 73
+      },
+      "preferred_combos": [
+        "G",
+        "D"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_SEA",
+      "division": null
+    },
+    {
+      "id": "CLUB_GS",
+      "name": "Godspeed",
+      "abbr": "GS",
+      "colors": {
+        "bg": "#FFD700",
+        "text": "#000000"
+      },
+      "elo_rating": 1309,
+      "tier": "C",
+      "stats": {
+        "MAC": 51,
+        "DRF": 55,
+        "TMF": 60,
+        "LAN": 64,
+        "MEC": 71
+      },
+      "preferred_combos": [
+        "D"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_TR",
+      "division": null
+    },
+    {
+      "id": "CLUB_ANA",
+      "name": "ANAKONDA",
+      "abbr": "ANA",
+      "colors": {
+        "bg": "#669900",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1308,
+      "tier": "C",
+      "stats": {
+        "MAC": 50,
+        "DRF": 51,
+        "TMF": 63,
+        "LAN": 75,
+        "MEC": 76
+      },
+      "preferred_combos": [
+        "G",
+        "A"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_BR",
+      "division": null
+    },
+    {
+      "id": "CLUB_ALB",
+      "name": "Albatross Gaming",
+      "abbr": "ALB",
+      "colors": {
+        "bg": "#000000",
+        "text": "#B4C6E7"
+      },
+      "elo_rating": 1308,
+      "tier": "C",
+      "stats": {
+        "MAC": 48,
+        "DRF": 53,
+        "TMF": 65,
+        "LAN": 64,
+        "MEC": 75
+      },
+      "preferred_combos": [
+        "D",
+        "A"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_RU",
+      "division": null
+    },
+    {
+      "id": "CLUB_NEG",
+      "name": "Nittel Eagles Gaming",
+      "abbr": "NEG",
+      "colors": {
+        "bg": "#000080",
+        "text": "#FFC000"
+      },
+      "elo_rating": 1305,
+      "tier": "C",
+      "stats": {
+        "MAC": 47,
+        "DRF": 53,
+        "TMF": 63,
+        "LAN": 64,
+        "MEC": 72
+      },
+      "preferred_combos": [
+        "G",
+        "E"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_JP",
+      "division": null
+    },
+    {
+      "id": "CLUB_ANT",
+      "name": "Antalia FC Esports",
+      "abbr": "ANT",
+      "colors": {
+        "bg": "#007BF6",
+        "text": "#ED7D31"
+      },
+      "elo_rating": 1292,
+      "tier": "C",
+      "stats": {
+        "MAC": 52,
+        "DRF": 50,
+        "TMF": 57,
+        "LAN": 68,
+        "MEC": 74
+      },
+      "preferred_combos": [
+        "B",
+        "A"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_TR",
+      "division": null
+    },
+    {
+      "id": "CLUB_K9",
+      "name": "K9",
+      "abbr": "K9",
+      "colors": {
+        "bg": "#8B4513",
+        "text": "#BFBFBF"
+      },
+      "elo_rating": 1288,
+      "tier": "C",
+      "stats": {
+        "MAC": 51,
+        "DRF": 50,
+        "TMF": 68,
+        "LAN": 72,
+        "MEC": 70
+      },
+      "preferred_combos": [
+        "E"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_WEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_RAT",
+      "name": "Ratique",
+      "abbr": "RAT",
+      "colors": {
+        "bg": "#800020",
+        "text": "#B76E79"
+      },
+      "elo_rating": 1287,
+      "tier": "C",
+      "stats": {
+        "MAC": 50,
+        "DRF": 56,
+        "TMF": 67,
+        "LAN": 71,
+        "MEC": 79
+      },
+      "preferred_combos": [
+        "C",
+        "G"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_RU",
+      "division": null
+    },
+    {
+      "id": "CLUB_CP",
+      "name": "Crux Pegasus",
+      "abbr": "CP",
+      "colors": {
+        "bg": "#4F81BD",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1279,
+      "tier": "C",
+      "stats": {
+        "MAC": 45,
+        "DRF": 61,
+        "TMF": 58,
+        "LAN": 67,
+        "MEC": 76
+      },
+      "preferred_combos": [
+        "A"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_SEA",
+      "division": null
+    },
+    {
+      "id": "CLUB_ALX",
+      "name": "Alphax",
+      "abbr": "ALX",
+      "colors": {
+        "bg": "#404040",
+        "text": "#9BC2E6"
+      },
+      "elo_rating": 1276,
+      "tier": "C",
+      "stats": {
+        "MAC": 52,
+        "DRF": 60,
+        "TMF": 61,
+        "LAN": 61,
+        "MEC": 73
+      },
+      "preferred_combos": [
+        "D"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_TR",
+      "division": null
+    },
+    {
+      "id": "CLUB_MAV",
+      "name": "Mavibank Saurus",
+      "abbr": "MAV",
+      "colors": {
+        "bg": "#0047AB",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1265,
+      "tier": "C-",
+      "stats": {
+        "MAC": 48,
+        "DRF": 56,
+        "TMF": 59,
+        "LAN": 60,
+        "MEC": 76
+      },
+      "preferred_combos": [
+        "C"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_TR",
+      "division": null
+    },
+    {
+      "id": "CLUB_IM",
+      "name": "Indkonnekt Miscellaneous",
+      "abbr": "IM",
+      "colors": {
+        "bg": "#FFA500",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1247,
+      "tier": "C-",
+      "stats": {
+        "MAC": 55,
+        "DRF": 52,
+        "TMF": 56,
+        "LAN": 56,
+        "MEC": 72
+      },
+      "preferred_combos": [
+        "D",
+        "B"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_SEA",
+      "division": null
+    },
+    {
+      "id": "CLUB_ANK",
+      "name": "IRAM Ankabut Esports",
+      "abbr": "ANK",
+      "colors": {
+        "bg": "#4B0082",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1242,
+      "tier": "C-",
+      "stats": {
+        "MAC": 52,
+        "DRF": 51,
+        "TMF": 58,
+        "LAN": 65,
+        "MEC": 71
+      },
+      "preferred_combos": [
+        "E"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_MEAF",
+      "division": null
+    },
+    {
+      "id": "CLUB_PF",
+      "name": "Pulpo Fenomeno",
+      "abbr": "PF",
+      "colors": {
+        "bg": "#8A2BE2",
+        "text": "#ADFF2F"
+      },
+      "elo_rating": 1241,
+      "tier": "C-",
+      "stats": {
+        "MAC": 47,
+        "DRF": 52,
+        "TMF": 59,
+        "LAN": 62,
+        "MEC": 73
+      },
+      "preferred_combos": [
+        "A"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_SA",
+      "division": null
+    },
+    {
+      "id": "CLUB_AVA",
+      "name": "Avallonians",
+      "abbr": "AVA",
+      "colors": {
+        "bg": "#013220",
+        "text": "#FFD700"
+      },
+      "elo_rating": 1237,
+      "tier": "C-",
+      "stats": {
+        "MAC": 49,
+        "DRF": 56,
+        "TMF": 65,
+        "LAN": 67,
+        "MEC": 73
+      },
+      "preferred_combos": [
+        "G",
+        "F"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_TR",
+      "division": null
+    },
+    {
+      "id": "CLUB_AGL",
+      "name": "Aglietta Esports",
+      "abbr": "AGL",
+      "colors": {
+        "bg": "#F9F5C3",
+        "text": "#000000"
+      },
+      "elo_rating": 1232,
+      "tier": "D++",
+      "stats": {
+        "MAC": 45,
+        "DRF": 55,
+        "TMF": 67,
+        "LAN": 70,
+        "MEC": 72
+      },
+      "preferred_combos": [
+        "A"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_SEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_HSG",
+      "name": "Hong Sharks Gaming",
+      "abbr": "HSG",
+      "colors": {
+        "bg": "#333F4F",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1216,
+      "tier": "D++",
+      "stats": {
+        "MAC": 46,
+        "DRF": 46,
+        "TMF": 66,
+        "LAN": 67,
+        "MEC": 78
+      },
+      "preferred_combos": [
+        "A"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_TW",
+      "division": null
+    },
+    {
+      "id": "CLUB_LC",
+      "name": "LSTV Counters",
+      "abbr": "LC",
+      "colors": {
+        "bg": "#8B0000",
+        "text": "#BFBFBF"
+      },
+      "elo_rating": 1190,
+      "tier": "D+",
+      "stats": {
+        "MAC": 46,
+        "DRF": 55,
+        "TMF": 62,
+        "LAN": 64,
+        "MEC": 72
+      },
+      "preferred_combos": [
+        "E"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_RU",
+      "division": null
+    },
+    {
+      "id": "CLUB_FRX",
+      "name": "FEROX",
+      "abbr": "FRX",
+      "colors": {
+        "bg": "#000000",
+        "text": "#C00000"
+      },
+      "elo_rating": 1173,
+      "tier": "D+",
+      "stats": {
+        "MAC": 47,
+        "DRF": 52,
+        "TMF": 58,
+        "LAN": 64,
+        "MEC": 74
+      },
+      "preferred_combos": [
+        "E"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_EEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_RLS",
+      "name": "RuTHLeSS",
+      "abbr": "RLS",
+      "colors": {
+        "bg": "#00C389",
+        "text": "#000000"
+      },
+      "elo_rating": 1167,
+      "tier": "D+",
+      "stats": {
+        "MAC": 45,
+        "DRF": 50,
+        "TMF": 59,
+        "LAN": 65,
+        "MEC": 69
+      },
+      "preferred_combos": [
+        "A",
+        "B"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_RU",
+      "division": null
+    },
+    {
+      "id": "CLUB_EPT",
+      "name": "Redbird Cozak",
+      "abbr": "EPT",
+      "colors": {
+        "bg": "#C00000",
+        "text": "#FFFF00"
+      },
+      "elo_rating": 1164,
+      "tier": "D+",
+      "stats": {
+        "MAC": 50,
+        "DRF": 51,
+        "TMF": 56,
+        "LAN": 59,
+        "MEC": 72
+      },
+      "preferred_combos": [
+        "F",
+        "G"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_EEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_GIK",
+      "name": "Gik Clan",
+      "abbr": "GIK",
+      "colors": {
+        "bg": "#D6AF4E",
+        "text": "#000000"
+      },
+      "elo_rating": 1163,
+      "tier": "D+",
+      "stats": {
+        "MAC": 47,
+        "DRF": 51,
+        "TMF": 54,
+        "LAN": 61,
+        "MEC": 73
+      },
+      "preferred_combos": [
+        "E",
+        "B"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_TW",
+      "division": null
+    },
+    {
+      "id": "CLUB_TUN",
+      "name": "Tunistorm",
+      "abbr": "TUN",
+      "colors": {
+        "bg": "#E32636",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1151,
+      "tier": "D0",
+      "stats": {
+        "MAC": 48,
+        "DRF": 48,
+        "TMF": 62,
+        "LAN": 58,
+        "MEC": 70
+      },
+      "preferred_combos": [
+        "F"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_MEAF",
+      "division": null
+    },
+    {
+      "id": "CLUB_BP",
+      "name": "Bohunk Pressure",
+      "abbr": "BP",
+      "colors": {
+        "bg": "#8B4000",
+        "text": "#97B75D"
+      },
+      "elo_rating": 1151,
+      "tier": "D0",
+      "stats": {
+        "MAC": 46,
+        "DRF": 53,
+        "TMF": 57,
+        "LAN": 55,
+        "MEC": 72
+      },
+      "preferred_combos": [
+        "A"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_EEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_RW",
+      "name": "Rapidas Whippets",
+      "abbr": "RW",
+      "colors": {
+        "bg": "#FFF700",
+        "text": "#000000"
+      },
+      "elo_rating": 1150,
+      "tier": "D0",
+      "stats": {
+        "MAC": 45,
+        "DRF": 47,
+        "TMF": 61,
+        "LAN": 60,
+        "MEC": 74
+      },
+      "preferred_combos": [
+        "G",
+        "B"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_SA",
+      "division": null
+    },
+    {
+      "id": "CLUB_CLO",
+      "name": "Clowny Gaming",
+      "abbr": "CLO",
+      "colors": {
+        "bg": "#FF3300",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1130,
+      "tier": "D0",
+      "stats": {
+        "MAC": 45,
+        "DRF": 45,
+        "TMF": 56,
+        "LAN": 63,
+        "MEC": 75
+      },
+      "preferred_combos": [
+        "A"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_BR",
+      "division": null
+    },
+    {
+      "id": "CLUB_BT",
+      "name": "Team Bettertomorrow",
+      "abbr": "BT",
+      "colors": {
+        "bg": "#ADDADD",
+        "text": "#000000"
+      },
+      "elo_rating": 1110,
+      "tier": "D",
+      "stats": {
+        "MAC": 47,
+        "DRF": 48,
+        "TMF": 66,
+        "LAN": 67,
+        "MEC": 64
+      },
+      "preferred_combos": [
+        "E"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_JP",
+      "division": null
+    },
+    {
+      "id": "CLUB_PAON",
+      "name": "PAON Bruxelle",
+      "abbr": "PAON",
+      "colors": {
+        "bg": "#000000",
+        "text": "#FFC000"
+      },
+      "elo_rating": 1103,
+      "tier": "D",
+      "stats": {
+        "MAC": 33,
+        "DRF": 55,
+        "TMF": 54,
+        "LAN": 60,
+        "MEC": 76
+      },
+      "preferred_combos": [
+        "D"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_WEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_WDG",
+      "name": "Wingdingers",
+      "abbr": "WDG",
+      "colors": {
+        "bg": "#FFF700",
+        "text": "#C800C8"
+      },
+      "elo_rating": 1101,
+      "tier": "D",
+      "stats": {
+        "MAC": 51,
+        "DRF": 54,
+        "TMF": 52,
+        "LAN": 60,
+        "MEC": 70
+      },
+      "preferred_combos": [
+        "E",
+        "D"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_EEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_SF",
+      "name": "Split Freakarrific",
+      "abbr": "SF",
+      "colors": {
+        "bg": "#0069D2",
+        "text": "#BF8F00"
+      },
+      "elo_rating": 1093,
+      "tier": "D",
+      "stats": {
+        "MAC": 35,
+        "DRF": 50,
+        "TMF": 57,
+        "LAN": 70,
+        "MEC": 73
+      },
+      "preferred_combos": [
+        "B",
+        "G"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_EEU",
+      "division": null
+    },
+    {
+      "id": "CLUB_ISC",
+      "name": "Iscandarya Gaming",
+      "abbr": "ISC",
+      "colors": {
+        "bg": "#4169E1",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1063,
+      "tier": "D-",
+      "stats": {
+        "MAC": 44,
+        "DRF": 47,
+        "TMF": 54,
+        "LAN": 60,
+        "MEC": 69
+      },
+      "preferred_combos": [
+        "F",
+        "C"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_MEAF",
+      "division": null
+    },
+    {
+      "id": "CLUB_RM",
+      "name": "Rainbow Markhor",
+      "abbr": "RM",
+      "colors": {
+        "bg": "#FF69B4",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1058,
+      "tier": "D-",
+      "stats": {
+        "MAC": 45,
+        "DRF": 39,
+        "TMF": 60,
+        "LAN": 68,
+        "MEC": 72
+      },
+      "preferred_combos": [
+        "A",
+        "D"
+      ],
+      "conference_id": "C_APAC",
+      "league_id": "L_SEA",
+      "division": null
+    },
+    {
+      "id": "CLUB_PEN",
+      "name": "PEN Courages",
+      "abbr": "PEN",
+      "colors": {
+        "bg": "#4169E1",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1038,
+      "tier": "D-",
+      "stats": {
+        "MAC": 46,
+        "DRF": 46,
+        "TMF": 62,
+        "LAN": 66,
+        "MEC": 70
+      },
+      "preferred_combos": [
+        "A"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_SA",
+      "division": null
+    },
+    {
+      "id": "CLUB_MAN",
+      "name": "Manticore Gaming",
+      "abbr": "MAN",
+      "colors": {
+        "bg": "#8B0000",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1021,
+      "tier": "F",
+      "stats": {
+        "MAC": 39,
+        "DRF": 48,
+        "TMF": 60,
+        "LAN": 60,
+        "MEC": 72
+      },
+      "preferred_combos": [
+        "A"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_MEAF",
+      "division": null
+    },
+    {
+      "id": "CLUB_TH",
+      "name": "Trojan Horse",
+      "abbr": "TH",
+      "colors": {
+        "bg": "#8B8C89",
+        "text": "#000000"
+      },
+      "elo_rating": 1018,
+      "tier": "F",
+      "stats": {
+        "MAC": 30,
+        "DRF": 49,
+        "TMF": 53,
+        "LAN": 61,
+        "MEC": 69
+      },
+      "preferred_combos": [
+        "F"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_SA",
+      "division": null
+    },
+    {
+      "id": "CLUB_ARS",
+      "name": "Arslan Esports",
+      "abbr": "ARS",
+      "colors": {
+        "bg": "#DAA520",
+        "text": "#FFFFFF"
+      },
+      "elo_rating": 1016,
+      "tier": "F",
+      "stats": {
+        "MAC": 30,
+        "DRF": 41,
+        "TMF": 52,
+        "LAN": 57,
+        "MEC": 64
+      },
+      "preferred_combos": [
+        "C"
+      ],
+      "conference_id": "C_EMEA",
+      "league_id": "L_MEAF",
+      "division": null
+    },
+    {
+      "id": "CLUB_ERP",
+      "name": "Exitosa RealPunch",
+      "abbr": "ERP",
+      "colors": {
+        "bg": "#FF4500",
+        "text": "#000000"
+      },
+      "elo_rating": 997,
+      "tier": "F",
+      "stats": {
+        "MAC": 38,
+        "DRF": 42,
+        "TMF": 53,
+        "LAN": 60,
+        "MEC": 62
+      },
+      "preferred_combos": [
+        "B"
+      ],
+      "conference_id": "C_AMER",
+      "league_id": "L_SA",
+      "division": null
+    }
+  ]
+}

@@ -1,0 +1,431 @@
+{
+  "document": {
+    "title": "MM Midseason Mayhem Format PRD",
+    "version": "1.0",
+    "language": "ko",
+    "purpose": "Define the 3-week operation plan for the Midseason Mayhem tournament held during Weeks 17-19.",
+    "created_for": "Esports league calendar planning and AI-readable tournament scheduling"
+  },
+  "tournament": {
+    "name": "Midseason Mayhem",
+    "short_name": "MM",
+    "period": {
+      "start_week": 17,
+      "end_week": 19,
+      "duration_weeks": 3,
+      "post_event_rest_week": 20
+    },
+    "participants": {
+      "team_count": 16,
+      "qualification": "One representative team from each regional league, either first-half champion or qualifier winner.",
+      "seeding_reference_week": 16,
+      "seeding_method": "Elo rating as of Week 16",
+      "seed_bands": [
+        {
+          "seed_band": 1,
+          "team_count": 4
+        },
+        {
+          "seed_band": 2,
+          "team_count": 4
+        },
+        {
+          "seed_band": 3,
+          "team_count": 4
+        },
+        {
+          "seed_band": 4,
+          "team_count": 4
+        }
+      ]
+    },
+    "overall_format": [
+      "Swiss Stage, Rounds 1-5",
+      "Knockout Stage, Quarterfinals, Semifinals, Grand Final"
+    ],
+    "default_assumptions": [
+      "Knockout Stage matches are Bo5 because no separate match length was specified.",
+      "There is no third-place match unless explicitly added as an optional show match.",
+      "There is no bracket reset in the Knockout Stage."
+    ]
+  },
+  "swiss_stage": {
+    "team_count": 16,
+    "rounds": 5,
+    "qualification_rule": "A team advances to Knockout Stage immediately upon reaching 3 wins.",
+    "elimination_rule": "A team is eliminated immediately upon reaching 3 losses.",
+    "pairing_rules": [
+      "Teams are paired against teams with the same match record whenever possible.",
+      "Teams cannot be paired against a team they have already played in a previous Swiss round.",
+      "If multiple valid pairings exist, tournament administration may draw randomly or use Elo/order-based pairing.",
+      "Qualification or elimination matches are Bo3.",
+      "Non-decisive matches are Bo1."
+    ],
+    "rounds_detail": [
+      {
+        "round": 1,
+        "record_groups": [
+          {
+            "record": "0-0",
+            "matches": 8,
+            "format": "Bo1"
+          }
+        ],
+        "pairing": "Seed 1 teams are randomly drawn against Seed 4 teams. Seed 2 teams are randomly drawn against Seed 3 teams.",
+        "duration_days": 1
+      },
+      {
+        "round": 2,
+        "record_groups": [
+          {
+            "record": "1-0",
+            "matches": 4,
+            "format": "Bo1"
+          },
+          {
+            "record": "0-1",
+            "matches": 4,
+            "format": "Bo1"
+          }
+        ],
+        "pairing": "Round 1 winners play other winners. Round 1 losers play other losers.",
+        "duration_days": 1
+      },
+      {
+        "round": 3,
+        "record_groups": [
+          {
+            "record": "2-0",
+            "matches": 2,
+            "format": "Bo3",
+            "stakes": "advancement"
+          },
+          {
+            "record": "1-1",
+            "matches": 4,
+            "format": "Bo1",
+            "stakes": "non-decisive"
+          },
+          {
+            "record": "0-2",
+            "matches": 2,
+            "format": "Bo3",
+            "stakes": "elimination"
+          }
+        ],
+        "duration_days": 3
+      },
+      {
+        "round": 4,
+        "record_groups": [
+          {
+            "record": "2-1",
+            "matches": 3,
+            "format": "Bo3",
+            "stakes": "advancement"
+          },
+          {
+            "record": "1-2",
+            "matches": 3,
+            "format": "Bo3",
+            "stakes": "elimination"
+          }
+        ],
+        "duration_days": 2
+      },
+      {
+        "round": 5,
+        "record_groups": [
+          {
+            "record": "2-2",
+            "matches": 3,
+            "format": "Bo3",
+            "stakes": "advancement/elimination"
+          }
+        ],
+        "duration_days": 1
+      }
+    ],
+    "final_advancement_distribution": [
+      {
+        "record": "3-0",
+        "teams": 2
+      },
+      {
+        "record": "3-1",
+        "teams": 3
+      },
+      {
+        "record": "3-2",
+        "teams": 3
+      }
+    ],
+    "match_count": {
+      "bo1": 20,
+      "bo3": 13,
+      "total": 33
+    }
+  },
+  "knockout_stage": {
+    "team_count": 8,
+    "format": "Single Elimination",
+    "match_format": "Bo5",
+    "stages": [
+      {
+        "stage": "Quarterfinals",
+        "matches": 4
+      },
+      {
+        "stage": "Semifinals",
+        "matches": 2
+      },
+      {
+        "stage": "Grand Final",
+        "matches": 1
+      }
+    ],
+    "bracket_assignment_rules": [
+      "The two 3-0 Swiss teams must be placed on opposite sides of the bracket so they cannot meet before the Grand Final.",
+      "Each 3-0 Swiss team must face a 3-2 Swiss team in the Quarterfinals.",
+      "The remaining two Quarterfinals are formed from the three 3-1 Swiss teams and the one 3-2 Swiss team not assigned to a 3-0 opponent.",
+      "All Knockout matches are single elimination.",
+      "No bracket reset is used."
+    ],
+    "recommended_bracket_template": [
+      {
+        "slot": "QF1",
+        "matchup": "3-0 A vs 3-2 C",
+        "bracket_side": "A"
+      },
+      {
+        "slot": "QF2",
+        "matchup": "3-1 B vs 3-1 C",
+        "bracket_side": "A"
+      },
+      {
+        "slot": "QF3",
+        "matchup": "3-1 A vs 3-2 A",
+        "bracket_side": "B"
+      },
+      {
+        "slot": "QF4",
+        "matchup": "3-0 B vs 3-2 B",
+        "bracket_side": "B"
+      }
+    ],
+    "ordering_tiebreakers": [
+      "Swiss match record",
+      "Swiss game differential",
+      "Opponents' average match win rate",
+      "Week 16 Elo rating",
+      "Random draw"
+    ],
+    "match_count": {
+      "bo5": 7,
+      "total": 7
+    }
+  },
+  "schedule": [
+    {
+      "week": 17,
+      "day": "Monday",
+      "stage": "Swiss Round 1",
+      "matches": 8,
+      "format": "Bo1",
+      "notes": "Seed 1 vs Seed 4, Seed 2 vs Seed 3. One-day completion."
+    },
+    {
+      "week": 17,
+      "day": "Tuesday",
+      "stage": "Swiss Round 2",
+      "matches": 8,
+      "format": "Bo1",
+      "notes": "1-0 teams vs 1-0 teams, 0-1 teams vs 0-1 teams."
+    },
+    {
+      "week": 17,
+      "day": "Wednesday",
+      "stage": "Swiss Round 3-A",
+      "matches": 2,
+      "format": "Bo3",
+      "notes": "2-0 advancement matches. Winners qualify at 3-0."
+    },
+    {
+      "week": 17,
+      "day": "Thursday",
+      "stage": "Swiss Round 3-B",
+      "matches": 4,
+      "format": "Bo1",
+      "notes": "1-1 non-decisive matches."
+    },
+    {
+      "week": 17,
+      "day": "Friday",
+      "stage": "Swiss Round 3-C",
+      "matches": 2,
+      "format": "Bo3",
+      "notes": "0-2 elimination matches. Losers are eliminated at 0-3."
+    },
+    {
+      "week": 17,
+      "day": "Saturday",
+      "stage": "Swiss Round 4-A",
+      "matches": 3,
+      "format": "Bo3",
+      "notes": "2-1 advancement matches. Winners qualify at 3-1."
+    },
+    {
+      "week": 17,
+      "day": "Sunday",
+      "stage": "Swiss Round 4-B",
+      "matches": 3,
+      "format": "Bo3",
+      "notes": "1-2 elimination matches. Losers are eliminated at 1-3."
+    },
+    {
+      "week": 18,
+      "day": "Monday",
+      "stage": "Swiss Round 5",
+      "matches": 3,
+      "format": "Bo3",
+      "notes": "2-2 final qualification/elimination matches."
+    },
+    {
+      "week": 18,
+      "day": "Tuesday",
+      "stage": "Knockout Draw and Media Day",
+      "matches": 0,
+      "format": "N/A",
+      "notes": "Bracket draw, content production, rest."
+    },
+    {
+      "week": 18,
+      "day": "Wednesday",
+      "stage": "Quarterfinal 1",
+      "matches": 1,
+      "format": "Bo5",
+      "notes": "Single main match."
+    },
+    {
+      "week": 18,
+      "day": "Thursday",
+      "stage": "Quarterfinal 2",
+      "matches": 1,
+      "format": "Bo5",
+      "notes": "Single main match."
+    },
+    {
+      "week": 18,
+      "day": "Friday",
+      "stage": "Quarterfinal 3",
+      "matches": 1,
+      "format": "Bo5",
+      "notes": "Single main match."
+    },
+    {
+      "week": 18,
+      "day": "Saturday",
+      "stage": "Quarterfinal 4",
+      "matches": 1,
+      "format": "Bo5",
+      "notes": "Single main match."
+    },
+    {
+      "week": 18,
+      "day": "Sunday",
+      "stage": "Rest and Semifinal Media Day",
+      "matches": 0,
+      "format": "N/A",
+      "notes": "Semifinal preparation."
+    },
+    {
+      "week": 19,
+      "day": "Monday",
+      "stage": "Rest and Semifinal Preview",
+      "matches": 0,
+      "format": "N/A",
+      "notes": "Content day."
+    },
+    {
+      "week": 19,
+      "day": "Tuesday",
+      "stage": "Semifinal 1",
+      "matches": 1,
+      "format": "Bo5",
+      "notes": "Single main match."
+    },
+    {
+      "week": 19,
+      "day": "Wednesday",
+      "stage": "Rest and Analysis Day",
+      "matches": 0,
+      "format": "N/A",
+      "notes": "Recovery and content."
+    },
+    {
+      "week": 19,
+      "day": "Thursday",
+      "stage": "Semifinal 2",
+      "matches": 1,
+      "format": "Bo5",
+      "notes": "Single main match."
+    },
+    {
+      "week": 19,
+      "day": "Friday",
+      "stage": "Grand Final Media Day",
+      "matches": 0,
+      "format": "N/A",
+      "notes": "Press conference, fan events."
+    },
+    {
+      "week": 19,
+      "day": "Saturday",
+      "stage": "Grand Final Preview and Rehearsal",
+      "matches": 0,
+      "format": "N/A",
+      "notes": "Optional show match only if needed."
+    },
+    {
+      "week": 19,
+      "day": "Sunday",
+      "stage": "Grand Final",
+      "matches": 1,
+      "format": "Bo5",
+      "notes": "MM champion decided."
+    }
+  ],
+  "match_totals": {
+    "swiss_total_matches": 33,
+    "knockout_total_matches": 7,
+    "event_total_matches": 40,
+    "by_format": {
+      "Bo1": 20,
+      "Bo3": 13,
+      "Bo5": 7
+    }
+  },
+  "week_summary": [
+    {
+      "week": 17,
+      "focus": "Swiss Rounds 1-4",
+      "official_matches": 30
+    },
+    {
+      "week": 18,
+      "focus": "Swiss Round 5 and Quarterfinals",
+      "official_matches": 7
+    },
+    {
+      "week": 19,
+      "focus": "Semifinals and Grand Final",
+      "official_matches": 3
+    }
+  ],
+  "operational_notes": [
+    "Week 20 can remain reserved for post-MM rest, travel, patch adaptation, and regional league re-entry.",
+    "Swiss rematch prevention must be validated before each draw.",
+    "Round 5 pairings should be generated only after all Round 4 results are locked.",
+    "Quarterfinal bracket draw should happen after Swiss Round 5 is complete."
+  ]
+}

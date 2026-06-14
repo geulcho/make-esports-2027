@@ -1,0 +1,70 @@
+{
+  "version": "1.0",
+  "title": "MAKE Esports Simulator Progression Spec",
+
+  "season": {
+    "total_weeks": 52,
+    "start_date": "2038-01-07",
+    "phase_duration_days": 14,
+    "calendar": [
+      { "weeks": [1],      "event": "PP",              "type": "international",  "implemented": false },
+      { "weeks": [2, 7],   "event": "지역 리그 1/5",    "type": "regional_league","sub_phases": 4, "implemented": true  },
+      { "weeks": [8, 9],   "event": "인터매치",         "type": "international",  "implemented": false },
+      { "weeks": [10, 13], "event": "지역 리그 2/5",    "type": "regional_league","sub_phases": 4, "implemented": true  },
+      { "weeks": [14, 15], "event": "RTM",              "type": "international",  "implemented": false },
+      { "weeks": [16],     "event": "휴식",             "type": "break",          "implemented": true  },
+      { "weeks": [17, 19], "event": "MM",               "type": "international",  "implemented": false },
+      { "weeks": [20],     "event": "휴식",             "type": "break",          "implemented": true  },
+      { "weeks": [21, 25], "event": "지역 리그 3/5",    "type": "regional_league","sub_phases": 4, "implemented": true  },
+      { "weeks": [26, 27], "event": "인터매치",         "type": "international",  "implemented": false },
+      { "weeks": [28, 32], "event": "지역 리그 4/5",    "type": "regional_league","sub_phases": 4, "implemented": true  },
+      { "weeks": [33, 34], "event": "인터매치",         "type": "international",  "implemented": false },
+      { "weeks": [35, 36], "event": "플레이오프",       "type": "playoff",        "implemented": false },
+      { "weeks": [37, 39], "event": "휴식",             "type": "break",          "implemented": true  },
+      { "weeks": [40],     "event": "휴식",             "type": "break",          "implemented": true  },
+      { "weeks": [41, 45], "event": "WT / VSC",         "type": "international",  "implemented": false },
+      { "weeks": [46],     "event": "휴식",             "type": "break",          "implemented": true  },
+      { "weeks": [47, 49], "event": "WE",               "type": "international",  "implemented": false },
+      { "weeks": [50, 52], "event": "오프시즌",         "type": "offseason",      "implemented": false }
+    ]
+  },
+
+  "regional_league": {
+    "splits": 5,
+    "sub_phases_per_split": 4,
+    "format": "Single Round Robin (Bo3)",
+    "standings_tiebreaker": ["wins", "set_diff", "score_diff"],
+    "cumulative_tracking": true,
+    "rtm_qualification_splits": [1, 2],
+    "playoff_qualification_splits": [1, 2, 3, 4],
+    "phase_distribution_by_team_count": {
+      "8":  { "rounds_per_phase": [2, 1, 1, 2], "note": "일별 스케줄로 실제 배분 결정" },
+      "10": { "rounds_per_phase": [2, 2, 2, 3] },
+      "12": { "rounds_per_phase": [2, 3, 3, 3] }
+    },
+    "skip_leagues": ["L_CN", "L_NA"]
+  },
+
+  "store": {
+    "key": "make-esports-store-v3",
+    "persist_fields": [
+      "gameDate", "gameYear", "seasonType",
+      "currentPhase", "activeMeta", "leagueStates",
+      "followedTeams", "followedLeagues", "followedPlayers",
+      "gridColumns"
+    ],
+    "computed_on_demand": ["schedule"]
+  },
+
+  "league_formats": {
+    "L_TW": { "ref": "league_format_8team_small.md" },
+    "L_JP": { "ref": "league_format_8team_small.md" },
+    "L_TR": { "ref": "league_format_8team_small.md" }
+  },
+
+  "phase_strip_display": {
+    "block_size": 4,
+    "block_number_formula": "ceil(currentPhase / 4)",
+    "phase_in_block_formula": "((currentPhase - 1) % 4) + 1"
+  }
+}

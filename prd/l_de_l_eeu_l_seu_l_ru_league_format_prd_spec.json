@@ -1,0 +1,644 @@
+{
+  "document": {
+    "title": "DACH / Eastern Europe / Southern Europe / Russia 10-Team League Format PRD",
+    "korean_title": "L_DE / L_EEU / L_SEU / L_RU 10팀 리그 진행 방식 PRD",
+    "version": "1.0",
+    "created_for": "AI-readable esports league format planning",
+    "language": "ko-KR with structured English keys"
+  },
+  "leagues": [
+    "L_DE",
+    "L_EEU",
+    "L_SEU",
+    "L_RU"
+  ],
+  "shared_format": true,
+  "league_structure": {
+    "teams": 10,
+    "venue_model": "single central venue per league",
+    "splits_per_year": [
+      "Spring",
+      "Summer"
+    ],
+    "champions_per_year": 2,
+    "regular_season_match_format": "Bo1",
+    "playoff_match_format": "Bo5",
+    "regular_season_days": [
+      "Saturday",
+      "Sunday"
+    ],
+    "regular_matches_per_day": 5,
+    "correction_note": "For a 10-team league, each full matchday has 5 Bo1 matches, not 6; all 10 teams play exactly once per matchday."
+  },
+  "regular_season": {
+    "format": "10-team double round robin",
+    "weeks": 9,
+    "matchdays": 18,
+    "matches_per_matchday": 5,
+    "matches_per_team": 18,
+    "total_matches_per_split": 90,
+    "team_participation": "Each team plays once on every regular-season matchday.",
+    "rounds": 18
+  },
+  "playoffs": {
+    "weeks": 3,
+    "qualified_teams": 6,
+    "format": "six-team double-elimination-style bracket",
+    "matches_total": 8,
+    "all_matches_bo5": true,
+    "bo5_matches_per_day": 1,
+    "bracket_reset": false,
+    "round_4_5_6_schedule_rule": "Rounds 4, 5, and 6 must be played as a Friday/Saturday/Sunday consecutive final weekend.",
+    "bracket": [
+      {
+        "round": 1,
+        "bracket": "upper",
+        "match_id": "U1",
+        "matchup": "Seed 1 vs Seed 4",
+        "format": "Bo5"
+      },
+      {
+        "round": 1,
+        "bracket": "upper",
+        "match_id": "U2",
+        "matchup": "Seed 2 vs Seed 3",
+        "format": "Bo5"
+      },
+      {
+        "round": 2,
+        "bracket": "lower",
+        "match_id": "L1",
+        "matchup": "Loser of U1 vs Seed 6",
+        "format": "Bo5"
+      },
+      {
+        "round": 2,
+        "bracket": "lower",
+        "match_id": "L2",
+        "matchup": "Loser of U2 vs Seed 5",
+        "format": "Bo5"
+      },
+      {
+        "round": 3,
+        "bracket": "upper_final",
+        "match_id": "U3",
+        "matchup": "Winner of U1 vs Winner of U2",
+        "format": "Bo5"
+      },
+      {
+        "round": 4,
+        "bracket": "lower",
+        "match_id": "L3",
+        "matchup": "Winner of L1 vs Winner of L2",
+        "format": "Bo5"
+      },
+      {
+        "round": 5,
+        "bracket": "lower_final",
+        "match_id": "L4",
+        "matchup": "Loser of U3 vs Winner of L3",
+        "format": "Bo5"
+      },
+      {
+        "round": 6,
+        "bracket": "grand_final",
+        "match_id": "GF",
+        "matchup": "Winner of U3 vs Winner of L4",
+        "format": "Bo5",
+        "bracket_reset": false
+      }
+    ]
+  },
+  "global_calendar_mapping": {
+    "spring": {
+      "regular_season_weeks": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        9,
+        10,
+        11
+      ],
+      "tiebreaker_and_media_week": 12,
+      "playoff_weeks": [
+        13,
+        14,
+        15
+      ],
+      "champion_decided_by": "Week 15 Sunday",
+      "regular_schedule": [
+        {
+          "week": 1,
+          "day": "Saturday",
+          "round": "R1",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 1,
+          "day": "Sunday",
+          "round": "R2",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 2,
+          "day": "Saturday",
+          "round": "R3",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 2,
+          "day": "Sunday",
+          "round": "R4",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 3,
+          "day": "Saturday",
+          "round": "R5",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 3,
+          "day": "Sunday",
+          "round": "R6",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 4,
+          "day": "Saturday",
+          "round": "R7",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 4,
+          "day": "Sunday",
+          "round": "R8",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 5,
+          "day": "Saturday",
+          "round": "R9",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 5,
+          "day": "Sunday",
+          "round": "R10",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 6,
+          "day": "Saturday",
+          "round": "R11",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 6,
+          "day": "Sunday",
+          "round": "R12",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 9,
+          "day": "Saturday",
+          "round": "R13",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 9,
+          "day": "Sunday",
+          "round": "R14",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 10,
+          "day": "Saturday",
+          "round": "R15",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 10,
+          "day": "Sunday",
+          "round": "R16",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 11,
+          "day": "Saturday",
+          "round": "R17",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 11,
+          "day": "Sunday",
+          "round": "R18",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        }
+      ],
+      "playoff_schedule": [
+        {
+          "week": 13,
+          "day": "Saturday",
+          "round": 1,
+          "match_id": "U1",
+          "matchup": "Seed 1 vs Seed 4",
+          "matches": 1,
+          "format": "Bo5"
+        },
+        {
+          "week": 13,
+          "day": "Sunday",
+          "round": 1,
+          "match_id": "U2",
+          "matchup": "Seed 2 vs Seed 3",
+          "matches": 1,
+          "format": "Bo5"
+        },
+        {
+          "week": 14,
+          "day": "Saturday",
+          "round": 2,
+          "match_id": "L1",
+          "matchup": "Loser of U1 vs Seed 6",
+          "matches": 1,
+          "format": "Bo5"
+        },
+        {
+          "week": 14,
+          "day": "Sunday",
+          "round": 2,
+          "match_id": "L2",
+          "matchup": "Loser of U2 vs Seed 5",
+          "matches": 1,
+          "format": "Bo5"
+        },
+        {
+          "week": 15,
+          "day": "Wednesday",
+          "round": 3,
+          "match_id": "U3",
+          "matchup": "Winner of U1 vs Winner of U2",
+          "matches": 1,
+          "format": "Bo5"
+        },
+        {
+          "week": 15,
+          "day": "Friday",
+          "round": 4,
+          "match_id": "L3",
+          "matchup": "Winner of L1 vs Winner of L2",
+          "matches": 1,
+          "format": "Bo5",
+          "special_note": "Rounds 4, 5, and 6 are played on consecutive Friday/Saturday/Sunday dates."
+        },
+        {
+          "week": 15,
+          "day": "Saturday",
+          "round": 5,
+          "match_id": "L4",
+          "matchup": "Loser of U3 vs Winner of L3",
+          "matches": 1,
+          "format": "Bo5",
+          "special_note": "Consecutive final-weekend match 2 of 3."
+        },
+        {
+          "week": 15,
+          "day": "Sunday",
+          "round": 6,
+          "match_id": "GF",
+          "matchup": "Winner of U3 vs Winner of L4",
+          "matches": 1,
+          "format": "Bo5",
+          "special_note": "Grand Final. No bracket reset by default."
+        }
+      ]
+    },
+    "summer": {
+      "regular_season_weeks": [
+        21,
+        22,
+        23,
+        24,
+        27,
+        28,
+        29,
+        30,
+        33
+      ],
+      "tiebreaker_and_media_week": 34,
+      "playoff_weeks": [
+        35,
+        36,
+        37
+      ],
+      "champion_decided_by": "Week 37 Sunday",
+      "regular_schedule": [
+        {
+          "week": 21,
+          "day": "Saturday",
+          "round": "R1",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 21,
+          "day": "Sunday",
+          "round": "R2",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 22,
+          "day": "Saturday",
+          "round": "R3",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 22,
+          "day": "Sunday",
+          "round": "R4",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 23,
+          "day": "Saturday",
+          "round": "R5",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 23,
+          "day": "Sunday",
+          "round": "R6",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 24,
+          "day": "Saturday",
+          "round": "R7",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 24,
+          "day": "Sunday",
+          "round": "R8",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 27,
+          "day": "Saturday",
+          "round": "R9",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 27,
+          "day": "Sunday",
+          "round": "R10",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 28,
+          "day": "Saturday",
+          "round": "R11",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 28,
+          "day": "Sunday",
+          "round": "R12",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 29,
+          "day": "Saturday",
+          "round": "R13",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 29,
+          "day": "Sunday",
+          "round": "R14",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 30,
+          "day": "Saturday",
+          "round": "R15",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 30,
+          "day": "Sunday",
+          "round": "R16",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 33,
+          "day": "Saturday",
+          "round": "R17",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        },
+        {
+          "week": 33,
+          "day": "Sunday",
+          "round": "R18",
+          "matches": 5,
+          "match_type": "Bo1",
+          "note": "Each of the 10 teams plays once."
+        }
+      ],
+      "playoff_schedule": [
+        {
+          "week": 35,
+          "day": "Saturday",
+          "round": 1,
+          "match_id": "U1",
+          "matchup": "Seed 1 vs Seed 4",
+          "matches": 1,
+          "format": "Bo5"
+        },
+        {
+          "week": 35,
+          "day": "Sunday",
+          "round": 1,
+          "match_id": "U2",
+          "matchup": "Seed 2 vs Seed 3",
+          "matches": 1,
+          "format": "Bo5"
+        },
+        {
+          "week": 36,
+          "day": "Saturday",
+          "round": 2,
+          "match_id": "L1",
+          "matchup": "Loser of U1 vs Seed 6",
+          "matches": 1,
+          "format": "Bo5"
+        },
+        {
+          "week": 36,
+          "day": "Sunday",
+          "round": 2,
+          "match_id": "L2",
+          "matchup": "Loser of U2 vs Seed 5",
+          "matches": 1,
+          "format": "Bo5"
+        },
+        {
+          "week": 37,
+          "day": "Wednesday",
+          "round": 3,
+          "match_id": "U3",
+          "matchup": "Winner of U1 vs Winner of U2",
+          "matches": 1,
+          "format": "Bo5"
+        },
+        {
+          "week": 37,
+          "day": "Friday",
+          "round": 4,
+          "match_id": "L3",
+          "matchup": "Winner of L1 vs Winner of L2",
+          "matches": 1,
+          "format": "Bo5",
+          "special_note": "Rounds 4, 5, and 6 are played on consecutive Friday/Saturday/Sunday dates."
+        },
+        {
+          "week": 37,
+          "day": "Saturday",
+          "round": 5,
+          "match_id": "L4",
+          "matchup": "Loser of U3 vs Winner of L3",
+          "matches": 1,
+          "format": "Bo5",
+          "special_note": "Consecutive final-weekend match 2 of 3."
+        },
+        {
+          "week": 37,
+          "day": "Sunday",
+          "round": 6,
+          "match_id": "GF",
+          "matchup": "Winner of U3 vs Winner of L4",
+          "matches": 1,
+          "format": "Bo5",
+          "special_note": "Grand Final. No bracket reset by default."
+        }
+      ]
+    }
+  },
+  "cup_week_constraints": {
+    "restricted_weeks": [
+      5,
+      9,
+      11,
+      22,
+      24,
+      28,
+      30
+    ],
+    "restricted_days": [
+      "Monday",
+      "Tuesday",
+      "Wednesday"
+    ],
+    "impact": "No conflict. Regular season is scheduled only on Saturday/Sunday; playoff final weeks use Wednesday/Friday/Saturday/Sunday but do not fall on listed cup weeks."
+  },
+  "ranking_and_tiebreakers": {
+    "regular_standings_order": [
+      "match win percentage",
+      "match wins",
+      "head-to-head record",
+      "game differential",
+      "tiebreaker Bo1 or Bo3 at organizer discretion"
+    ],
+    "tiebreaker_weeks": {
+      "spring": 12,
+      "summer": 34
+    },
+    "note": "Tiebreaker weeks are not part of the 3-week playoff window; they are reserved for seeding, media, venue preparation, and necessary qualification tiebreakers."
+  },
+  "requirements_check": {
+    "10_teams": true,
+    "single_venue": true,
+    "bo1_regular_season": true,
+    "spring_and_summer_champions": true,
+    "regular_season_9_weeks": true,
+    "regular_season_sat_sun_only": true,
+    "five_bo1_matches_per_day": true,
+    "each_team_plays_once_per_matchday": true,
+    "top_6_playoffs": true,
+    "three_week_playoffs": true,
+    "rounds_4_5_6_fri_sat_sun": true
+  }
+}

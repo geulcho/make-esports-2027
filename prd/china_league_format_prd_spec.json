@@ -1,0 +1,1489 @@
+{
+  "document": {
+    "title_ko": "중국 리그 진행 방식 PRD",
+    "title_en": "Dragon-Phoenix 16-Team League Format PRD",
+    "version": "v1.1",
+    "purpose": "Transfer the 16-team Dragon/Phoenix league format and schedule constraints to another AI or production team.",
+    "language": "Korean with structured English JSON labels",
+    "revision_summary": [
+      {
+        "version": "v1.1",
+        "change": "Regular-season matchdays are split across adjacent dates: 8-match rounds become 4+4 across two days."
+      }
+    ]
+  },
+  "league": {
+    "team_count": 16,
+    "divisions": [
+      {
+        "name_ko": "드래곤",
+        "name_en": "Dragon",
+        "teams": 8,
+        "abbr": "D"
+      },
+      {
+        "name_ko": "피닉스",
+        "name_en": "Phoenix",
+        "teams": 8,
+        "abbr": "P"
+      }
+    ],
+    "city_based_franchises": true,
+    "concurrent_matches_allowed": true,
+    "default_match_format": "Bo5"
+  },
+  "global_calendar_constraints": {
+    "regional_available_weeks": [
+      {
+        "weeks": "Week 1-6",
+        "length_weeks": 6,
+        "role": "First-half regular season R1-R12"
+      },
+      {
+        "weeks": "Week 9-15",
+        "length_weeks": 7,
+        "role": "First-half regular season R13-R22 plus MM qualifier"
+      },
+      {
+        "weeks": "Week 21-24",
+        "length_weeks": 4,
+        "role": "Second-half regular season R1-R9"
+      },
+      {
+        "weeks": "Week 27-30",
+        "length_weeks": 4,
+        "role": "Second-half regular season R10-R18"
+      },
+      {
+        "weeks": "Week 33-37",
+        "length_weeks": 5,
+        "role": "Second-half regular season R19-R22 plus playoffs"
+      }
+    ],
+    "intermatch_breaks": [
+      {
+        "weeks": "Week 7-8"
+      },
+      {
+        "weeks": "Week 25-26"
+      },
+      {
+        "weeks": "Week 31-32"
+      }
+    ],
+    "mm_block": {
+      "weeks": "Week 16-20",
+      "duration_weeks": 5,
+      "regional_league_matches": false
+    },
+    "cup_weeks": [
+      5,
+      9,
+      11,
+      22,
+      24,
+      28,
+      30
+    ],
+    "cup_week_regional_blackout_days": [
+      "Monday",
+      "Tuesday",
+      "Wednesday"
+    ],
+    "regular_season_split_days": [
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "three_round_week_extra_pair": [
+      "Tuesday",
+      "Wednesday"
+    ]
+  },
+  "regular_season_matchday_distribution": {
+    "matches_per_round": 8,
+    "split_matches_per_day": 4,
+    "two_round_week_pattern": [
+      {
+        "logical_round": "first round of week",
+        "days": [
+          "Thursday",
+          "Friday"
+        ],
+        "matches_per_day": 4
+      },
+      {
+        "logical_round": "second round of week",
+        "days": [
+          "Saturday",
+          "Sunday"
+        ],
+        "matches_per_day": 4
+      }
+    ],
+    "three_round_week_pattern": [
+      {
+        "logical_round": "extra round",
+        "days": [
+          "Tuesday",
+          "Wednesday"
+        ],
+        "matches_per_day": 4,
+        "allowed_only_on_non_cup_weeks": true
+      },
+      {
+        "logical_round": "middle round",
+        "days": [
+          "Thursday",
+          "Friday"
+        ],
+        "matches_per_day": 4
+      },
+      {
+        "logical_round": "weekend round",
+        "days": [
+          "Saturday",
+          "Sunday"
+        ],
+        "matches_per_day": 4
+      }
+    ],
+    "rationale": "Avoid 8 Bo5 matches concentrating on a single Thursday or Sunday while preserving weekend exposure."
+  },
+  "format_definitions": {
+    "regular_season_round": "A complete round in which all 16 teams play once, totaling 8 Bo5 matches. A logical round may be split across two dates.",
+    "multi_match_series_unit": "Each game in a playoff best-of-N series is one Bo5 match.",
+    "best_of_3_series": "Up to 3 Bo5 matches; first to 2 Bo5 wins advances.",
+    "best_of_5_series": "Up to 5 Bo5 matches; first to 3 Bo5 wins wins the championship."
+  },
+  "regular_season_format": {
+    "per_half": {
+      "matches_per_team": 22,
+      "league_matches_total": 176,
+      "rounds_total": 22,
+      "matches_per_round": 8,
+      "matches_per_split_day": 4,
+      "same_division": {
+        "opponents_per_team": 7,
+        "format": "Double round robin",
+        "matches_per_team": 14
+      },
+      "cross_division": {
+        "opponents_per_team": 8,
+        "format": "Single round robin",
+        "matches_per_team": 8
+      },
+      "home_away_balance_per_team": {
+        "home": 11,
+        "away": 11
+      }
+    },
+    "annual_per_team": {
+      "regular_season_matches": 44,
+      "home_matches": 22,
+      "away_matches": 22
+    }
+  },
+  "first_half": {
+    "regular_season": {
+      "duration_weeks": 11,
+      "weeks_used": [
+        "Week 1-6",
+        "Week 9-13"
+      ],
+      "rounds_total": 22,
+      "matches_total": 176,
+      "matches_per_team": 22,
+      "matches_per_split_day": 4,
+      "schedule": [
+        {
+          "week": 1,
+          "day": "Thursday",
+          "round": 1,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 1,
+          "day": "Friday",
+          "round": 1,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 1,
+          "day": "Saturday",
+          "round": 2,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 1,
+          "day": "Sunday",
+          "round": 2,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 2,
+          "day": "Thursday",
+          "round": 3,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 2,
+          "day": "Friday",
+          "round": 3,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 2,
+          "day": "Saturday",
+          "round": 4,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 2,
+          "day": "Sunday",
+          "round": 4,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 3,
+          "day": "Thursday",
+          "round": 5,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 3,
+          "day": "Friday",
+          "round": 5,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 3,
+          "day": "Saturday",
+          "round": 6,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 3,
+          "day": "Sunday",
+          "round": 6,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 4,
+          "day": "Thursday",
+          "round": 7,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 4,
+          "day": "Friday",
+          "round": 7,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 4,
+          "day": "Saturday",
+          "round": 8,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 4,
+          "day": "Sunday",
+          "round": 8,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 5,
+          "day": "Thursday",
+          "round": 9,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "cup_week": true,
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 5,
+          "day": "Friday",
+          "round": 9,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "cup_week": true,
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 5,
+          "day": "Saturday",
+          "round": 10,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "cup_week": true,
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 5,
+          "day": "Sunday",
+          "round": 10,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "cup_week": true,
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 6,
+          "day": "Thursday",
+          "round": 11,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 6,
+          "day": "Friday",
+          "round": 11,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 6,
+          "day": "Saturday",
+          "round": 12,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 6,
+          "day": "Sunday",
+          "round": 12,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 9,
+          "day": "Thursday",
+          "round": 13,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "cup_week": true,
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 9,
+          "day": "Friday",
+          "round": 13,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "cup_week": true,
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 9,
+          "day": "Saturday",
+          "round": 14,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "cup_week": true,
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 9,
+          "day": "Sunday",
+          "round": 14,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "cup_week": true,
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 10,
+          "day": "Thursday",
+          "round": 15,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Cross-Division",
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 10,
+          "day": "Friday",
+          "round": 15,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Cross-Division",
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 10,
+          "day": "Saturday",
+          "round": 16,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Cross-Division",
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 10,
+          "day": "Sunday",
+          "round": 16,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Cross-Division",
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 11,
+          "day": "Thursday",
+          "round": 17,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Cross-Division",
+          "cup_week": true,
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 11,
+          "day": "Friday",
+          "round": 17,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Cross-Division",
+          "cup_week": true,
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 11,
+          "day": "Saturday",
+          "round": 18,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Cross-Division",
+          "cup_week": true,
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 11,
+          "day": "Sunday",
+          "round": 18,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Cross-Division",
+          "cup_week": true,
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 12,
+          "day": "Thursday",
+          "round": 19,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Cross-Division",
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 12,
+          "day": "Friday",
+          "round": 19,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Cross-Division",
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 12,
+          "day": "Saturday",
+          "round": 20,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Cross-Division",
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 12,
+          "day": "Sunday",
+          "round": 20,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Cross-Division",
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 13,
+          "day": "Thursday",
+          "round": 21,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Cross-Division",
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 13,
+          "day": "Friday",
+          "round": 21,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Cross-Division",
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 13,
+          "day": "Saturday",
+          "round": 22,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Cross-Division",
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 13,
+          "day": "Sunday",
+          "round": 22,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Cross-Division",
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 14,
+          "days": [
+            "Monday",
+            "Tuesday",
+            "Wednesday"
+          ],
+          "event": "First-half tiebreaker reserve / bracket lock",
+          "matches": "as_needed",
+          "note": "Moved from Week 13 Sunday because R22 now uses Saturday/Sunday."
+        }
+      ]
+    },
+    "mm_qualifier": {
+      "duration_weeks": 2,
+      "weeks_used": [
+        "Week 14",
+        "Week 15"
+      ],
+      "qualifying_teams": "Top 4 from each division after first-half regular season",
+      "teams_total": 8,
+      "mm_slots": 1,
+      "all_matches_single_bo5": true,
+      "matches_total": 7,
+      "same_as_north_america_league": true,
+      "bracket": [
+        "Dragon Semifinal A: D1 vs D4",
+        "Dragon Semifinal B: D2 vs D3",
+        "Phoenix Semifinal A: P1 vs P4",
+        "Phoenix Semifinal B: P2 vs P3",
+        "Dragon Final",
+        "Phoenix Final",
+        "Final Qualifier"
+      ],
+      "schedule": [
+        {
+          "week": 14,
+          "day": "Thursday",
+          "stage": "Dragon Semifinal A",
+          "matchup": "D1 vs D4",
+          "matches": 1,
+          "host": "D1 home"
+        },
+        {
+          "week": 14,
+          "day": "Friday",
+          "stage": "Phoenix Semifinal A",
+          "matchup": "P1 vs P4",
+          "matches": 1,
+          "host": "P1 home"
+        },
+        {
+          "week": 14,
+          "day": "Saturday",
+          "stage": "Dragon Semifinal B",
+          "matchup": "D2 vs D3",
+          "matches": 1,
+          "host": "D2 home"
+        },
+        {
+          "week": 14,
+          "day": "Sunday",
+          "stage": "Phoenix Semifinal B",
+          "matchup": "P2 vs P3",
+          "matches": 1,
+          "host": "P2 home"
+        },
+        {
+          "week": 15,
+          "day": "Thursday",
+          "stage": "Dragon Final",
+          "matches": 1,
+          "host": "Higher seed home"
+        },
+        {
+          "week": 15,
+          "day": "Friday",
+          "stage": "Phoenix Final",
+          "matches": 1,
+          "host": "Higher seed home"
+        },
+        {
+          "week": 15,
+          "day": "Sunday",
+          "stage": "Final Qualifier",
+          "matches": 1,
+          "host": "Better first-half regular season record"
+        }
+      ]
+    }
+  },
+  "second_half": {
+    "regular_season": {
+      "duration_weeks": 10,
+      "weeks_used": [
+        "Week 21-24",
+        "Week 27-30",
+        "Week 33-34"
+      ],
+      "rounds_total": 22,
+      "matches_total": 176,
+      "matches_per_team": 22,
+      "matches_per_split_day": 4,
+      "three_round_weeks": [
+        21,
+        27
+      ],
+      "schedule": [
+        {
+          "week": 21,
+          "day": "Tuesday",
+          "round": 1,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Extra 3-round-week pair"
+        },
+        {
+          "week": 21,
+          "day": "Wednesday",
+          "round": 1,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Extra 3-round-week pair"
+        },
+        {
+          "week": 21,
+          "day": "Thursday",
+          "round": 2,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 21,
+          "day": "Friday",
+          "round": 2,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 21,
+          "day": "Saturday",
+          "round": 3,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 21,
+          "day": "Sunday",
+          "round": 3,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 22,
+          "day": "Thursday",
+          "round": 4,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "cup_week": true,
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 22,
+          "day": "Friday",
+          "round": 4,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "cup_week": true,
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 22,
+          "day": "Saturday",
+          "round": 5,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "cup_week": true,
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 22,
+          "day": "Sunday",
+          "round": 5,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "cup_week": true,
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 23,
+          "day": "Thursday",
+          "round": 6,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 23,
+          "day": "Friday",
+          "round": 6,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 23,
+          "day": "Saturday",
+          "round": 7,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 23,
+          "day": "Sunday",
+          "round": 7,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 24,
+          "day": "Thursday",
+          "round": 8,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "cup_week": true,
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 24,
+          "day": "Friday",
+          "round": 8,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "cup_week": true,
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 24,
+          "day": "Saturday",
+          "round": 9,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "cup_week": true,
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 24,
+          "day": "Sunday",
+          "round": 9,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "cup_week": true,
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 27,
+          "day": "Tuesday",
+          "round": 10,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Extra 3-round-week pair"
+        },
+        {
+          "week": 27,
+          "day": "Wednesday",
+          "round": 10,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Extra 3-round-week pair"
+        },
+        {
+          "week": 27,
+          "day": "Thursday",
+          "round": 11,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 27,
+          "day": "Friday",
+          "round": 11,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 27,
+          "day": "Saturday",
+          "round": 12,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 27,
+          "day": "Sunday",
+          "round": 12,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 28,
+          "day": "Thursday",
+          "round": 13,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "cup_week": true,
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 28,
+          "day": "Friday",
+          "round": 13,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "cup_week": true,
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 28,
+          "day": "Saturday",
+          "round": 14,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "cup_week": true,
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 28,
+          "day": "Sunday",
+          "round": 14,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Divisional",
+          "cup_week": true,
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 29,
+          "day": "Thursday",
+          "round": 15,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Cross-Division",
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 29,
+          "day": "Friday",
+          "round": 15,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Cross-Division",
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 29,
+          "day": "Saturday",
+          "round": 16,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Cross-Division",
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 29,
+          "day": "Sunday",
+          "round": 16,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Cross-Division",
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 30,
+          "day": "Thursday",
+          "round": 17,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Cross-Division",
+          "cup_week": true,
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 30,
+          "day": "Friday",
+          "round": 17,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Cross-Division",
+          "cup_week": true,
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 30,
+          "day": "Saturday",
+          "round": 18,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Cross-Division",
+          "cup_week": true,
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 30,
+          "day": "Sunday",
+          "round": 18,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Cross-Division",
+          "cup_week": true,
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 33,
+          "day": "Thursday",
+          "round": 19,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Cross-Division",
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 33,
+          "day": "Friday",
+          "round": 19,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Cross-Division",
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 33,
+          "day": "Saturday",
+          "round": 20,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Cross-Division",
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 33,
+          "day": "Sunday",
+          "round": 20,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Cross-Division",
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 34,
+          "day": "Thursday",
+          "round": 21,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Cross-Division",
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 34,
+          "day": "Friday",
+          "round": 21,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Cross-Division",
+          "note": "Thursday-origin round split across Thursday and Friday"
+        },
+        {
+          "week": 34,
+          "day": "Saturday",
+          "round": 22,
+          "split_part": 1,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Cross-Division",
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 34,
+          "day": "Sunday",
+          "round": 22,
+          "split_part": 2,
+          "split_parts_total": 2,
+          "matches": 4,
+          "composition": "Cross-Division",
+          "note": "Weekend round split across Saturday and Sunday"
+        },
+        {
+          "week": 35,
+          "day": "Monday",
+          "event": "Second-half tiebreaker reserve / playoff bracket lock",
+          "matches": "as_needed",
+          "note": "Needed because R22 now uses Saturday/Sunday of Week 34."
+        }
+      ]
+    },
+    "playoffs": {
+      "duration_weeks": 3,
+      "weeks_used": [
+        "Week 35",
+        "Week 36",
+        "Week 37"
+      ],
+      "qualification": "Top 5 per division enter postseason area; 4th and 5th play in for the 4th seed slot.",
+      "teams_total": 10,
+      "stages": [
+        {
+          "stage": "Play-In",
+          "series_count": 2,
+          "format": "Single Bo5; D4 vs D5 and P4 vs P5",
+          "bo5_matches_range": [
+            2,
+            2
+          ]
+        },
+        {
+          "stage": "Division Semifinals",
+          "series_count": 4,
+          "format": "3-match best-of-2-wins; each match Bo5",
+          "bo5_matches_range": [
+            8,
+            12
+          ]
+        },
+        {
+          "stage": "Division Finals",
+          "series_count": 2,
+          "format": "3-match best-of-2-wins; each match Bo5",
+          "bo5_matches_range": [
+            4,
+            6
+          ]
+        },
+        {
+          "stage": "Grand Final",
+          "series_count": 1,
+          "format": "5-match best-of-3-wins; each match Bo5",
+          "bo5_matches_range": [
+            3,
+            5
+          ]
+        }
+      ],
+      "match_count_range": {
+        "minimum_bo5_matches": 17,
+        "maximum_bo5_matches": 25
+      },
+      "schedule": [
+        {
+          "week": 35,
+          "day": "Monday",
+          "stage": "Tiebreaker reserve / playoff bracket lock",
+          "matches": "as needed"
+        },
+        {
+          "week": 35,
+          "day": "Tuesday",
+          "stage": "Play-In",
+          "matches": 2,
+          "host": "D4 home and P4 home"
+        },
+        {
+          "week": 35,
+          "day": "Wednesday",
+          "stage": "Travel / bracket lock",
+          "matches": 0
+        },
+        {
+          "week": 35,
+          "day": "Thursday",
+          "stage": "Division Semifinals Game 1",
+          "matches": 4,
+          "host": "Higher seed home"
+        },
+        {
+          "week": 35,
+          "day": "Friday",
+          "stage": "Division Semifinals Game 2",
+          "matches": 4,
+          "host": "Higher seed home"
+        },
+        {
+          "week": 35,
+          "day": "Sunday",
+          "stage": "Division Semifinals Game 3 if needed",
+          "matches": "up to 4",
+          "host": "Higher seed home"
+        },
+        {
+          "week": 36,
+          "day": "Tuesday",
+          "stage": "Division Finals Game 1",
+          "matches": 2,
+          "host": "Higher seed home"
+        },
+        {
+          "week": 36,
+          "day": "Thursday",
+          "stage": "Division Finals Game 2",
+          "matches": 2,
+          "host": "Higher seed home"
+        },
+        {
+          "week": 36,
+          "day": "Saturday",
+          "stage": "Division Finals Game 3 if needed",
+          "matches": "up to 2",
+          "host": "Higher seed home"
+        },
+        {
+          "week": 36,
+          "day": "Sunday",
+          "stage": "Grand Final media / travel",
+          "matches": 0
+        },
+        {
+          "week": 37,
+          "day": "Monday",
+          "stage": "Grand Final Game 1",
+          "matches": 1,
+          "host": "Home-advantage team home"
+        },
+        {
+          "week": 37,
+          "day": "Tuesday",
+          "stage": "Grand Final Game 2",
+          "matches": 1,
+          "host": "Home-advantage team home"
+        },
+        {
+          "week": 37,
+          "day": "Wednesday",
+          "stage": "Travel Day",
+          "matches": 0
+        },
+        {
+          "week": 37,
+          "day": "Thursday",
+          "stage": "Grand Final Game 3",
+          "matches": 1,
+          "host": "Other finalist home"
+        },
+        {
+          "week": 37,
+          "day": "Friday",
+          "stage": "Grand Final Game 4 if needed",
+          "matches": "up to 1",
+          "host": "Other finalist home"
+        },
+        {
+          "week": 37,
+          "day": "Saturday",
+          "stage": "Travel Day",
+          "matches": 0
+        },
+        {
+          "week": 37,
+          "day": "Sunday",
+          "stage": "Grand Final Game 5 if needed",
+          "matches": "up to 1",
+          "host": "Home-advantage team home"
+        }
+      ]
+    }
+  },
+  "hosting_rules": {
+    "regular_season": "Home/away balanced; matches may run concurrently across home markets.",
+    "mm_qualifier": {
+      "division_semifinals": "Higher seed home",
+      "division_finals": "Higher seed home",
+      "final_qualifier": "Better first-half regular season record hosts"
+    },
+    "playoffs": {
+      "play_in": "4th seed home",
+      "division_semifinals": "Higher seed home",
+      "division_finals": "Higher seed home",
+      "grand_final": "2-2-1 home format: games 1/2/5 at home-advantage team, games 3/4 at other finalist"
+    },
+    "grand_final_home_advantage_tiebreakers": [
+      "Second-half regular-season win rate",
+      "Annual cumulative win rate",
+      "Match differential",
+      "Game/map differential",
+      "Head-to-head",
+      "League office tiebreaker"
+    ]
+  },
+  "standings_and_tiebreakers": {
+    "default_ranking_order": [
+      "Match win rate",
+      "Match wins",
+      "Head-to-head",
+      "Match differential",
+      "Game/map differential",
+      "Division record",
+      "Bo5 tiebreaker"
+    ],
+    "reserve_windows": [
+      {
+        "phase": "First half",
+        "weeks_days": "Week 14 Monday-Wednesday"
+      },
+      {
+        "phase": "Second half",
+        "weeks_days": "Week 35 Monday"
+      }
+    ],
+    "three_team_tie_policy": "League office may use mini-bracket or ladder tiebreaker."
+  },
+  "match_totals": {
+    "first_half_regular_season": 176,
+    "mm_qualifier": 7,
+    "second_half_regular_season": 176,
+    "playoffs_min": 17,
+    "playoffs_max": 25,
+    "season_total_min": 376,
+    "season_total_max": 384
+  },
+  "requirements_checklist": [
+    {
+      "requirement": "16-team city-based league",
+      "status": "Satisfied"
+    },
+    {
+      "requirement": "Dragon/Phoenix divisions of 8 teams each",
+      "status": "Satisfied"
+    },
+    {
+      "requirement": "All regular-season matches are Bo5",
+      "status": "Satisfied"
+    },
+    {
+      "requirement": "Regular-season 8-match rounds split into 4+4 across two dates",
+      "status": "Satisfied"
+    },
+    {
+      "requirement": "Thursday-origin rounds split Thu/Fri",
+      "status": "Satisfied"
+    },
+    {
+      "requirement": "Weekend rounds split Sat/Sun",
+      "status": "Satisfied"
+    },
+    {
+      "requirement": "Cup weeks avoid Monday/Tuesday/Wednesday",
+      "status": "Satisfied"
+    },
+    {
+      "requirement": "First-half MM qualifier unchanged",
+      "status": "Satisfied"
+    },
+    {
+      "requirement": "Second-half regular season completed in 10 weeks",
+      "status": "Satisfied"
+    },
+    {
+      "requirement": "Playoffs completed in Weeks 35-37",
+      "status": "Satisfied"
+    }
+  ]
+}

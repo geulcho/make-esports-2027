@@ -1,0 +1,426 @@
+{
+  "document": {
+    "title": "Regional Cup Tournaments PRD: COPA, APEX, EGT",
+    "version": "1.0",
+    "format": "json_spec",
+    "scope": "Regional cup tournaments held during global cup windows",
+    "tournaments": ["COPA", "APEX", "EGT"]
+  },
+  "cup_windows": [
+    {"week": 5, "days": ["Monday", "Tuesday", "Wednesday"], "main_stage": "Early qualifiers / Round 1"},
+    {"week": 9, "days": ["Monday", "Tuesday", "Wednesday"], "main_stage": "Round 2 or Round of 64"},
+    {"week": 11, "days": ["Monday", "Tuesday", "Wednesday"], "main_stage": "Round of 32"},
+    {"week": 22, "days": ["Monday", "Tuesday", "Wednesday"], "main_stage": "Round of 16"},
+    {"week": 24, "days": ["Monday", "Tuesday", "Wednesday"], "main_stage": "Quarterfinals"},
+    {"week": 28, "days": ["Monday", "Tuesday", "Wednesday"], "main_stage": "Semifinals"},
+    {"week": 30, "days": ["Monday", "Tuesday", "Wednesday"], "main_stage": "Finals"}
+  ],
+  "common_rules": {
+    "regional_league_blackout": "No regional league matches on Monday, Tuesday, or Wednesday of cup weeks.",
+    "qualification_basis": "Previous-year league standings determine round entry eligibility.",
+    "venue_model": "Multiple venues may be used. Simultaneous matches are allowed.",
+    "default_draw_policy": "Random draw unless otherwise specified.",
+    "default_match_format_before_quarterfinals": "Bo3",
+    "quarterfinals_onward_match_format": "Bo5",
+    "world_tournaments_relevance": "COPA, APEX, and EGT champions each receive a WT special qualification slot, subject to WT duplicate-slot transfer rules."
+  },
+  "assumptions": [
+    {
+      "id": "COPA_R2_mid_seed_interpretation",
+      "description": "The user text says L_SA 3rd to 8th, 4 teams and L_BR 3rd to 8th, 4 teams. Since these are 10-team leagues and Round 1 uses the bottom 4 teams, this spec interprets the Round 2 mid-tier entries as 3rd to 6th place, 4 teams per league."
+    }
+  ],
+  "tournaments": {
+    "COPA": {
+      "name": "COPA",
+      "region": "Americas",
+      "participating_leagues": [
+        {"league": "North America", "teams": 24},
+        {"league": "L_SA", "teams": 10},
+        {"league": "L_BR", "teams": 10}
+      ],
+      "total_teams": 44,
+      "champion_reward": "WT special slot",
+      "stages": [
+        {
+          "stage": "Round 1",
+          "week": 5,
+          "teams": 8,
+          "entrants": ["L_SA bottom 4", "L_BR bottom 4"],
+          "draw": "random",
+          "format": "Bo3",
+          "matches": 4,
+          "winners_advance": 4,
+          "daily_schedule": [
+            {"day": "Monday", "matches": 2},
+            {"day": "Tuesday", "matches": 2},
+            {"day": "Wednesday", "matches": 0, "note": "reserve"}
+          ]
+        },
+        {
+          "stage": "Round 2",
+          "week": 9,
+          "teams": 16,
+          "entrants": ["Round 1 winners 4", "North America bottom 4", "L_SA 3rd to 6th", "L_BR 3rd to 6th"],
+          "draw": "random",
+          "format": "Bo3",
+          "matches": 8,
+          "winners_advance": 8,
+          "daily_schedule": [
+            {"day": "Monday", "matches": 3},
+            {"day": "Tuesday", "matches": 3},
+            {"day": "Wednesday", "matches": 2}
+          ]
+        },
+        {
+          "stage": "Round of 32",
+          "week": 11,
+          "teams": 32,
+          "entrants": ["Round 2 winners 8", "North America top 20", "L_SA top 2", "L_BR top 2"],
+          "draw": "random",
+          "format": "Bo3",
+          "matches": 16,
+          "winners_advance": 16,
+          "daily_schedule": [
+            {"day": "Monday", "matches": 6},
+            {"day": "Tuesday", "matches": 5},
+            {"day": "Wednesday", "matches": 5}
+          ]
+        },
+        {
+          "stage": "Round of 16",
+          "week": 22,
+          "teams": 16,
+          "draw": "random_redraw_after_previous_round",
+          "format": "Bo3",
+          "matches": 8,
+          "winners_advance": 8,
+          "daily_schedule": [
+            {"day": "Monday", "matches": 3},
+            {"day": "Tuesday", "matches": 3},
+            {"day": "Wednesday", "matches": 2}
+          ]
+        },
+        {
+          "stage": "Quarterfinals",
+          "week": 24,
+          "teams": 8,
+          "draw": "random_redraw_after_previous_round",
+          "format": "Bo5",
+          "matches": 4,
+          "winners_advance": 4,
+          "daily_schedule": [
+            {"day": "Monday", "matches": 2},
+            {"day": "Tuesday", "matches": 2},
+            {"day": "Wednesday", "matches": 0, "note": "reserve/media"}
+          ]
+        },
+        {
+          "stage": "Semifinals",
+          "week": 28,
+          "teams": 4,
+          "draw": "random_redraw_after_previous_round",
+          "format": "Bo5",
+          "matches": 2,
+          "winners_advance": 2,
+          "daily_schedule": [
+            {"day": "Monday", "matches": 1},
+            {"day": "Tuesday", "matches": 1},
+            {"day": "Wednesday", "matches": 0, "note": "reserve/media"}
+          ]
+        },
+        {
+          "stage": "Final",
+          "week": 30,
+          "teams": 2,
+          "draw": "none",
+          "format": "Bo5",
+          "matches": 1,
+          "winner": "COPA champion and WT special-slot holder",
+          "daily_schedule": [
+            {"day": "Tuesday", "matches": 1}
+          ]
+        }
+      ]
+    },
+    "APEX": {
+      "name": "APEX",
+      "region": "Asia-Pacific",
+      "participating_leagues": [
+        {"league": "China", "teams": 16},
+        {"league": "Korea", "teams": 12},
+        {"league": "L_TW", "teams": 8},
+        {"league": "L_JP", "teams": 8},
+        {"league": "L_SEA", "teams": 12}
+      ],
+      "total_teams": 56,
+      "champion_reward": "WT special slot",
+      "qualifier_regions": {
+        "north": ["China", "Korea"],
+        "south": ["L_TW", "L_JP", "L_SEA"]
+      },
+      "stages": [
+        {
+          "stage": "Round 1 South Qualifier",
+          "week": 5,
+          "teams": 12,
+          "entrants": ["L_TW 5th to 8th", "L_JP 5th to 8th", "L_SEA 9th to 12th"],
+          "draw": "random",
+          "format": "Bo3",
+          "matches": 6,
+          "winners_advance": 6,
+          "daily_schedule": [
+            {"day": "Monday", "matches": 2},
+            {"day": "Tuesday", "matches": 2},
+            {"day": "Wednesday", "matches": 2}
+          ]
+        },
+        {
+          "stage": "Round 2 North Qualifier",
+          "week": 9,
+          "teams": 20,
+          "entrants": ["China bottom 12", "Korea bottom 8"],
+          "draw": "random",
+          "format": "Bo3",
+          "matches": 10,
+          "winners_advance": 10,
+          "daily_schedule": [
+            {"day": "Monday", "matches": 4},
+            {"day": "Tuesday", "matches": 3},
+            {"day": "Wednesday", "matches": 3}
+          ]
+        },
+        {
+          "stage": "Round 2 South Qualifier",
+          "week": 9,
+          "teams": 16,
+          "entrants": ["Round 1 South winners 6", "L_TW 3rd to 4th", "L_JP 3rd to 4th", "L_SEA 3rd to 8th"],
+          "draw": "random",
+          "format": "Bo3",
+          "matches": 8,
+          "winners_advance": 8,
+          "daily_schedule": [
+            {"day": "Monday", "matches": 2},
+            {"day": "Tuesday", "matches": 3},
+            {"day": "Wednesday", "matches": 3}
+          ]
+        },
+        {
+          "stage": "Round of 32",
+          "week": 11,
+          "teams": 32,
+          "entrants": ["North R2 winners 10", "South R2 winners 8", "China 1st to 4th", "Korea 1st to 4th", "L_TW 1st to 2nd", "L_JP 1st to 2nd", "L_SEA 1st to 2nd"],
+          "draw": "random",
+          "format": "Bo3",
+          "matches": 16,
+          "winners_advance": 16,
+          "daily_schedule": [
+            {"day": "Monday", "matches": 6},
+            {"day": "Tuesday", "matches": 5},
+            {"day": "Wednesday", "matches": 5}
+          ]
+        },
+        {
+          "stage": "Round of 16",
+          "week": 22,
+          "teams": 16,
+          "draw": "random_redraw_after_previous_round",
+          "format": "Bo3",
+          "matches": 8,
+          "winners_advance": 8,
+          "daily_schedule": [
+            {"day": "Monday", "matches": 3},
+            {"day": "Tuesday", "matches": 3},
+            {"day": "Wednesday", "matches": 2}
+          ]
+        },
+        {
+          "stage": "Quarterfinals",
+          "week": 24,
+          "teams": 8,
+          "draw": "random_redraw_after_previous_round",
+          "format": "Bo5",
+          "matches": 4,
+          "winners_advance": 4,
+          "daily_schedule": [
+            {"day": "Monday", "matches": 2},
+            {"day": "Tuesday", "matches": 2},
+            {"day": "Wednesday", "matches": 0, "note": "reserve/media"}
+          ]
+        },
+        {
+          "stage": "Semifinals",
+          "week": 28,
+          "teams": 4,
+          "draw": "random_redraw_after_previous_round",
+          "format": "Bo5",
+          "matches": 2,
+          "winners_advance": 2,
+          "daily_schedule": [
+            {"day": "Monday", "matches": 1},
+            {"day": "Tuesday", "matches": 1},
+            {"day": "Wednesday", "matches": 0, "note": "reserve/media"}
+          ]
+        },
+        {
+          "stage": "Final",
+          "week": 30,
+          "teams": 2,
+          "draw": "none",
+          "format": "Bo5",
+          "matches": 1,
+          "winner": "APEX champion and WT special-slot holder",
+          "daily_schedule": [
+            {"day": "Monday", "matches": 1}
+          ]
+        }
+      ]
+    },
+    "EGT": {
+      "name": "EGT",
+      "region": "Europe, Middle East, Africa",
+      "participating_leagues": [
+        {"league": "L_NEU", "teams": 12},
+        {"league": "L_WEU", "teams": 12},
+        {"league": "L_RU", "teams": 10},
+        {"league": "L_DE", "teams": 10},
+        {"league": "L_SEU", "teams": 10},
+        {"league": "L_EEU", "teams": 10},
+        {"league": "L_TR", "teams": 8},
+        {"league": "L_MEAF", "teams": 8}
+      ],
+      "total_teams": 80,
+      "champion_reward": "WT special slot",
+      "stages": [
+        {
+          "stage": "Round 1",
+          "week": 5,
+          "teams": 32,
+          "entrants": ["Bottom 4 teams from each of the 8 participating leagues"],
+          "draw": "random",
+          "format": "Bo3",
+          "matches": 16,
+          "winners_advance": 16,
+          "daily_schedule": [
+            {"day": "Monday", "matches": 6},
+            {"day": "Tuesday", "matches": 5},
+            {"day": "Wednesday", "matches": 5}
+          ]
+        },
+        {
+          "stage": "Round of 64",
+          "week": 9,
+          "teams": 64,
+          "entrants": ["Round 1 winners 16", "48 direct entrants"],
+          "direct_entrants": "All non-bottom-4 teams from the 8 participating leagues",
+          "draw": "random",
+          "format": "Bo3",
+          "matches": 32,
+          "winners_advance": 32,
+          "daily_schedule": [
+            {"day": "Monday", "matches": 11},
+            {"day": "Tuesday", "matches": 11},
+            {"day": "Wednesday", "matches": 10}
+          ]
+        },
+        {
+          "stage": "Round of 32",
+          "week": 11,
+          "teams": 32,
+          "draw": "random_redraw_after_previous_round",
+          "format": "Bo3",
+          "matches": 16,
+          "winners_advance": 16,
+          "daily_schedule": [
+            {"day": "Monday", "matches": 6},
+            {"day": "Tuesday", "matches": 5},
+            {"day": "Wednesday", "matches": 5}
+          ]
+        },
+        {
+          "stage": "Round of 16",
+          "week": 22,
+          "teams": 16,
+          "draw": "random_redraw_after_previous_round",
+          "format": "Bo3",
+          "matches": 8,
+          "winners_advance": 8,
+          "daily_schedule": [
+            {"day": "Monday", "matches": 3},
+            {"day": "Tuesday", "matches": 3},
+            {"day": "Wednesday", "matches": 2}
+          ]
+        },
+        {
+          "stage": "Quarterfinals",
+          "week": 24,
+          "teams": 8,
+          "draw": "random_redraw_after_previous_round",
+          "format": "Bo5",
+          "matches": 4,
+          "winners_advance": 4,
+          "daily_schedule": [
+            {"day": "Monday", "matches": 2},
+            {"day": "Tuesday", "matches": 2},
+            {"day": "Wednesday", "matches": 0, "note": "reserve/media"}
+          ]
+        },
+        {
+          "stage": "Semifinals",
+          "week": 28,
+          "teams": 4,
+          "draw": "random_redraw_after_previous_round",
+          "format": "Bo5",
+          "matches": 2,
+          "winners_advance": 2,
+          "daily_schedule": [
+            {"day": "Monday", "matches": 1},
+            {"day": "Tuesday", "matches": 1},
+            {"day": "Wednesday", "matches": 0, "note": "reserve/media"}
+          ]
+        },
+        {
+          "stage": "Final",
+          "week": 30,
+          "teams": 2,
+          "draw": "none",
+          "format": "Bo5",
+          "matches": 1,
+          "winner": "EGT champion and WT special-slot holder",
+          "daily_schedule": [
+            {"day": "Wednesday", "matches": 1}
+          ]
+        }
+      ]
+    }
+  },
+  "master_schedule": [
+    {"week": 5, "day": "Monday", "COPA": "R1 2 Bo3", "APEX": "South R1 2 Bo3", "EGT": "R1 6 Bo3"},
+    {"week": 5, "day": "Tuesday", "COPA": "R1 2 Bo3", "APEX": "South R1 2 Bo3", "EGT": "R1 5 Bo3"},
+    {"week": 5, "day": "Wednesday", "COPA": "Reserve", "APEX": "South R1 2 Bo3", "EGT": "R1 5 Bo3"},
+    {"week": 9, "day": "Monday", "COPA": "R2 3 Bo3", "APEX": "R2 6 Bo3", "EGT": "R64 11 Bo3"},
+    {"week": 9, "day": "Tuesday", "COPA": "R2 3 Bo3", "APEX": "R2 6 Bo3", "EGT": "R64 11 Bo3"},
+    {"week": 9, "day": "Wednesday", "COPA": "R2 2 Bo3", "APEX": "R2 6 Bo3", "EGT": "R64 10 Bo3"},
+    {"week": 11, "day": "Monday", "COPA": "R32 6 Bo3", "APEX": "R32 6 Bo3", "EGT": "R32 6 Bo3"},
+    {"week": 11, "day": "Tuesday", "COPA": "R32 5 Bo3", "APEX": "R32 5 Bo3", "EGT": "R32 5 Bo3"},
+    {"week": 11, "day": "Wednesday", "COPA": "R32 5 Bo3", "APEX": "R32 5 Bo3", "EGT": "R32 5 Bo3"},
+    {"week": 22, "day": "Monday", "COPA": "R16 3 Bo3", "APEX": "R16 3 Bo3", "EGT": "R16 3 Bo3"},
+    {"week": 22, "day": "Tuesday", "COPA": "R16 3 Bo3", "APEX": "R16 3 Bo3", "EGT": "R16 3 Bo3"},
+    {"week": 22, "day": "Wednesday", "COPA": "R16 2 Bo3", "APEX": "R16 2 Bo3", "EGT": "R16 2 Bo3"},
+    {"week": 24, "day": "Monday", "COPA": "QF 2 Bo5", "APEX": "QF 2 Bo5", "EGT": "QF 2 Bo5"},
+    {"week": 24, "day": "Tuesday", "COPA": "QF 2 Bo5", "APEX": "QF 2 Bo5", "EGT": "QF 2 Bo5"},
+    {"week": 24, "day": "Wednesday", "COPA": "Reserve/media", "APEX": "Reserve/media", "EGT": "Reserve/media"},
+    {"week": 28, "day": "Monday", "COPA": "SF1 1 Bo5", "APEX": "SF1 1 Bo5", "EGT": "SF1 1 Bo5"},
+    {"week": 28, "day": "Tuesday", "COPA": "SF2 1 Bo5", "APEX": "SF2 1 Bo5", "EGT": "SF2 1 Bo5"},
+    {"week": 28, "day": "Wednesday", "COPA": "Reserve/media", "APEX": "Reserve/media", "EGT": "Reserve/media"},
+    {"week": 30, "day": "Monday", "COPA": "Media/finalist content", "APEX": "Final 1 Bo5", "EGT": "Media/finalist content"},
+    {"week": 30, "day": "Tuesday", "COPA": "Final 1 Bo5", "APEX": "Post-final content", "EGT": "Media/finalist content"},
+    {"week": 30, "day": "Wednesday", "COPA": "Post-final content", "APEX": "Post-final content", "EGT": "Final 1 Bo5"}
+  ],
+  "match_count_summary": {
+    "COPA": {"bo3_matches": 36, "bo5_matches": 7, "total_matches": 43},
+    "APEX": {"bo3_matches": 48, "bo5_matches": 7, "total_matches": 55},
+    "EGT": {"bo3_matches": 72, "bo5_matches": 7, "total_matches": 79},
+    "combined": {"bo3_matches": 156, "bo5_matches": 21, "total_matches": 177}
+  }
+}

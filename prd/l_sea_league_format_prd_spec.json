@@ -1,0 +1,909 @@
+{
+  "document_version": "v1.2",
+  "title": "L_SEA League Format PRD",
+  "league_codes": [
+    "L_SEA"
+  ],
+  "applies_to": [
+    "Southeast Asia League"
+  ],
+  "league_structure": {
+    "teams": 12,
+    "venue_model": "single centralized arena",
+    "concurrent_matches": false,
+    "season_structure": "spring_summer_double_split",
+    "champions_per_year": 2,
+    "regular_season_match_format": "Bo3",
+    "playoff_match_formats": {
+      "upper_bracket_round_1": "Bo3",
+      "all_other_playoff_matches": "Bo5"
+    }
+  },
+  "global_calendar_constraints": {
+    "regional_windows": {
+      "spring": [
+        "Week 1-6",
+        "Week 9-15"
+      ],
+      "summer": [
+        "Week 21-24",
+        "Week 27-30",
+        "Week 33-37"
+      ]
+    },
+    "cup_weeks_no_regional_matches_monday_tuesday_wednesday": [
+      5,
+      9,
+      11,
+      22,
+      24,
+      28,
+      30
+    ],
+    "spring_champion_deadline": "Week 15 Sunday",
+    "summer_champion_deadline": "Week 37 Sunday",
+    "l_sea_planned_finish": {
+      "spring": "Week 13 Sunday",
+      "summer": "Week 35 Sunday"
+    },
+    "open_weeks_after_l_sea_finish": {
+      "spring": [
+        "Week 14",
+        "Week 15"
+      ],
+      "summer": [
+        "Week 36",
+        "Week 37"
+      ]
+    }
+  },
+  "regular_season": {
+    "duration_weeks_per_split": 8,
+    "format": "12-team single round robin",
+    "matches_per_team": 11,
+    "total_matches_per_split": 66,
+    "match_sessions_per_split": 22,
+    "matches_per_session": 3,
+    "session_format": "3 Bo3 matches in a single centralized arena",
+    "pairing_rule": "The pairing generator must ensure each team plays every other team exactly once.",
+    "weekend_first_policy": {
+      "goal": "Use all Sat/Sun dates first, then add Friday sessions to finish in 8 weeks.",
+      "saturday_sunday_sessions_per_split": 16,
+      "saturday_sunday_matches_per_split": 48,
+      "friday_sessions_per_split": 6,
+      "friday_matches_per_split": 18,
+      "thursday_sessions_in_base_plan": 0,
+      "thursday_allowed_as_overflow": true,
+      "weekend_match_share": 0.727,
+      "friday_plus_weekend_match_share": 1.0
+    }
+  },
+  "playoffs": {
+    "duration_weeks_per_split": 3,
+    "entrants": 8,
+    "format": "double_elimination",
+    "format_reference": "Identical to L_NEU / L_WEU playoff format.",
+    "grand_final_bracket_reset": false,
+    "daily_match_limits": {
+      "Bo3": 2,
+      "Bo5": 1
+    },
+    "bracket": [
+      {
+        "id": "UB1",
+        "stage": "Upper Bracket Round 1",
+        "matchup": "Seed 1 vs Seed 8",
+        "format": "Bo3"
+      },
+      {
+        "id": "UB2",
+        "stage": "Upper Bracket Round 1",
+        "matchup": "Seed 4 vs Seed 5",
+        "format": "Bo3"
+      },
+      {
+        "id": "UB3",
+        "stage": "Upper Bracket Round 1",
+        "matchup": "Seed 2 vs Seed 7",
+        "format": "Bo3"
+      },
+      {
+        "id": "UB4",
+        "stage": "Upper Bracket Round 1",
+        "matchup": "Seed 3 vs Seed 6",
+        "format": "Bo3"
+      },
+      {
+        "id": "UB5",
+        "stage": "Upper Bracket Semifinal",
+        "matchup": "Winner UB1 vs Winner UB2",
+        "format": "Bo5"
+      },
+      {
+        "id": "UB6",
+        "stage": "Upper Bracket Semifinal",
+        "matchup": "Winner UB3 vs Winner UB4",
+        "format": "Bo5"
+      },
+      {
+        "id": "LB1",
+        "stage": "Lower Bracket Round 1",
+        "matchup": "Loser UB1 vs Loser UB2",
+        "format": "Bo5"
+      },
+      {
+        "id": "LB2",
+        "stage": "Lower Bracket Round 1",
+        "matchup": "Loser UB3 vs Loser UB4",
+        "format": "Bo5"
+      },
+      {
+        "id": "LB3",
+        "stage": "Lower Bracket Round 2",
+        "matchup": "Winner LB1 vs Loser UB6",
+        "format": "Bo5"
+      },
+      {
+        "id": "LB4",
+        "stage": "Lower Bracket Round 2",
+        "matchup": "Winner LB2 vs Loser UB5",
+        "format": "Bo5"
+      },
+      {
+        "id": "UBF",
+        "stage": "Upper Bracket Final",
+        "matchup": "Winner UB5 vs Winner UB6",
+        "format": "Bo5"
+      },
+      {
+        "id": "LB5",
+        "stage": "Lower Bracket Round 3",
+        "matchup": "Winner LB3 vs Winner LB4",
+        "format": "Bo5"
+      },
+      {
+        "id": "LBF",
+        "stage": "Lower Bracket Final",
+        "matchup": "Winner LB5 vs Loser UBF",
+        "format": "Bo5"
+      },
+      {
+        "id": "GF",
+        "stage": "Grand Final",
+        "matchup": "Winner UBF vs Winner LBF",
+        "format": "Bo5"
+      }
+    ],
+    "match_count": {
+      "Bo3": 4,
+      "Bo5": 10,
+      "total": 14
+    }
+  },
+  "schedules": {
+    "spring": {
+      "regular_season": [
+        {
+          "week": "Week 1",
+          "day": "Friday",
+          "session": "RS1",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Opening regular-season week. Friday compression slot.",
+          "is_weekend": false,
+          "is_friday_compression_slot": true,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 1",
+          "day": "Saturday",
+          "session": "RS2",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Opening regular-season week. Weekend priority slot.",
+          "is_weekend": true,
+          "is_friday_compression_slot": false,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 1",
+          "day": "Sunday",
+          "session": "RS3",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Opening regular-season week. Weekend priority slot.",
+          "is_weekend": true,
+          "is_friday_compression_slot": false,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 2",
+          "day": "Friday",
+          "session": "RS4",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Standard Friday-to-Sunday week. Friday compression slot.",
+          "is_weekend": false,
+          "is_friday_compression_slot": true,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 2",
+          "day": "Saturday",
+          "session": "RS5",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Standard Friday-to-Sunday week. Weekend priority slot.",
+          "is_weekend": true,
+          "is_friday_compression_slot": false,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 2",
+          "day": "Sunday",
+          "session": "RS6",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Standard Friday-to-Sunday week. Weekend priority slot.",
+          "is_weekend": true,
+          "is_friday_compression_slot": false,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 3",
+          "day": "Friday",
+          "session": "RS7",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Standard Friday-to-Sunday week. Friday compression slot.",
+          "is_weekend": false,
+          "is_friday_compression_slot": true,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 3",
+          "day": "Saturday",
+          "session": "RS8",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Standard Friday-to-Sunday week. Weekend priority slot.",
+          "is_weekend": true,
+          "is_friday_compression_slot": false,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 3",
+          "day": "Sunday",
+          "session": "RS9",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Standard Friday-to-Sunday week. Weekend priority slot.",
+          "is_weekend": true,
+          "is_friday_compression_slot": false,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 4",
+          "day": "Friday",
+          "session": "RS10",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Standard Friday-to-Sunday week. Friday compression slot.",
+          "is_weekend": false,
+          "is_friday_compression_slot": true,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 4",
+          "day": "Saturday",
+          "session": "RS11",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Standard Friday-to-Sunday week. Weekend priority slot.",
+          "is_weekend": true,
+          "is_friday_compression_slot": false,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 4",
+          "day": "Sunday",
+          "session": "RS12",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Standard Friday-to-Sunday week. Weekend priority slot.",
+          "is_weekend": true,
+          "is_friday_compression_slot": false,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 5",
+          "day": "Saturday",
+          "session": "RS13",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Cup week; no regional matches on Mon/Tue/Wed. Weekend-only regular-season week. Weekend priority slot.",
+          "is_weekend": true,
+          "is_friday_compression_slot": false,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 5",
+          "day": "Sunday",
+          "session": "RS14",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Cup week; no regional matches on Mon/Tue/Wed. Weekend-only regular-season week. Weekend priority slot.",
+          "is_weekend": true,
+          "is_friday_compression_slot": false,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 6",
+          "day": "Friday",
+          "session": "RS15",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Final pre-IM regular-season week. Friday compression slot.",
+          "is_weekend": false,
+          "is_friday_compression_slot": true,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 6",
+          "day": "Saturday",
+          "session": "RS16",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Final pre-IM regular-season week. Weekend priority slot.",
+          "is_weekend": true,
+          "is_friday_compression_slot": false,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 6",
+          "day": "Sunday",
+          "session": "RS17",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Final pre-IM regular-season week. Weekend priority slot.",
+          "is_weekend": true,
+          "is_friday_compression_slot": false,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 9",
+          "day": "Saturday",
+          "session": "RS18",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Cup week after IM; no regional matches on Mon/Tue/Wed. Weekend-only regular-season week. Weekend priority slot.",
+          "is_weekend": true,
+          "is_friday_compression_slot": false,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 9",
+          "day": "Sunday",
+          "session": "RS19",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Cup week after IM; no regional matches on Mon/Tue/Wed. Weekend-only regular-season week. Weekend priority slot.",
+          "is_weekend": true,
+          "is_friday_compression_slot": false,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 10",
+          "day": "Friday",
+          "session": "RS20",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Final regular-season week. Friday compression slot.",
+          "is_weekend": false,
+          "is_friday_compression_slot": true,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 10",
+          "day": "Saturday",
+          "session": "RS21",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Final regular-season week. Weekend priority slot.",
+          "is_weekend": true,
+          "is_friday_compression_slot": false,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 10",
+          "day": "Sunday",
+          "session": "RS22",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Final regular-season week. Weekend priority slot.",
+          "is_weekend": true,
+          "is_friday_compression_slot": false,
+          "is_thursday_overflow_slot": false
+        }
+      ],
+      "playoffs": [
+        {
+          "week": "Week 11",
+          "day": "Thursday",
+          "stage": "Upper Bracket Round 1",
+          "match": "UB1: Seed 1 vs Seed 8 + UB2: Seed 4 vs Seed 5",
+          "format": "2 Bo3",
+          "notes": "Cup week; regional matches resume on Thursday. Two Bo3 matches may be played in one day."
+        },
+        {
+          "week": "Week 11",
+          "day": "Friday",
+          "stage": "Upper Bracket Round 1",
+          "match": "UB3: Seed 2 vs Seed 7 + UB4: Seed 3 vs Seed 6",
+          "format": "2 Bo3",
+          "notes": "Two Bo3 matches may be played in one day."
+        },
+        {
+          "week": "Week 11",
+          "day": "Saturday",
+          "stage": "Upper Bracket Semifinal",
+          "match": "UB5: Winner UB1 vs Winner UB2",
+          "format": "1 Bo5",
+          "notes": "Weekend premium slot. One Bo5 per day."
+        },
+        {
+          "week": "Week 11",
+          "day": "Sunday",
+          "stage": "Upper Bracket Semifinal",
+          "match": "UB6: Winner UB3 vs Winner UB4",
+          "format": "1 Bo5",
+          "notes": "Weekend premium slot. One Bo5 per day."
+        },
+        {
+          "week": "Week 12",
+          "day": "Tuesday",
+          "stage": "Lower Bracket Round 1",
+          "match": "LB1: Loser UB1 vs Loser UB2",
+          "format": "1 Bo5",
+          "notes": "One Bo5 per day."
+        },
+        {
+          "week": "Week 12",
+          "day": "Wednesday",
+          "stage": "Lower Bracket Round 1",
+          "match": "LB2: Loser UB3 vs Loser UB4",
+          "format": "1 Bo5",
+          "notes": "One Bo5 per day."
+        },
+        {
+          "week": "Week 12",
+          "day": "Thursday",
+          "stage": "Lower Bracket Round 2",
+          "match": "LB3: Winner LB1 vs Loser UB6",
+          "format": "1 Bo5",
+          "notes": "One Bo5 per day."
+        },
+        {
+          "week": "Week 12",
+          "day": "Friday",
+          "stage": "Lower Bracket Round 2",
+          "match": "LB4: Winner LB2 vs Loser UB5",
+          "format": "1 Bo5",
+          "notes": "One Bo5 per day."
+        },
+        {
+          "week": "Week 12",
+          "day": "Saturday",
+          "stage": "Upper Bracket Final",
+          "match": "UBF: Winner UB5 vs Winner UB6",
+          "format": "1 Bo5",
+          "notes": "Weekend premium slot."
+        },
+        {
+          "week": "Week 12",
+          "day": "Sunday",
+          "stage": "Lower Bracket Round 3",
+          "match": "LB5: Winner LB3 vs Winner LB4",
+          "format": "1 Bo5",
+          "notes": "Weekend premium slot."
+        },
+        {
+          "week": "Week 13",
+          "day": "Saturday",
+          "stage": "Lower Bracket Final",
+          "match": "LBF: Winner LB5 vs Loser UBF",
+          "format": "1 Bo5",
+          "notes": "Final weekend."
+        },
+        {
+          "week": "Week 13",
+          "day": "Sunday",
+          "stage": "Grand Final",
+          "match": "GF: Winner UBF vs Winner LBF",
+          "format": "1 Bo5",
+          "notes": "Spring champion decided. No bracket reset by default."
+        }
+      ]
+    },
+    "summer": {
+      "regular_season": [
+        {
+          "week": "Week 21",
+          "day": "Friday",
+          "session": "RS1",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Opening regular-season week. Friday compression slot.",
+          "is_weekend": false,
+          "is_friday_compression_slot": true,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 21",
+          "day": "Saturday",
+          "session": "RS2",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Opening regular-season week. Weekend priority slot.",
+          "is_weekend": true,
+          "is_friday_compression_slot": false,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 21",
+          "day": "Sunday",
+          "session": "RS3",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Opening regular-season week. Weekend priority slot.",
+          "is_weekend": true,
+          "is_friday_compression_slot": false,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 22",
+          "day": "Friday",
+          "session": "RS4",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Cup week; no regional matches on Mon/Tue/Wed. Friday is allowed and used. Friday compression slot.",
+          "is_weekend": false,
+          "is_friday_compression_slot": true,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 22",
+          "day": "Saturday",
+          "session": "RS5",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Cup week; no regional matches on Mon/Tue/Wed. Friday is allowed and used. Weekend priority slot.",
+          "is_weekend": true,
+          "is_friday_compression_slot": false,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 22",
+          "day": "Sunday",
+          "session": "RS6",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Cup week; no regional matches on Mon/Tue/Wed. Friday is allowed and used. Weekend priority slot.",
+          "is_weekend": true,
+          "is_friday_compression_slot": false,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 23",
+          "day": "Friday",
+          "session": "RS7",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Standard Friday-to-Sunday week. Friday compression slot.",
+          "is_weekend": false,
+          "is_friday_compression_slot": true,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 23",
+          "day": "Saturday",
+          "session": "RS8",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Standard Friday-to-Sunday week. Weekend priority slot.",
+          "is_weekend": true,
+          "is_friday_compression_slot": false,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 23",
+          "day": "Sunday",
+          "session": "RS9",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Standard Friday-to-Sunday week. Weekend priority slot.",
+          "is_weekend": true,
+          "is_friday_compression_slot": false,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 24",
+          "day": "Saturday",
+          "session": "RS10",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Cup week; no regional matches on Mon/Tue/Wed. Weekend-only regular-season week. Weekend priority slot.",
+          "is_weekend": true,
+          "is_friday_compression_slot": false,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 24",
+          "day": "Sunday",
+          "session": "RS11",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Cup week; no regional matches on Mon/Tue/Wed. Weekend-only regular-season week. Weekend priority slot.",
+          "is_weekend": true,
+          "is_friday_compression_slot": false,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 27",
+          "day": "Friday",
+          "session": "RS12",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Post-IM regular-season restart. Friday compression slot.",
+          "is_weekend": false,
+          "is_friday_compression_slot": true,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 27",
+          "day": "Saturday",
+          "session": "RS13",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Post-IM regular-season restart. Weekend priority slot.",
+          "is_weekend": true,
+          "is_friday_compression_slot": false,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 27",
+          "day": "Sunday",
+          "session": "RS14",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Post-IM regular-season restart. Weekend priority slot.",
+          "is_weekend": true,
+          "is_friday_compression_slot": false,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 28",
+          "day": "Saturday",
+          "session": "RS15",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Cup week; no regional matches on Mon/Tue/Wed. Weekend-only regular-season week. Weekend priority slot.",
+          "is_weekend": true,
+          "is_friday_compression_slot": false,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 28",
+          "day": "Sunday",
+          "session": "RS16",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Cup week; no regional matches on Mon/Tue/Wed. Weekend-only regular-season week. Weekend priority slot.",
+          "is_weekend": true,
+          "is_friday_compression_slot": false,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 29",
+          "day": "Friday",
+          "session": "RS17",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Standard Friday-to-Sunday week. Friday compression slot.",
+          "is_weekend": false,
+          "is_friday_compression_slot": true,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 29",
+          "day": "Saturday",
+          "session": "RS18",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Standard Friday-to-Sunday week. Weekend priority slot.",
+          "is_weekend": true,
+          "is_friday_compression_slot": false,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 29",
+          "day": "Sunday",
+          "session": "RS19",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Standard Friday-to-Sunday week. Weekend priority slot.",
+          "is_weekend": true,
+          "is_friday_compression_slot": false,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 30",
+          "day": "Friday",
+          "session": "RS20",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Cup week final regular-season week; Friday is allowed and used. Friday compression slot.",
+          "is_weekend": false,
+          "is_friday_compression_slot": true,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 30",
+          "day": "Saturday",
+          "session": "RS21",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Cup week final regular-season week; Friday is allowed and used. Weekend priority slot.",
+          "is_weekend": true,
+          "is_friday_compression_slot": false,
+          "is_thursday_overflow_slot": false
+        },
+        {
+          "week": "Week 30",
+          "day": "Sunday",
+          "session": "RS22",
+          "matches": 3,
+          "format": "Bo3",
+          "notes": "Cup week final regular-season week; Friday is allowed and used. Weekend priority slot.",
+          "is_weekend": true,
+          "is_friday_compression_slot": false,
+          "is_thursday_overflow_slot": false
+        }
+      ],
+      "playoffs": [
+        {
+          "week": "Week 33",
+          "day": "Thursday",
+          "stage": "Upper Bracket Round 1",
+          "match": "UB1: Seed 1 vs Seed 8 + UB2: Seed 4 vs Seed 5",
+          "format": "2 Bo3",
+          "notes": "Playoffs begin after IM 3. Two Bo3 matches may be played in one day."
+        },
+        {
+          "week": "Week 33",
+          "day": "Friday",
+          "stage": "Upper Bracket Round 1",
+          "match": "UB3: Seed 2 vs Seed 7 + UB4: Seed 3 vs Seed 6",
+          "format": "2 Bo3",
+          "notes": "Two Bo3 matches may be played in one day."
+        },
+        {
+          "week": "Week 33",
+          "day": "Saturday",
+          "stage": "Upper Bracket Semifinal",
+          "match": "UB5: Winner UB1 vs Winner UB2",
+          "format": "1 Bo5",
+          "notes": "Weekend premium slot. One Bo5 per day."
+        },
+        {
+          "week": "Week 33",
+          "day": "Sunday",
+          "stage": "Upper Bracket Semifinal",
+          "match": "UB6: Winner UB3 vs Winner UB4",
+          "format": "1 Bo5",
+          "notes": "Weekend premium slot. One Bo5 per day."
+        },
+        {
+          "week": "Week 34",
+          "day": "Tuesday",
+          "stage": "Lower Bracket Round 1",
+          "match": "LB1: Loser UB1 vs Loser UB2",
+          "format": "1 Bo5",
+          "notes": "One Bo5 per day."
+        },
+        {
+          "week": "Week 34",
+          "day": "Wednesday",
+          "stage": "Lower Bracket Round 1",
+          "match": "LB2: Loser UB3 vs Loser UB4",
+          "format": "1 Bo5",
+          "notes": "One Bo5 per day."
+        },
+        {
+          "week": "Week 34",
+          "day": "Thursday",
+          "stage": "Lower Bracket Round 2",
+          "match": "LB3: Winner LB1 vs Loser UB6",
+          "format": "1 Bo5",
+          "notes": "One Bo5 per day."
+        },
+        {
+          "week": "Week 34",
+          "day": "Friday",
+          "stage": "Lower Bracket Round 2",
+          "match": "LB4: Winner LB2 vs Loser UB5",
+          "format": "1 Bo5",
+          "notes": "One Bo5 per day."
+        },
+        {
+          "week": "Week 34",
+          "day": "Saturday",
+          "stage": "Upper Bracket Final",
+          "match": "UBF: Winner UB5 vs Winner UB6",
+          "format": "1 Bo5",
+          "notes": "Weekend premium slot."
+        },
+        {
+          "week": "Week 34",
+          "day": "Sunday",
+          "stage": "Lower Bracket Round 3",
+          "match": "LB5: Winner LB3 vs Winner LB4",
+          "format": "1 Bo5",
+          "notes": "Weekend premium slot."
+        },
+        {
+          "week": "Week 35",
+          "day": "Saturday",
+          "stage": "Lower Bracket Final",
+          "match": "LBF: Winner LB5 vs Loser UBF",
+          "format": "1 Bo5",
+          "notes": "Final weekend."
+        },
+        {
+          "week": "Week 35",
+          "day": "Sunday",
+          "stage": "Grand Final",
+          "match": "GF: Winner UBF vs Winner LBF",
+          "format": "1 Bo5",
+          "notes": "Summer champion decided. No bracket reset by default."
+        }
+      ]
+    }
+  },
+  "match_count_summary": {
+    "per_split": {
+      "regular_season_bo3": 66,
+      "playoff_bo3": 4,
+      "playoff_bo5": 10,
+      "total_match_objects": 80
+    },
+    "annual": {
+      "spring_regular_season": 66,
+      "spring_playoffs": 14,
+      "summer_regular_season": 66,
+      "summer_playoffs": 14,
+      "total_match_objects": 160
+    }
+  },
+  "requirement_coverage": {
+    "12_team_l_sea_league": true,
+    "single_centralized_arena": true,
+    "all_regular_season_matches_bo3": true,
+    "spring_and_summer_champions_separately_decided": true,
+    "regular_season_bo3_single_round_robin": true,
+    "66_regular_season_matches_per_split": true,
+    "11_matches_per_team_per_split": true,
+    "regular_season_lasts_8_weeks": true,
+    "weekend_first_regular_season_scheduling": true,
+    "friday_regular_season_scheduling_allowed_and_used": true,
+    "thursday_allowed_as_overflow": true,
+    "top_8_teams_qualify_for_playoffs": true,
+    "playoffs_last_3_weeks": true,
+    "playoff_format_identical_to_l_neu_l_weu": true,
+    "upper_bracket_round_1_bo3": true,
+    "all_other_playoff_matches_bo5": true,
+    "bo3_playoff_daily_limit_2_matches": true,
+    "bo5_playoff_daily_limit_1_match": true,
+    "early_league_finish_allowed": true
+  }
+}

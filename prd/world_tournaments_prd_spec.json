@@ -1,0 +1,552 @@
+{
+  "document_version": "1.0",
+  "tournament": {
+    "code": "WT",
+    "name": "World Tournaments",
+    "type": "end_of_year_global_championship",
+    "prestige_level": "highest",
+    "calendar_window": {
+      "start_week": 39,
+      "end_week": 43
+    },
+    "selected_finish": {
+      "week": 43,
+      "day": "Sunday"
+    },
+    "participants": 32
+  },
+  "qualification": {
+    "total_slots": 32,
+    "league_coefficient_slots": [
+      {
+        "league_coefficient_ranks": "1-4",
+        "slots_per_league": 3,
+        "total_slots": 12
+      },
+      {
+        "league_coefficient_ranks": "5-8",
+        "slots_per_league": 2,
+        "total_slots": 8
+      },
+      {
+        "league_coefficient_ranks": "9-16",
+        "slots_per_league": 1,
+        "total_slots": 8
+      }
+    ],
+    "special_champion_slots": [
+      {
+        "source": "MM",
+        "name": "Midseason Mayhem",
+        "slots": 1
+      },
+      {
+        "source": "APEX",
+        "name": "APAC regional championship",
+        "slots": 1
+      },
+      {
+        "source": "EGT",
+        "name": "EMEA regional championship",
+        "slots": 1
+      },
+      {
+        "source": "COPA",
+        "name": "AMERICA regional championship",
+        "slots": 1
+      }
+    ],
+    "duplicate_qualification_policy": {
+      "rule": "If a special champion is already qualified, or if a team owns multiple special qualifications, the duplicate slot is transferred to the next-highest non-qualified team from the same league.",
+      "recommended_resolution_order": [
+        "normal_league_slots",
+        "MM",
+        "APEX",
+        "EGT",
+        "COPA"
+      ],
+      "same_league_replacement_required": true
+    }
+  },
+  "seeding": {
+    "pools": [
+      {
+        "seed": 1,
+        "teams": 8,
+        "composition": "1st seed teams from league coefficient ranks 1-8"
+      },
+      {
+        "seed": 2,
+        "teams": 8,
+        "composition": "2nd seed teams from league coefficient ranks 1-8"
+      },
+      {
+        "seed": 3,
+        "teams": 8,
+        "composition": "1st seed teams from league coefficient ranks 9-16"
+      },
+      {
+        "seed": 4,
+        "teams": 8,
+        "composition": "MM, APEX, COPA, EGT champions or replacement teams, plus 3rd seed teams from league coefficient ranks 1-4"
+      }
+    ]
+  },
+  "group_draw": {
+    "groups": 8,
+    "teams_per_group": 4,
+    "seed_distribution": "Each group receives one team from Seed 1, Seed 2, Seed 3, and Seed 4.",
+    "league_protection": "Teams from the same league cannot be in the same group.",
+    "failed_draw_handling": [
+      "redraw_current_seed_pool",
+      "controlled_slot_swap"
+    ]
+  },
+  "group_stage": {
+    "format": "Bo1 double round robin",
+    "groups": 8,
+    "teams_per_group": 4,
+    "matches_per_group": 12,
+    "total_matches": 96,
+    "advancement": {
+      "teams_per_group": 2,
+      "total_teams": 16
+    },
+    "scheduling_model": {
+      "first_half": {
+        "days": 6,
+        "matches_per_day": 8,
+        "description": "Each day includes one match from each group. After six days, each group has completed its first six matches."
+      },
+      "second_half": {
+        "days": 8,
+        "matches_per_day": 6,
+        "description": "One group is completed per day. Each group final day contains the remaining six matches for that group."
+      },
+      "total_days": 14
+    },
+    "tiebreakers": [
+      "match_wins",
+      "score_differential",
+      "score_scored",
+      "head_to_head",
+      "seed_comparison"
+    ],
+    "extra_tiebreaker_matches_by_default": false
+  },
+  "knockout_stage": {
+    "format": "single_elimination",
+    "rounds": [
+      {
+        "round": "Round of 16",
+        "teams": 16,
+        "matches": 8,
+        "match_format": "Bo5",
+        "daily_match_limit": 2
+      },
+      {
+        "round": "Quarterfinals",
+        "teams": 8,
+        "matches": 4,
+        "match_format": "Bo5",
+        "daily_match_limit": 1
+      },
+      {
+        "round": "Semifinals",
+        "teams": 4,
+        "matches": 2,
+        "match_format": "Bo5",
+        "daily_match_limit": 1
+      },
+      {
+        "round": "Grand Final",
+        "teams": 2,
+        "matches": 1,
+        "match_format": "Bo5",
+        "daily_match_limit": 1
+      }
+    ],
+    "round_of_16_rules": {
+      "pairing": "group_winner_vs_different_group_runner_up",
+      "same_group_rematch_allowed": false,
+      "same_group_teams_in_opposite_bracket_halves": true
+    },
+    "recommended_round_of_16_bracket_template": [
+      {
+        "match": "R16-1",
+        "bracket_half": "upper",
+        "pairing": "Group A 1st vs Group H 2nd"
+      },
+      {
+        "match": "R16-2",
+        "bracket_half": "upper",
+        "pairing": "Group B 1st vs Group G 2nd"
+      },
+      {
+        "match": "R16-3",
+        "bracket_half": "upper",
+        "pairing": "Group C 1st vs Group F 2nd"
+      },
+      {
+        "match": "R16-4",
+        "bracket_half": "upper",
+        "pairing": "Group D 1st vs Group E 2nd"
+      },
+      {
+        "match": "R16-5",
+        "bracket_half": "lower",
+        "pairing": "Group E 1st vs Group D 2nd"
+      },
+      {
+        "match": "R16-6",
+        "bracket_half": "lower",
+        "pairing": "Group F 1st vs Group C 2nd"
+      },
+      {
+        "match": "R16-7",
+        "bracket_half": "lower",
+        "pairing": "Group G 1st vs Group B 2nd"
+      },
+      {
+        "match": "R16-8",
+        "bracket_half": "lower",
+        "pairing": "Group H 1st vs Group A 2nd"
+      }
+    ]
+  },
+  "schedule": [
+    {
+      "week": 39,
+      "day": "Monday",
+      "stage": "Group Day 1",
+      "matches": 8,
+      "format": "Bo1",
+      "notes": "One match from each group"
+    },
+    {
+      "week": 39,
+      "day": "Tuesday",
+      "stage": "Group Day 2",
+      "matches": 8,
+      "format": "Bo1",
+      "notes": "One match from each group"
+    },
+    {
+      "week": 39,
+      "day": "Wednesday",
+      "stage": "Group Day 3",
+      "matches": 8,
+      "format": "Bo1",
+      "notes": "One match from each group"
+    },
+    {
+      "week": 39,
+      "day": "Thursday",
+      "stage": "Group Day 4",
+      "matches": 8,
+      "format": "Bo1",
+      "notes": "One match from each group"
+    },
+    {
+      "week": 39,
+      "day": "Friday",
+      "stage": "Group Day 5",
+      "matches": 8,
+      "format": "Bo1",
+      "notes": "One match from each group"
+    },
+    {
+      "week": 39,
+      "day": "Saturday",
+      "stage": "Group Day 6",
+      "matches": 8,
+      "format": "Bo1",
+      "notes": "First half complete"
+    },
+    {
+      "week": 39,
+      "day": "Sunday",
+      "stage": "Group A Final Day",
+      "matches": 6,
+      "format": "Bo1",
+      "notes": "Remaining six Group A matches"
+    },
+    {
+      "week": 40,
+      "day": "Monday",
+      "stage": "Group B Final Day",
+      "matches": 6,
+      "format": "Bo1",
+      "notes": "Remaining six Group B matches"
+    },
+    {
+      "week": 40,
+      "day": "Tuesday",
+      "stage": "Group C Final Day",
+      "matches": 6,
+      "format": "Bo1",
+      "notes": "Remaining six Group C matches"
+    },
+    {
+      "week": 40,
+      "day": "Wednesday",
+      "stage": "Group D Final Day",
+      "matches": 6,
+      "format": "Bo1",
+      "notes": "Remaining six Group D matches"
+    },
+    {
+      "week": 40,
+      "day": "Thursday",
+      "stage": "Group E Final Day",
+      "matches": 6,
+      "format": "Bo1",
+      "notes": "Remaining six Group E matches"
+    },
+    {
+      "week": 40,
+      "day": "Friday",
+      "stage": "Group F Final Day",
+      "matches": 6,
+      "format": "Bo1",
+      "notes": "Remaining six Group F matches"
+    },
+    {
+      "week": 40,
+      "day": "Saturday",
+      "stage": "Group G Final Day",
+      "matches": 6,
+      "format": "Bo1",
+      "notes": "Remaining six Group G matches"
+    },
+    {
+      "week": 40,
+      "day": "Sunday",
+      "stage": "Group H Final Day",
+      "matches": 6,
+      "format": "Bo1",
+      "notes": "Group stage complete"
+    },
+    {
+      "week": 41,
+      "day": "Monday",
+      "stage": "Bracket Draw and Media Day",
+      "matches": 0,
+      "format": "none",
+      "notes": "Knockout bracket finalized"
+    },
+    {
+      "week": 41,
+      "day": "Tuesday",
+      "stage": "Round of 16 Day 1",
+      "matches": 2,
+      "format": "Bo5",
+      "notes": "R16-1 and R16-2"
+    },
+    {
+      "week": 41,
+      "day": "Wednesday",
+      "stage": "Round of 16 Day 2",
+      "matches": 2,
+      "format": "Bo5",
+      "notes": "R16-3 and R16-4"
+    },
+    {
+      "week": 41,
+      "day": "Thursday",
+      "stage": "Round of 16 Day 3",
+      "matches": 2,
+      "format": "Bo5",
+      "notes": "R16-5 and R16-6"
+    },
+    {
+      "week": 41,
+      "day": "Friday",
+      "stage": "Round of 16 Day 4",
+      "matches": 2,
+      "format": "Bo5",
+      "notes": "R16-7 and R16-8"
+    },
+    {
+      "week": 41,
+      "day": "Saturday",
+      "stage": "Quarterfinal Preview",
+      "matches": 0,
+      "format": "none",
+      "notes": "Rest, media, content"
+    },
+    {
+      "week": 41,
+      "day": "Sunday",
+      "stage": "Fan Event and Rest Day",
+      "matches": 0,
+      "format": "none",
+      "notes": "Rest, media, content"
+    },
+    {
+      "week": 42,
+      "day": "Monday",
+      "stage": "Quarterfinal Preparation",
+      "matches": 0,
+      "format": "none",
+      "notes": "Media and recovery"
+    },
+    {
+      "week": 42,
+      "day": "Tuesday",
+      "stage": "Quarterfinal Content Day",
+      "matches": 0,
+      "format": "none",
+      "notes": "Content and interviews"
+    },
+    {
+      "week": 42,
+      "day": "Wednesday",
+      "stage": "Quarterfinal Preview",
+      "matches": 0,
+      "format": "none",
+      "notes": "Broadcast preview"
+    },
+    {
+      "week": 42,
+      "day": "Thursday",
+      "stage": "Quarterfinal 1",
+      "matches": 1,
+      "format": "Bo5",
+      "notes": "Single prime match"
+    },
+    {
+      "week": 42,
+      "day": "Friday",
+      "stage": "Quarterfinal 2",
+      "matches": 1,
+      "format": "Bo5",
+      "notes": "Single prime match"
+    },
+    {
+      "week": 42,
+      "day": "Saturday",
+      "stage": "Quarterfinal 3",
+      "matches": 1,
+      "format": "Bo5",
+      "notes": "Single prime match"
+    },
+    {
+      "week": 42,
+      "day": "Sunday",
+      "stage": "Quarterfinal 4",
+      "matches": 1,
+      "format": "Bo5",
+      "notes": "Single prime match"
+    },
+    {
+      "week": 43,
+      "day": "Monday",
+      "stage": "Semifinal Media Day",
+      "matches": 0,
+      "format": "none",
+      "notes": "Media and preparation"
+    },
+    {
+      "week": 43,
+      "day": "Tuesday",
+      "stage": "Semifinal 1",
+      "matches": 1,
+      "format": "Bo5",
+      "notes": "Single prime match"
+    },
+    {
+      "week": 43,
+      "day": "Wednesday",
+      "stage": "Rest and Analysis Day",
+      "matches": 0,
+      "format": "none",
+      "notes": "Recovery and content"
+    },
+    {
+      "week": 43,
+      "day": "Thursday",
+      "stage": "Semifinal 2",
+      "matches": 1,
+      "format": "Bo5",
+      "notes": "Single prime match"
+    },
+    {
+      "week": 43,
+      "day": "Friday",
+      "stage": "Grand Final Media Day",
+      "matches": 0,
+      "format": "none",
+      "notes": "Press, interviews, features"
+    },
+    {
+      "week": 43,
+      "day": "Saturday",
+      "stage": "Grand Final Preview and Fan Fest",
+      "matches": 0,
+      "format": "none",
+      "notes": "Fan event and rehearsal"
+    },
+    {
+      "week": 43,
+      "day": "Sunday",
+      "stage": "Grand Final",
+      "matches": 1,
+      "format": "Bo5",
+      "notes": "WT champion crowned"
+    }
+  ],
+  "match_count_summary": {
+    "group_stage": {
+      "matches": 96,
+      "format": "Bo1"
+    },
+    "round_of_16": {
+      "matches": 8,
+      "format": "Bo5"
+    },
+    "quarterfinals": {
+      "matches": 4,
+      "format": "Bo5"
+    },
+    "semifinals": {
+      "matches": 2,
+      "format": "Bo5"
+    },
+    "grand_final": {
+      "matches": 1,
+      "format": "Bo5"
+    },
+    "total": {
+      "bo1_matches": 96,
+      "bo5_matches": 15
+    }
+  },
+  "weekly_summary": [
+    {
+      "week": 39,
+      "main_content": "Group Stage first half plus Group A Final Day",
+      "matches": "54 Bo1"
+    },
+    {
+      "week": 40,
+      "main_content": "Group B to Group H Final Days",
+      "matches": "42 Bo1"
+    },
+    {
+      "week": 41,
+      "main_content": "Round of 16",
+      "matches": "8 Bo5"
+    },
+    {
+      "week": 42,
+      "main_content": "Quarterfinals",
+      "matches": "4 Bo5"
+    },
+    {
+      "week": 43,
+      "main_content": "Semifinals and Grand Final",
+      "matches": "3 Bo5"
+    }
+  ]
+}

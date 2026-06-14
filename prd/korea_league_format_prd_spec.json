@@ -1,0 +1,1300 @@
+{
+  "document_title": "한국 리그 진행 방식 PRD",
+  "document_version": "1.0",
+  "language": "ko-KR",
+  "league": {
+    "name": "Korea League",
+    "teams": 12,
+    "venue_model": "single_venue",
+    "annual_structure": "spring_summer_two_splits",
+    "champions_per_year": 2,
+    "regular_match_format": "Bo3",
+    "playoff_match_format": "Bo5"
+  },
+  "calendar_windows": {
+    "spring_regular": [
+      "Week 1-6",
+      "Week 9-13"
+    ],
+    "spring_playoffs": [
+      "Week 14-15"
+    ],
+    "summer_regular": [
+      "Week 21-24",
+      "Week 27-30",
+      "Week 33-35"
+    ],
+    "summer_playoffs": [
+      "Week 36-37"
+    ],
+    "intermatch_breaks": [
+      "Week 7-8",
+      "Week 25-26",
+      "Week 31-32"
+    ],
+    "mm_block": [
+      "Week 16-20"
+    ]
+  },
+  "regional_match_day_constraints": {
+    "single_venue": true,
+    "weekday_regular_bo3_cap_per_day": 2,
+    "weekend_regular_bo3_cap_per_day": 3,
+    "playoff_matches_per_day": 1,
+    "cup_weeks": [
+      5,
+      9,
+      11,
+      22,
+      24,
+      28,
+      30
+    ],
+    "cup_week_blocked_days": [
+      "Monday",
+      "Tuesday",
+      "Wednesday"
+    ]
+  },
+  "regular_season_format_per_split": {
+    "teams": 12,
+    "format": "double_round_robin",
+    "matches_per_team": 22,
+    "total_matches": 132,
+    "recommended_duration_weeks": 11,
+    "notes": [
+      "The official fixture generator should assign 132 Bo3 fixtures into the listed daily match slots.",
+      "Because weekly match totals vary, a few teams may play 1 or 3 matches in selected weeks, but each team must finish with exactly 22 matches per split.",
+      "No regular-season day may exceed 2 Bo3 matches on weekdays or 3 Bo3 matches on weekends."
+    ]
+  },
+  "regular_season_schedules": {
+    "spring": {
+      "total_matches": 132,
+      "weeks": [
+        {
+          "week": 1,
+          "week_type": "normal_13",
+          "total_regular_matches": 13,
+          "days": [
+            {
+              "day_en": "Tuesday",
+              "day_ko": "화",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Wednesday",
+              "day_ko": "수",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Thursday",
+              "day_ko": "목",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Friday",
+              "day_ko": "금",
+              "regular_matches": 1,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Saturday",
+              "day_ko": "토",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            },
+            {
+              "day_en": "Sunday",
+              "day_ko": "일",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            }
+          ],
+          "note": "스프링 정규시즌 개막 주간"
+        },
+        {
+          "week": 2,
+          "week_type": "normal_13",
+          "total_regular_matches": 13,
+          "days": [
+            {
+              "day_en": "Tuesday",
+              "day_ko": "화",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Wednesday",
+              "day_ko": "수",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Thursday",
+              "day_ko": "목",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Friday",
+              "day_ko": "금",
+              "regular_matches": 1,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Saturday",
+              "day_ko": "토",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            },
+            {
+              "day_en": "Sunday",
+              "day_ko": "일",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            }
+          ],
+          "note": "일반 13경기 주간"
+        },
+        {
+          "week": 3,
+          "week_type": "normal_13",
+          "total_regular_matches": 13,
+          "days": [
+            {
+              "day_en": "Tuesday",
+              "day_ko": "화",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Wednesday",
+              "day_ko": "수",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Thursday",
+              "day_ko": "목",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Friday",
+              "day_ko": "금",
+              "regular_matches": 1,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Saturday",
+              "day_ko": "토",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            },
+            {
+              "day_en": "Sunday",
+              "day_ko": "일",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            }
+          ],
+          "note": "일반 13경기 주간"
+        },
+        {
+          "week": 4,
+          "week_type": "normal_13",
+          "total_regular_matches": 13,
+          "days": [
+            {
+              "day_en": "Tuesday",
+              "day_ko": "화",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Wednesday",
+              "day_ko": "수",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Thursday",
+              "day_ko": "목",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Friday",
+              "day_ko": "금",
+              "regular_matches": 1,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Saturday",
+              "day_ko": "토",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            },
+            {
+              "day_en": "Sunday",
+              "day_ko": "일",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            }
+          ],
+          "note": "일반 13경기 주간"
+        },
+        {
+          "week": 5,
+          "week_type": "cup_10",
+          "total_regular_matches": 10,
+          "days": [
+            {
+              "day_en": "Thursday",
+              "day_ko": "목",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Friday",
+              "day_ko": "금",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Saturday",
+              "day_ko": "토",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            },
+            {
+              "day_en": "Sunday",
+              "day_ko": "일",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            }
+          ],
+          "note": "컵 대회 주간. 월/화/수 지역 리그 불가"
+        },
+        {
+          "week": 6,
+          "week_type": "normal_13",
+          "total_regular_matches": 13,
+          "days": [
+            {
+              "day_en": "Tuesday",
+              "day_ko": "화",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Wednesday",
+              "day_ko": "수",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Thursday",
+              "day_ko": "목",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Friday",
+              "day_ko": "금",
+              "regular_matches": 1,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Saturday",
+              "day_ko": "토",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            },
+            {
+              "day_en": "Sunday",
+              "day_ko": "일",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            }
+          ],
+          "note": "IM 전 마지막 주간"
+        },
+        {
+          "week": 9,
+          "week_type": "cup_10",
+          "total_regular_matches": 10,
+          "days": [
+            {
+              "day_en": "Thursday",
+              "day_ko": "목",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Friday",
+              "day_ko": "금",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Saturday",
+              "day_ko": "토",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            },
+            {
+              "day_en": "Sunday",
+              "day_ko": "일",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            }
+          ],
+          "note": "IM 이후 재개. 컵 대회 주간"
+        },
+        {
+          "week": 10,
+          "week_type": "normal_13",
+          "total_regular_matches": 13,
+          "days": [
+            {
+              "day_en": "Tuesday",
+              "day_ko": "화",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Wednesday",
+              "day_ko": "수",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Thursday",
+              "day_ko": "목",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Friday",
+              "day_ko": "금",
+              "regular_matches": 1,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Saturday",
+              "day_ko": "토",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            },
+            {
+              "day_en": "Sunday",
+              "day_ko": "일",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            }
+          ],
+          "note": "일반 13경기 주간"
+        },
+        {
+          "week": 11,
+          "week_type": "cup_10",
+          "total_regular_matches": 10,
+          "days": [
+            {
+              "day_en": "Thursday",
+              "day_ko": "목",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Friday",
+              "day_ko": "금",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Saturday",
+              "day_ko": "토",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            },
+            {
+              "day_en": "Sunday",
+              "day_ko": "일",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            }
+          ],
+          "note": "컵 대회 주간. 월/화/수 지역 리그 불가"
+        },
+        {
+          "week": 12,
+          "week_type": "normal_12",
+          "total_regular_matches": 12,
+          "days": [
+            {
+              "day_en": "Wednesday",
+              "day_ko": "수",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Thursday",
+              "day_ko": "목",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Friday",
+              "day_ko": "금",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Saturday",
+              "day_ko": "토",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            },
+            {
+              "day_en": "Sunday",
+              "day_ko": "일",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            }
+          ],
+          "note": "일반 12경기 주간"
+        },
+        {
+          "week": 13,
+          "week_type": "final_12",
+          "total_regular_matches": 12,
+          "days": [
+            {
+              "day_en": "Monday",
+              "day_ko": "월",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Tuesday",
+              "day_ko": "화",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Wednesday",
+              "day_ko": "수",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Thursday",
+              "day_ko": "목",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Friday",
+              "day_ko": "금",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Saturday",
+              "day_ko": "토",
+              "regular_matches": 2,
+              "is_weekend": true,
+              "cap": 3
+            },
+            {
+              "day_en": "Sunday",
+              "day_ko": "일",
+              "regular_matches": 0,
+              "is_weekend": true,
+              "cap": 3
+            }
+          ],
+          "note": "정규시즌 최종 주간. 일요일은 타이브레이커 예비일"
+        }
+      ]
+    },
+    "summer": {
+      "total_matches": 132,
+      "weeks": [
+        {
+          "week": 21,
+          "week_type": "normal_14",
+          "total_regular_matches": 14,
+          "days": [
+            {
+              "day_en": "Tuesday",
+              "day_ko": "화",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Wednesday",
+              "day_ko": "수",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Thursday",
+              "day_ko": "목",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Friday",
+              "day_ko": "금",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Saturday",
+              "day_ko": "토",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            },
+            {
+              "day_en": "Sunday",
+              "day_ko": "일",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            }
+          ],
+          "note": "서머 정규시즌 개막. 14경기 주간"
+        },
+        {
+          "week": 22,
+          "week_type": "cup_10",
+          "total_regular_matches": 10,
+          "days": [
+            {
+              "day_en": "Thursday",
+              "day_ko": "목",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Friday",
+              "day_ko": "금",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Saturday",
+              "day_ko": "토",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            },
+            {
+              "day_en": "Sunday",
+              "day_ko": "일",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            }
+          ],
+          "note": "컵 대회 주간. 월/화/수 지역 리그 불가"
+        },
+        {
+          "week": 23,
+          "week_type": "normal_13",
+          "total_regular_matches": 13,
+          "days": [
+            {
+              "day_en": "Tuesday",
+              "day_ko": "화",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Wednesday",
+              "day_ko": "수",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Thursday",
+              "day_ko": "목",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Friday",
+              "day_ko": "금",
+              "regular_matches": 1,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Saturday",
+              "day_ko": "토",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            },
+            {
+              "day_en": "Sunday",
+              "day_ko": "일",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            }
+          ],
+          "note": "일반 13경기 주간"
+        },
+        {
+          "week": 24,
+          "week_type": "cup_10",
+          "total_regular_matches": 10,
+          "days": [
+            {
+              "day_en": "Thursday",
+              "day_ko": "목",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Friday",
+              "day_ko": "금",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Saturday",
+              "day_ko": "토",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            },
+            {
+              "day_en": "Sunday",
+              "day_ko": "일",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            }
+          ],
+          "note": "컵 대회 주간. 월/화/수 지역 리그 불가"
+        },
+        {
+          "week": 27,
+          "week_type": "normal_14",
+          "total_regular_matches": 14,
+          "days": [
+            {
+              "day_en": "Tuesday",
+              "day_ko": "화",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Wednesday",
+              "day_ko": "수",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Thursday",
+              "day_ko": "목",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Friday",
+              "day_ko": "금",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Saturday",
+              "day_ko": "토",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            },
+            {
+              "day_en": "Sunday",
+              "day_ko": "일",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            }
+          ],
+          "note": "IM 이후 재개. 14경기 주간"
+        },
+        {
+          "week": 28,
+          "week_type": "cup_10",
+          "total_regular_matches": 10,
+          "days": [
+            {
+              "day_en": "Thursday",
+              "day_ko": "목",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Friday",
+              "day_ko": "금",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Saturday",
+              "day_ko": "토",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            },
+            {
+              "day_en": "Sunday",
+              "day_ko": "일",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            }
+          ],
+          "note": "컵 대회 주간. 월/화/수 지역 리그 불가"
+        },
+        {
+          "week": 29,
+          "week_type": "normal_13",
+          "total_regular_matches": 13,
+          "days": [
+            {
+              "day_en": "Tuesday",
+              "day_ko": "화",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Wednesday",
+              "day_ko": "수",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Thursday",
+              "day_ko": "목",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Friday",
+              "day_ko": "금",
+              "regular_matches": 1,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Saturday",
+              "day_ko": "토",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            },
+            {
+              "day_en": "Sunday",
+              "day_ko": "일",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            }
+          ],
+          "note": "일반 13경기 주간"
+        },
+        {
+          "week": 30,
+          "week_type": "cup_10",
+          "total_regular_matches": 10,
+          "days": [
+            {
+              "day_en": "Thursday",
+              "day_ko": "목",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Friday",
+              "day_ko": "금",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Saturday",
+              "day_ko": "토",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            },
+            {
+              "day_en": "Sunday",
+              "day_ko": "일",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            }
+          ],
+          "note": "컵 대회 주간. 월/화/수 지역 리그 불가"
+        },
+        {
+          "week": 33,
+          "week_type": "normal_13",
+          "total_regular_matches": 13,
+          "days": [
+            {
+              "day_en": "Tuesday",
+              "day_ko": "화",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Wednesday",
+              "day_ko": "수",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Thursday",
+              "day_ko": "목",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Friday",
+              "day_ko": "금",
+              "regular_matches": 1,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Saturday",
+              "day_ko": "토",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            },
+            {
+              "day_en": "Sunday",
+              "day_ko": "일",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            }
+          ],
+          "note": "IM 이후 재개. 일반 13경기 주간"
+        },
+        {
+          "week": 34,
+          "week_type": "normal_13",
+          "total_regular_matches": 13,
+          "days": [
+            {
+              "day_en": "Tuesday",
+              "day_ko": "화",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Wednesday",
+              "day_ko": "수",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Thursday",
+              "day_ko": "목",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Friday",
+              "day_ko": "금",
+              "regular_matches": 1,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Saturday",
+              "day_ko": "토",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            },
+            {
+              "day_en": "Sunday",
+              "day_ko": "일",
+              "regular_matches": 3,
+              "is_weekend": true,
+              "cap": 3
+            }
+          ],
+          "note": "일반 13경기 주간"
+        },
+        {
+          "week": 35,
+          "week_type": "final_12",
+          "total_regular_matches": 12,
+          "days": [
+            {
+              "day_en": "Monday",
+              "day_ko": "월",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Tuesday",
+              "day_ko": "화",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Wednesday",
+              "day_ko": "수",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Thursday",
+              "day_ko": "목",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Friday",
+              "day_ko": "금",
+              "regular_matches": 2,
+              "is_weekend": false,
+              "cap": 2
+            },
+            {
+              "day_en": "Saturday",
+              "day_ko": "토",
+              "regular_matches": 2,
+              "is_weekend": true,
+              "cap": 3
+            },
+            {
+              "day_en": "Sunday",
+              "day_ko": "일",
+              "regular_matches": 0,
+              "is_weekend": true,
+              "cap": 3
+            }
+          ],
+          "note": "정규시즌 최종 주간. 일요일은 타이브레이커 예비일"
+        }
+      ]
+    }
+  },
+  "playoff_format_per_split": {
+    "qualifying_teams": 6,
+    "total_matches": 8,
+    "match_format": "Bo5",
+    "matches_per_day": 1,
+    "bracket_reset": false,
+    "bracket": [
+      {
+        "match_id": "M1",
+        "round": 1,
+        "name": "Round 1 A",
+        "matchup": "3rd seed vs 6th seed",
+        "format": "Bo5"
+      },
+      {
+        "match_id": "M2",
+        "round": 1,
+        "name": "Round 1 B",
+        "matchup": "4th seed vs 5th seed",
+        "format": "Bo5"
+      },
+      {
+        "match_id": "M3",
+        "round": 2,
+        "name": "Round 2 A",
+        "matchup": "1st seed vs M1 winner",
+        "format": "Bo5"
+      },
+      {
+        "match_id": "M4",
+        "round": 2,
+        "name": "Round 2 B",
+        "matchup": "2nd seed vs M2 winner",
+        "format": "Bo5"
+      },
+      {
+        "match_id": "M5",
+        "round": 3,
+        "name": "Upper Final",
+        "matchup": "M3 winner vs M4 winner",
+        "format": "Bo5"
+      },
+      {
+        "match_id": "M6",
+        "round": 3,
+        "name": "Lower Match",
+        "matchup": "M3 loser vs M4 loser",
+        "format": "Bo5"
+      },
+      {
+        "match_id": "M7",
+        "round": 4,
+        "name": "Final Qualifier",
+        "matchup": "M5 loser vs M6 winner",
+        "format": "Bo5",
+        "required_day": "Saturday"
+      },
+      {
+        "match_id": "M8",
+        "round": 5,
+        "name": "Grand Final",
+        "matchup": "M5 winner vs M7 winner",
+        "format": "Bo5",
+        "required_day": "Sunday"
+      }
+    ],
+    "schedule": {
+      "spring": [
+        {
+          "week": 14,
+          "day": "Tue",
+          "match_id": "M1",
+          "stage": "Round 1",
+          "matchup": "3rd seed vs 6th seed",
+          "format": "Bo5"
+        },
+        {
+          "week": 14,
+          "day": "Wed",
+          "match_id": "M2",
+          "stage": "Round 1",
+          "matchup": "4th seed vs 5th seed",
+          "format": "Bo5"
+        },
+        {
+          "week": 14,
+          "day": "Sat",
+          "match_id": "M3",
+          "stage": "Round 2",
+          "matchup": "1st seed vs M1 winner",
+          "format": "Bo5"
+        },
+        {
+          "week": 14,
+          "day": "Sun",
+          "match_id": "M4",
+          "stage": "Round 2",
+          "matchup": "2nd seed vs M2 winner",
+          "format": "Bo5"
+        },
+        {
+          "week": 15,
+          "day": "Tue",
+          "match_id": "M5",
+          "stage": "Round 3 Upper",
+          "matchup": "M3 winner vs M4 winner",
+          "format": "Bo5"
+        },
+        {
+          "week": 15,
+          "day": "Wed",
+          "match_id": "M6",
+          "stage": "Round 3 Lower",
+          "matchup": "M3 loser vs M4 loser",
+          "format": "Bo5"
+        },
+        {
+          "week": 15,
+          "day": "Sat",
+          "match_id": "M7",
+          "stage": "Round 4 Final Qualifier",
+          "matchup": "M5 loser vs M6 winner",
+          "format": "Bo5"
+        },
+        {
+          "week": 15,
+          "day": "Sun",
+          "match_id": "M8",
+          "stage": "Round 5 Grand Final",
+          "matchup": "M5 winner vs M7 winner",
+          "format": "Bo5"
+        }
+      ],
+      "summer": [
+        {
+          "week": 36,
+          "day": "Tue",
+          "match_id": "M1",
+          "stage": "Round 1",
+          "matchup": "3rd seed vs 6th seed",
+          "format": "Bo5"
+        },
+        {
+          "week": 36,
+          "day": "Wed",
+          "match_id": "M2",
+          "stage": "Round 1",
+          "matchup": "4th seed vs 5th seed",
+          "format": "Bo5"
+        },
+        {
+          "week": 36,
+          "day": "Sat",
+          "match_id": "M3",
+          "stage": "Round 2",
+          "matchup": "1st seed vs M1 winner",
+          "format": "Bo5"
+        },
+        {
+          "week": 36,
+          "day": "Sun",
+          "match_id": "M4",
+          "stage": "Round 2",
+          "matchup": "2nd seed vs M2 winner",
+          "format": "Bo5"
+        },
+        {
+          "week": 37,
+          "day": "Tue",
+          "match_id": "M5",
+          "stage": "Round 3 Upper",
+          "matchup": "M3 winner vs M4 winner",
+          "format": "Bo5"
+        },
+        {
+          "week": 37,
+          "day": "Wed",
+          "match_id": "M6",
+          "stage": "Round 3 Lower",
+          "matchup": "M3 loser vs M4 loser",
+          "format": "Bo5"
+        },
+        {
+          "week": 37,
+          "day": "Sat",
+          "match_id": "M7",
+          "stage": "Round 4 Final Qualifier",
+          "matchup": "M5 loser vs M6 winner",
+          "format": "Bo5"
+        },
+        {
+          "week": 37,
+          "day": "Sun",
+          "match_id": "M8",
+          "stage": "Round 5 Grand Final",
+          "matchup": "M5 winner vs M7 winner",
+          "format": "Bo5"
+        }
+      ]
+    }
+  },
+  "counts_summary": {
+    "spring_regular_matches": 132,
+    "spring_playoff_matches": 8,
+    "summer_regular_matches": 132,
+    "summer_playoff_matches": 8,
+    "annual_total_matches": 280
+  }
+}

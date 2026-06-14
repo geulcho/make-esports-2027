@@ -1,0 +1,592 @@
+{
+  "document": {
+    "title": "Intermatch & WE Qualifiers Schedule PRD",
+    "version": "v1.0",
+    "language": "ko",
+    "scope": [
+      "W7-W8",
+      "W25-W26",
+      "W31-W32"
+    ],
+    "pending": [
+      "WE main event format for W45-W48"
+    ]
+  },
+  "we_qualification_summary": {
+    "direct_slots": {
+      "Europe": 8,
+      "AsiaPacific": 6,
+      "Americas": 4,
+      "MiddleEastAfrica": 1
+    },
+    "iq_wildcard_slots": 5,
+    "total_we_teams": 24
+  },
+  "common_rules": {
+    "regional_draw_ranking_reference": "Week 6 national team ranking",
+    "iq_draw_ranking_reference": "Week 30 national team ranking",
+    "iq_draw_restriction": "No same-region matchup in IQ",
+    "multiple_venues_allowed": true,
+    "friendlies_affect_qualification": false
+  },
+  "regional_qualifiers": {
+    "Europe": {
+      "participants": 32,
+      "groups": 4,
+      "teams_per_group": 8,
+      "seeding": "8 pots of 4 teams based on Week 6 ranking",
+      "group_stage": {
+        "format": "Bo3 single round robin",
+        "matches_per_team": 7,
+        "matches_per_matchday": 16,
+        "matchdays_total": 7,
+        "w7_w8_matchdays": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "w25_w26_matchdays": [
+          6,
+          7
+        ]
+      },
+      "advancement": {
+        "we_direct": "Top 2 from each group, 8 teams total",
+        "regional_playoff": "3rd and 4th from each group, 8 teams total",
+        "iq": "4 European Playoff winners"
+      },
+      "regional_playoff": {
+        "format": "Bo5 single match",
+        "draw_rule": "Group 3rd vs different group 4th, random draw",
+        "matches": 4
+      }
+    },
+    "AsiaPacific": {
+      "participants": 24,
+      "groups": 3,
+      "teams_per_group": 8,
+      "seeding": "8 pots of 3 teams based on Week 6 ranking",
+      "group_stage": {
+        "format": "Bo3 single round robin",
+        "matches_per_team": 7,
+        "matches_per_matchday": 12,
+        "matchdays_total": 7,
+        "w7_w8_matchdays": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "w25_w26_matchdays": [
+          6,
+          7
+        ]
+      },
+      "advancement": {
+        "we_direct": "Top 2 from each group, 6 teams total",
+        "regional_playoff": "3rd and 4th from each group, 6 teams total",
+        "iq": "3 Asia-Pacific Playoff winners"
+      },
+      "regional_playoff": {
+        "format": "Bo5 single match",
+        "draw_rule": "Group 3rd vs different group 4th, random draw",
+        "matches": 3
+      }
+    },
+    "Americas": {
+      "participants": 17,
+      "subregions": {
+        "NorthAmerica": {
+          "teams": 8,
+          "matches_per_team": 7
+        },
+        "SouthAmerica": {
+          "teams": 9,
+          "matches_per_team": 8
+        }
+      },
+      "group_stage": {
+        "format": "Bo3 single round robin",
+        "standard_matchday_matches": {
+          "NorthAmerica": 4,
+          "SouthAmerica": 4
+        },
+        "w7_w8_matchdays": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "w25_w26_matchdays": {
+          "NorthAmerica": [
+            6,
+            7
+          ],
+          "SouthAmerica": [
+            6,
+            7,
+            8
+          ]
+        }
+      },
+      "advancement": {
+        "we_direct": "Top 2 from North America + Top 2 from South America, 4 teams total",
+        "regional_playoff": "3rd and 4th from both subregions, 4 teams total",
+        "iq": "2 American Playoff winners"
+      },
+      "regional_playoff": {
+        "format": "Bo5 single match",
+        "matches": [
+          {
+            "match": "American Playoff 1",
+            "teams": "North America 3rd vs South America 4th"
+          },
+          {
+            "match": "American Playoff 2",
+            "teams": "South America 3rd vs North America 4th"
+          }
+        ]
+      }
+    },
+    "MiddleEastAfrica": {
+      "participants": 24,
+      "structure": [
+        "1st Qualifier",
+        "2nd Qualifier",
+        "Final Qualifier"
+      ],
+      "default_match_format": "Bo5",
+      "exception": "Final Qualifier upper bracket round 1 is Bo3",
+      "advancement": {
+        "we_direct": "Final Qualifier grand final winner",
+        "iq": "Final Qualifier grand final loser"
+      },
+      "1st_qualifier": {
+        "participants": "Bottom 16 by regional ranking",
+        "format": "Bo5 single match",
+        "matches": 8,
+        "winners_advance": 8
+      },
+      "2nd_qualifier": {
+        "participants": "Top 8 by regional ranking + 8 first qualifier winners",
+        "format": "Bo5 single match",
+        "matches": 8,
+        "winners_advance": 8
+      },
+      "final_qualifier": {
+        "participants": 8,
+        "format": "Double elimination",
+        "upper_bracket_round_1": "Bo3",
+        "all_other_matches": "Bo5",
+        "bracket_reset": false,
+        "matches_total": 14
+      }
+    }
+  },
+  "schedules": {
+    "w7_w8": [
+      {
+        "week": "W7",
+        "day": "Mon",
+        "Europe": "MD1-A, 8 Bo3",
+        "AsiaPacific": "MD1-A, 6 Bo3",
+        "Americas": "MD1-A, North America 4 Bo3",
+        "MiddleEastAfrica": null
+      },
+      {
+        "week": "W7",
+        "day": "Tue",
+        "Europe": "MD1-B, 8 Bo3",
+        "AsiaPacific": "MD1-B, 6 Bo3",
+        "Americas": "MD1-B, South America 4 Bo3",
+        "MiddleEastAfrica": null
+      },
+      {
+        "week": "W7",
+        "day": "Wed",
+        "Europe": "MD2-A, 8 Bo3",
+        "AsiaPacific": "MD2-A, 6 Bo3",
+        "Americas": "MD2-A, North America 4 Bo3",
+        "MiddleEastAfrica": null
+      },
+      {
+        "week": "W7",
+        "day": "Thu",
+        "Europe": "MD2-B, 8 Bo3",
+        "AsiaPacific": "MD2-B, 6 Bo3",
+        "Americas": "MD2-B, South America 4 Bo3",
+        "MiddleEastAfrica": null
+      },
+      {
+        "week": "W7",
+        "day": "Fri",
+        "Europe": "MD3-A, 8 Bo3",
+        "AsiaPacific": "MD3-A, 6 Bo3",
+        "Americas": "MD3-A, North America 4 Bo3",
+        "MiddleEastAfrica": null
+      },
+      {
+        "week": "W7",
+        "day": "Sat",
+        "Europe": null,
+        "AsiaPacific": null,
+        "Americas": null,
+        "MiddleEastAfrica": "1st Qualifier first half, 4 Bo5"
+      },
+      {
+        "week": "W7",
+        "day": "Sun",
+        "Europe": null,
+        "AsiaPacific": null,
+        "Americas": null,
+        "MiddleEastAfrica": "1st Qualifier second half, 4 Bo5"
+      },
+      {
+        "week": "W8",
+        "day": "Mon",
+        "Europe": "MD3-B, 8 Bo3",
+        "AsiaPacific": "MD3-B, 6 Bo3",
+        "Americas": "MD3-B, South America 4 Bo3",
+        "MiddleEastAfrica": null
+      },
+      {
+        "week": "W8",
+        "day": "Tue",
+        "Europe": "MD4-A, 8 Bo3",
+        "AsiaPacific": "MD4-A, 6 Bo3",
+        "Americas": "MD4-A, North America 4 Bo3",
+        "MiddleEastAfrica": null
+      },
+      {
+        "week": "W8",
+        "day": "Wed",
+        "Europe": "MD4-B, 8 Bo3",
+        "AsiaPacific": "MD4-B, 6 Bo3",
+        "Americas": "MD4-B, South America 4 Bo3",
+        "MiddleEastAfrica": null
+      },
+      {
+        "week": "W8",
+        "day": "Thu",
+        "Europe": "MD5-A, 8 Bo3",
+        "AsiaPacific": "MD5-A, 6 Bo3",
+        "Americas": "MD5-A, North America 4 Bo3",
+        "MiddleEastAfrica": null
+      },
+      {
+        "week": "W8",
+        "day": "Fri",
+        "Europe": "MD5-B, 8 Bo3",
+        "AsiaPacific": "MD5-B, 6 Bo3",
+        "Americas": "MD5-B, South America 4 Bo3",
+        "MiddleEastAfrica": null
+      },
+      {
+        "week": "W8",
+        "day": "Sat",
+        "Europe": null,
+        "AsiaPacific": null,
+        "Americas": null,
+        "MiddleEastAfrica": "2nd Qualifier first half, 4 Bo5"
+      },
+      {
+        "week": "W8",
+        "day": "Sun",
+        "Europe": null,
+        "AsiaPacific": null,
+        "Americas": null,
+        "MiddleEastAfrica": "2nd Qualifier second half, 4 Bo5"
+      }
+    ],
+    "w25_w26": [
+      {
+        "week": "W25",
+        "day": "Mon",
+        "Europe": "MD6-A, 8 Bo3",
+        "AsiaPacific": "MD6-A, 6 Bo3",
+        "Americas": "MD6-A, North America 4 Bo3",
+        "MiddleEastAfrica": "Final Qualifier UB R1, 4 Bo3"
+      },
+      {
+        "week": "W25",
+        "day": "Tue",
+        "Europe": "MD6-B, 8 Bo3",
+        "AsiaPacific": "MD6-B, 6 Bo3",
+        "Americas": "MD6-B, South America 4 Bo3",
+        "MiddleEastAfrica": null
+      },
+      {
+        "week": "W25",
+        "day": "Wed",
+        "Europe": "MD7-A, 8 Bo3",
+        "AsiaPacific": "MD7-A, 6 Bo3",
+        "Americas": "MD7-A, North America 4 Bo3",
+        "MiddleEastAfrica": "Final Qualifier LB R1, 2 Bo5"
+      },
+      {
+        "week": "W25",
+        "day": "Thu",
+        "Europe": "MD7-B, 8 Bo3",
+        "AsiaPacific": "MD7-B, 6 Bo3",
+        "Americas": "MD7-B, South America 4 Bo3",
+        "MiddleEastAfrica": null
+      },
+      {
+        "week": "W25",
+        "day": "Fri",
+        "Europe": "Standings calculation",
+        "AsiaPacific": "Standings calculation",
+        "Americas": "South America MD8, 4 Bo3",
+        "MiddleEastAfrica": "Final Qualifier UB SF, 2 Bo5"
+      },
+      {
+        "week": "W25",
+        "day": "Sat",
+        "Europe": "Reserve/tiebreaker day",
+        "AsiaPacific": "Reserve/tiebreaker day",
+        "Americas": "Reserve/tiebreaker day",
+        "MiddleEastAfrica": null
+      },
+      {
+        "week": "W25",
+        "day": "Sun",
+        "Europe": "Regional playoff draw preparation",
+        "AsiaPacific": "Regional playoff draw preparation",
+        "Americas": "Regional playoff draw preparation",
+        "MiddleEastAfrica": "Final Qualifier LB R2, 2 Bo5"
+      },
+      {
+        "week": "W26",
+        "day": "Mon",
+        "Europe": "Regional playoff draw",
+        "AsiaPacific": "Regional playoff draw",
+        "Americas": "American playoff pairing confirmation",
+        "MiddleEastAfrica": null
+      },
+      {
+        "week": "W26",
+        "day": "Tue",
+        "Europe": null,
+        "AsiaPacific": "Asia-Pacific Playoff, 3 Bo5",
+        "Americas": null,
+        "MiddleEastAfrica": "Final Qualifier LB R3, 1 Bo5"
+      },
+      {
+        "week": "W26",
+        "day": "Wed",
+        "Europe": null,
+        "AsiaPacific": null,
+        "Americas": "American Playoff, 2 Bo5",
+        "MiddleEastAfrica": null
+      },
+      {
+        "week": "W26",
+        "day": "Thu",
+        "Europe": "European Playoff Matches 1-2, 2 Bo5",
+        "AsiaPacific": null,
+        "Americas": null,
+        "MiddleEastAfrica": "Final Qualifier UB Final, 1 Bo5"
+      },
+      {
+        "week": "W26",
+        "day": "Fri",
+        "Europe": "European Playoff Matches 3-4, 2 Bo5",
+        "AsiaPacific": null,
+        "Americas": null,
+        "MiddleEastAfrica": null
+      },
+      {
+        "week": "W26",
+        "day": "Sat",
+        "Europe": "IQ teams confirmed/media",
+        "AsiaPacific": "IQ teams confirmed/media",
+        "Americas": "IQ teams confirmed/media",
+        "MiddleEastAfrica": "Final Qualifier LB Final, 1 Bo5"
+      },
+      {
+        "week": "W26",
+        "day": "Sun",
+        "Europe": "IQ roster deadline",
+        "AsiaPacific": "IQ roster deadline",
+        "Americas": "IQ roster deadline",
+        "MiddleEastAfrica": "Final Qualifier Grand Final, 1 Bo5"
+      }
+    ],
+    "w31_w32": [
+      {
+        "week": "W31",
+        "day": "Mon",
+        "IQ": "Draw",
+        "EEC": "QF1-QF2, 2 Bo5",
+        "TPC": "Play-In, 2 Bo5",
+        "Friendlies": "Optional"
+      },
+      {
+        "week": "W31",
+        "day": "Tue",
+        "IQ": "Match 1, 1 Bo5",
+        "EEC": null,
+        "TPC": null,
+        "Friendlies": null
+      },
+      {
+        "week": "W31",
+        "day": "Wed",
+        "IQ": null,
+        "EEC": "QF3-QF4, 2 Bo5",
+        "TPC": null,
+        "Friendlies": "Optional"
+      },
+      {
+        "week": "W31",
+        "day": "Thu",
+        "IQ": "Match 2, 1 Bo5",
+        "EEC": null,
+        "TPC": null,
+        "Friendlies": null
+      },
+      {
+        "week": "W31",
+        "day": "Fri",
+        "IQ": null,
+        "EEC": null,
+        "TPC": "QF1-QF2, 2 Bo5",
+        "Friendlies": "Optional"
+      },
+      {
+        "week": "W31",
+        "day": "Sat",
+        "IQ": "Match 3, 1 Bo5",
+        "EEC": null,
+        "TPC": null,
+        "Friendlies": null
+      },
+      {
+        "week": "W31",
+        "day": "Sun",
+        "IQ": null,
+        "EEC": null,
+        "TPC": "QF3-QF4, 2 Bo5",
+        "Friendlies": "Optional"
+      },
+      {
+        "week": "W32",
+        "day": "Mon",
+        "IQ": "Reserve day",
+        "EEC": "Reserve day",
+        "TPC": "Reserve day",
+        "Friendlies": "Recommended"
+      },
+      {
+        "week": "W32",
+        "day": "Tue",
+        "IQ": "Match 4, 1 Bo5",
+        "EEC": null,
+        "TPC": null,
+        "Friendlies": null
+      },
+      {
+        "week": "W32",
+        "day": "Wed",
+        "IQ": null,
+        "EEC": null,
+        "TPC": "SF1-SF2, 2 Bo5",
+        "Friendlies": "Optional"
+      },
+      {
+        "week": "W32",
+        "day": "Thu",
+        "IQ": "Match 5, 1 Bo5",
+        "EEC": null,
+        "TPC": null,
+        "Friendlies": null
+      },
+      {
+        "week": "W32",
+        "day": "Fri",
+        "IQ": null,
+        "EEC": "SF1-SF2, 2 Bo5",
+        "TPC": null,
+        "Friendlies": "Optional"
+      },
+      {
+        "week": "W32",
+        "day": "Sat",
+        "IQ": null,
+        "EEC": null,
+        "TPC": "Final, 1 Bo5",
+        "Friendlies": null
+      },
+      {
+        "week": "W32",
+        "day": "Sun",
+        "IQ": null,
+        "EEC": "Final, 1 Bo5",
+        "TPC": null,
+        "Friendlies": "WE preparation begins"
+      }
+    ]
+  },
+  "side_events": {
+    "IQ": {
+      "name": "Interregional Qualifier",
+      "week": "W31-W32",
+      "participants": 10,
+      "participant_breakdown": {
+        "Europe": 4,
+        "AsiaPacific": 3,
+        "Americas": 2,
+        "MiddleEastAfrica": 1
+      },
+      "format": "Five Bo5 single qualification matches",
+      "winners_to_we": 5,
+      "same_region_matchup_allowed": false,
+      "seed_reference": "Week 30 national team ranking"
+    },
+    "EEC": {
+      "name": "European Esports Championship",
+      "week": "W31-W32",
+      "participants": "8 WE-qualified European teams",
+      "format": "Bo5 single elimination",
+      "matches_total": 7,
+      "seed_reference": "Week 30 national team ranking",
+      "recommended_bracket": [
+        "1 vs 8",
+        "4 vs 5",
+        "3 vs 6",
+        "2 vs 7"
+      ]
+    },
+    "TPC": {
+      "name": "Trans-Pacific Championship",
+      "week": "W31-W32",
+      "participants": "6 WE-qualified Asia-Pacific teams + 4 WE-qualified Americas teams",
+      "format": "Bottom 4 rating teams play Bo5 play-in, then 8-team Bo5 single elimination",
+      "matches_total": 9,
+      "seed_reference": "Week 30 national team ranking"
+    }
+  },
+  "friendly_match_policy": {
+    "allowed": true,
+    "qualification_impact": false,
+    "recommended_slots": [
+      "W31 Mon",
+      "W31 Wed",
+      "W31 Fri",
+      "W31 Sun",
+      "W32 Mon",
+      "W32 Wed",
+      "W32 Fri"
+    ],
+    "purpose": [
+      "WE roster coordination",
+      "cross-region practice",
+      "broadcast content",
+      "use of off-days"
+    ]
+  }
+}

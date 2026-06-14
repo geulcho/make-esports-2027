@@ -1,0 +1,1175 @@
+{
+  "document": {
+    "title": "Global Esports Season Pipeline PRD",
+    "version": "1.0",
+    "purpose": "Top-level orchestration file for AI agents to understand how regional leagues, regional cups, club international events, intermatches, WE qualifiers, WT, and WE fit into one 52-week season.",
+    "language": "English with league IDs preserved"
+  },
+  "calendar_constants": {
+    "year_length_weeks": 52,
+    "regional_league_windows": [
+      "W1-W6",
+      "W9-W15",
+      "W21-W24",
+      "W27-W30",
+      "W33-W37"
+    ],
+    "intermatch_windows": [
+      "W7-W8",
+      "W25-W26",
+      "W31-W32"
+    ],
+    "cup_blackout_weeks_for_regional_leagues": [
+      5,
+      9,
+      11,
+      22,
+      24,
+      28,
+      30
+    ],
+    "cup_blackout_days": [
+      "Monday",
+      "Tuesday",
+      "Wednesday"
+    ],
+    "mm_window": "W17-W19",
+    "mm_arrival_seed_window": "W16",
+    "mm_return_rest_window": "W20",
+    "wt_window": "W39-W43",
+    "wt_prep_window": "W38",
+    "we_window": "W45-W48",
+    "we_prep_window": "W44",
+    "offseason_window": "W49-W52"
+  },
+  "component_documents": {
+    "regional_leagues": [
+      {
+        "id": "L_NA",
+        "name": "North America 24-team League",
+        "md": "north_america_league_format_prd.md",
+        "json": "north_america_league_format_prd_spec.json"
+      },
+      {
+        "id": "L_CN",
+        "name": "China / Dragon-Phoenix 16-team League",
+        "md": "china_league_format_prd.md",
+        "json": "china_league_format_prd_spec.json",
+        "also_known_as": [
+          "dragon_phoenix_league_format_prd.md",
+          "dragon_phoenix_league_format_prd_spec.json"
+        ]
+      },
+      {
+        "id": "L_KR",
+        "name": "Korea 12-team League",
+        "md": "korea_league_format_prd.md",
+        "json": "korea_league_format_prd_spec.json"
+      },
+      {
+        "id": "L_NEU_L_WEU",
+        "name": "North Europe / West Europe 12-team Bo1 Leagues",
+        "md": "l_neu_l_weu_league_format_prd.md",
+        "json": "l_neu_l_weu_league_format_prd_spec.json"
+      },
+      {
+        "id": "L_SEA",
+        "name": "Southeast Asia 12-team Bo3 League",
+        "md": "l_sea_league_format_prd.md",
+        "json": "l_sea_league_format_prd_spec.json"
+      },
+      {
+        "id": "L_DE_L_EEU_L_SEU_L_RU",
+        "name": "DACH / Eastern Europe / Southern Europe / Russia 10-team Bo1 Leagues",
+        "md": "l_de_l_eeu_l_seu_l_ru_league_format_prd.md",
+        "json": "l_de_l_eeu_l_seu_l_ru_league_format_prd_spec.json"
+      },
+      {
+        "id": "L_BR_L_SA",
+        "name": "Brazil / LATAM 10-team Bo3 Leagues",
+        "md": "l_br_l_sa_league_format_prd.md",
+        "json": "l_br_l_sa_league_format_prd_spec.json"
+      },
+      {
+        "id": "L_TW_L_JP",
+        "name": "Taiwan-Hong Kong / Japan 8-team Bo3 Leagues",
+        "md": "l_tw_l_jp_league_format_prd.md",
+        "json": "l_tw_l_jp_league_format_prd_spec.json"
+      },
+      {
+        "id": "L_TR",
+        "name": "Turkey 8-team Bo1 League",
+        "md": "l_tr_league_format_prd.md",
+        "json": "l_tr_league_format_prd_spec.json"
+      },
+      {
+        "id": "L_MEAF",
+        "name": "Middle East & Africa 8-team Split Tournament League",
+        "md": "l_meaf_league_format_prd.md",
+        "json": "l_meaf_league_format_prd_spec.json"
+      }
+    ],
+    "cross_regional_cups": [
+      {
+        "id": "REGIONAL_CUPS",
+        "name": "COPA / APEX / EGT Regional Cups",
+        "md": "regional_cups_egt_copa_apex_prd.md",
+        "json": "regional_cups_egt_copa_apex_spec.json"
+      }
+    ],
+    "international_and_national_team": [
+      {
+        "id": "MM",
+        "name": "Midseason Mayhem",
+        "md": "midseason_mayhem_prd.md",
+        "json": "midseason_mayhem_prd_spec.json"
+      },
+      {
+        "id": "INTERMATCH_WE_QUALIFIERS",
+        "name": "Intermatch / WE Qualifiers / IQ / EEC / TPC",
+        "md": "intermatch_we_qualifiers_prd.md",
+        "json": "intermatch_we_qualifiers_prd_spec.json"
+      },
+      {
+        "id": "WT",
+        "name": "World Tournaments",
+        "md": "world_tournaments_prd.md",
+        "json": "world_tournaments_prd_spec.json"
+      },
+      {
+        "id": "WE",
+        "name": "World Event",
+        "md": "world_event_prd.md",
+        "json": "world_event_prd_spec.json"
+      }
+    ]
+  },
+  "data_locks": [
+    {
+      "week": 6,
+      "lock": "National-team ranking snapshot",
+      "used_for": "Intermatch / WE qualifier group draws"
+    },
+    {
+      "week": 15,
+      "lock": "Spring champions and MM qualifiers finalized",
+      "used_for": "MM participant list"
+    },
+    {
+      "week": 16,
+      "lock": "Club Elo snapshot",
+      "used_for": "MM seeding into four 4-team seed pools"
+    },
+    {
+      "week": 30,
+      "lock": "National-team ranking snapshot",
+      "used_for": "IQ draw and same-region avoidance"
+    },
+    {
+      "week": 30,
+      "lock": "APEX / COPA / EGT champions finalized",
+      "used_for": "WT special slots"
+    },
+    {
+      "week": 32,
+      "lock": "WE final field finalized",
+      "used_for": "WE participants after IQ"
+    },
+    {
+      "week": 33,
+      "lock": "National-team rating snapshot",
+      "used_for": "WE main-event seeding into four 6-team pots"
+    },
+    {
+      "week": 37,
+      "lock": "Summer champions and final regional standings finalized",
+      "used_for": "WT regional slots and league coefficient entries"
+    },
+    {
+      "week": 38,
+      "lock": "WT field, slot inheritance, and draw validation",
+      "used_for": "WT group draw"
+    }
+  ],
+  "league_timelines": {
+    "L_NA": {
+      "spring": {
+        "regular": [
+          "W1-W6",
+          "W9-W13"
+        ],
+        "mm_qualifier": [
+          "W14-W15"
+        ]
+      },
+      "summer": {
+        "regular": [
+          "W21-W24",
+          "W27-W30",
+          "W33-W34"
+        ],
+        "playoffs": [
+          "W35-W37"
+        ]
+      }
+    },
+    "L_CN": {
+      "spring": {
+        "regular": [
+          "W1-W6",
+          "W9-W13"
+        ],
+        "mm_qualifier": [
+          "W14-W15"
+        ]
+      },
+      "summer": {
+        "regular": [
+          "W21-W24",
+          "W27-W30",
+          "W33-W34"
+        ],
+        "playoffs": [
+          "W35-W37"
+        ]
+      }
+    },
+    "L_KR": {
+      "spring": {
+        "regular": [
+          "W1-W6",
+          "W9-W13"
+        ],
+        "playoffs": [
+          "W14-W15"
+        ]
+      },
+      "summer": {
+        "regular": [
+          "W21-W24",
+          "W27-W30",
+          "W33-W35"
+        ],
+        "playoffs": [
+          "W36-W37"
+        ]
+      }
+    },
+    "L_NEU_L_WEU": {
+      "spring": {
+        "regular": [
+          "W1-W6",
+          "W9-W12"
+        ],
+        "playoffs": [
+          "W13-W15"
+        ]
+      },
+      "summer": {
+        "regular": [
+          "W21-W24",
+          "W27-W30",
+          "W33-W34"
+        ],
+        "playoffs": [
+          "W35-W37"
+        ]
+      }
+    },
+    "L_SEA": {
+      "spring": {
+        "regular": [
+          "W1-W6",
+          "W9-W10"
+        ],
+        "playoffs": [
+          "W11-W13"
+        ]
+      },
+      "summer": {
+        "regular": [
+          "W21-W24",
+          "W27-W30"
+        ],
+        "playoffs": [
+          "W33-W35"
+        ]
+      }
+    },
+    "L_DE_L_EEU_L_SEU_L_RU": {
+      "spring": {
+        "regular": [
+          "W1-W6",
+          "W9-W11"
+        ],
+        "buffer": [
+          "W12"
+        ],
+        "playoffs": [
+          "W13-W15"
+        ]
+      },
+      "summer": {
+        "regular": [
+          "W21-W24",
+          "W27-W30",
+          "W33"
+        ],
+        "buffer": [
+          "W34"
+        ],
+        "playoffs": [
+          "W35-W37"
+        ]
+      }
+    },
+    "L_BR_L_SA": {
+      "spring": {
+        "regular": [
+          "W1-W6",
+          "W9-W11"
+        ],
+        "buffer": [
+          "W12"
+        ],
+        "playoffs": [
+          "W13-W15"
+        ]
+      },
+      "summer": {
+        "regular": [
+          "W21-W24",
+          "W27-W30",
+          "W33"
+        ],
+        "buffer": [
+          "W34"
+        ],
+        "playoffs": [
+          "W35-W37"
+        ]
+      }
+    },
+    "L_TW_L_JP": {
+      "spring": {
+        "regular": [
+          "W1-W6",
+          "W9"
+        ],
+        "playoffs": [
+          "W10-W11"
+        ],
+        "early_break": [
+          "W12-W15"
+        ]
+      },
+      "summer": {
+        "regular": [
+          "W21-W23",
+          "W27-W30"
+        ],
+        "buffer": [
+          "W24"
+        ],
+        "playoffs": [
+          "W33-W34"
+        ],
+        "early_break": [
+          "W35-W37"
+        ]
+      }
+    },
+    "L_TR": {
+      "spring": {
+        "regular": [
+          "W1-W6",
+          "W9"
+        ],
+        "playoffs": [
+          "W10-W12"
+        ],
+        "early_break": [
+          "W13-W15"
+        ]
+      },
+      "summer": {
+        "regular": [
+          "W21-W24",
+          "W28-W30"
+        ],
+        "buffer": [
+          "W27"
+        ],
+        "playoffs": [
+          "W33-W35"
+        ],
+        "early_break": [
+          "W36-W37"
+        ]
+      }
+    },
+    "L_MEAF": {
+      "season": {
+        "split_1": [
+          "W1-W3"
+        ],
+        "split_2": [
+          "W4-W6"
+        ],
+        "split_3": [
+          "W9-W11"
+        ],
+        "mm_qualifier": [
+          "W12"
+        ],
+        "split_4": [
+          "W21-W23"
+        ],
+        "split_5": [
+          "W27-W29"
+        ],
+        "final_playoffs": [
+          "W33-W34"
+        ]
+      }
+    }
+  },
+  "international_timelines": {
+    "REGIONAL_CUPS": {
+      "weeks": {
+        "W5": "Round 1",
+        "W9": "Round 2 / Round of 64",
+        "W11": "Round of 32",
+        "W22": "Round of 16",
+        "W24": "Quarterfinals",
+        "W28": "Semifinals",
+        "W30": "Finals"
+      }
+    },
+    "INTERMATCH_WE_QUALIFIERS": {
+      "W7-W8": "WE qualifier group phase part 1 and MEAF early qualifiers",
+      "W25-W26": "WE qualifier completion and regional playoff/final qualifiers",
+      "W31-W32": "IQ plus EEC/TPC/friendlies"
+    },
+    "MM": {
+      "W16": "Arrival and seeding",
+      "W17-W19": "Main event",
+      "W20": "Recovery"
+    },
+    "WT": {
+      "W38": "Preparation and draw",
+      "W39-W43": "Main event ending W43 Sunday"
+    },
+    "WE": {
+      "W44": "Preparation",
+      "W45-W48": "Main event",
+      "W49-W52": "Offseason"
+    }
+  },
+  "weekly_calendar": [
+    {
+      "week": 1,
+      "regional_league_activity": [
+        "Spring regular season begins for most regional leagues",
+        "L_MEAF Split 1"
+      ],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [],
+      "data_or_draw_locks": [],
+      "notes": "First week of the annual regional calendar."
+    },
+    {
+      "week": 2,
+      "regional_league_activity": [
+        "Spring regular season",
+        "L_MEAF Split 1"
+      ],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [],
+      "data_or_draw_locks": [],
+      "notes": ""
+    },
+    {
+      "week": 3,
+      "regional_league_activity": [
+        "Spring regular season",
+        "L_MEAF Split 1 concludes"
+      ],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [],
+      "data_or_draw_locks": [],
+      "notes": ""
+    },
+    {
+      "week": 4,
+      "regional_league_activity": [
+        "Spring regular season",
+        "L_MEAF Split 2 begins"
+      ],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [],
+      "data_or_draw_locks": [],
+      "notes": ""
+    },
+    {
+      "week": 5,
+      "regional_league_activity": [
+        "Spring regular season",
+        "L_MEAF Split 2"
+      ],
+      "regional_cup_activity": [
+        "COPA Round 1",
+        "APEX Round 1",
+        "EGT Round 1"
+      ],
+      "national_team_activity": [],
+      "international_event_activity": [],
+      "data_or_draw_locks": [],
+      "notes": "Monday-Wednesday are reserved for cups; regional leagues use later-week slots."
+    },
+    {
+      "week": 6,
+      "regional_league_activity": [
+        "Spring regular season",
+        "L_MEAF Split 2 concludes"
+      ],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [],
+      "data_or_draw_locks": [
+        "Week 6 national-team ranking snapshot for WE qualifier draws"
+      ],
+      "notes": ""
+    },
+    {
+      "week": 7,
+      "regional_league_activity": [],
+      "regional_cup_activity": [],
+      "national_team_activity": [
+        "Intermatch 1",
+        "Europe/APAC/Americas WE qualifier MD1-MD3 split sessions",
+        "Middle East & Africa WE qualifier Round 1"
+      ],
+      "international_event_activity": [],
+      "data_or_draw_locks": [],
+      "notes": "No regional league matches."
+    },
+    {
+      "week": 8,
+      "regional_league_activity": [],
+      "regional_cup_activity": [],
+      "national_team_activity": [
+        "Intermatch 1",
+        "Europe/APAC/Americas WE qualifier MD4-MD5 split sessions",
+        "Middle East & Africa WE qualifier Round 2"
+      ],
+      "international_event_activity": [],
+      "data_or_draw_locks": [],
+      "notes": "No regional league matches."
+    },
+    {
+      "week": 9,
+      "regional_league_activity": [
+        "Spring regional leagues resume",
+        "L_MEAF Split 3 begins",
+        "L_TW/L_JP and L_TR resume final regular-week or playoff windows depending on league"
+      ],
+      "regional_cup_activity": [
+        "COPA Round 2",
+        "APEX Round 2",
+        "EGT Round of 64"
+      ],
+      "national_team_activity": [],
+      "international_event_activity": [],
+      "data_or_draw_locks": [],
+      "notes": "Cup Monday-Wednesday blackout applies."
+    },
+    {
+      "week": 10,
+      "regional_league_activity": [
+        "Spring regular season / early playoffs depending on league",
+        "L_MEAF Split 3",
+        "L_TW/L_JP playoffs",
+        "L_TR playoffs"
+      ],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [],
+      "data_or_draw_locks": [],
+      "notes": ""
+    },
+    {
+      "week": 11,
+      "regional_league_activity": [
+        "Spring regular season / playoffs depending on league",
+        "L_MEAF Split 3 concludes",
+        "L_TW/L_JP spring finals"
+      ],
+      "regional_cup_activity": [
+        "COPA Round of 32",
+        "APEX Round of 32",
+        "EGT Round of 32"
+      ],
+      "national_team_activity": [],
+      "international_event_activity": [],
+      "data_or_draw_locks": [],
+      "notes": "Cup Monday-Wednesday blackout applies."
+    },
+    {
+      "week": 12,
+      "regional_league_activity": [
+        "Spring buffer or playoffs for selected leagues",
+        "L_TR spring final window",
+        "L_MEAF MM qualifier"
+      ],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [],
+      "data_or_draw_locks": [],
+      "notes": "Several smaller leagues are already complete or using buffer windows."
+    },
+    {
+      "week": 13,
+      "regional_league_activity": [
+        "Large leagues spring regular-season finale",
+        "L_NEU/L_WEU spring playoffs",
+        "L_SEA spring playoffs",
+        "L_DE/L_EEU/L_SEU/L_RU spring playoffs",
+        "L_BR/L_SA spring playoffs"
+      ],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [],
+      "data_or_draw_locks": [],
+      "notes": "Many regional leagues either conclude spring or lock playoff seeds."
+    },
+    {
+      "week": 14,
+      "regional_league_activity": [
+        "L_NA and L_CN MM qualifiers",
+        "L_KR spring playoffs",
+        "European 12-team and 10-team league spring playoffs",
+        "Brazil/LATAM spring playoffs"
+      ],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [],
+      "data_or_draw_locks": [],
+      "notes": "Spring title races and MM qualification peak."
+    },
+    {
+      "week": 15,
+      "regional_league_activity": [
+        "Spring champions and MM entrants finalized across applicable leagues"
+      ],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [],
+      "data_or_draw_locks": [
+        "MM participant list locked"
+      ],
+      "notes": "Deadline for spring winners and MM qualification results."
+    },
+    {
+      "week": 16,
+      "regional_league_activity": [],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [
+        "MM arrival / seeding / draw / media / rest"
+      ],
+      "data_or_draw_locks": [
+        "Week 16 Club Elo snapshot for MM seeding"
+      ],
+      "notes": ""
+    },
+    {
+      "week": 17,
+      "regional_league_activity": [],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [
+        "MM Swiss Stage R1-R4"
+      ],
+      "data_or_draw_locks": [],
+      "notes": "No regional league matches."
+    },
+    {
+      "week": 18,
+      "regional_league_activity": [],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [
+        "MM Swiss R5",
+        "MM quarterfinals"
+      ],
+      "data_or_draw_locks": [],
+      "notes": "No regional league matches."
+    },
+    {
+      "week": 19,
+      "regional_league_activity": [],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [
+        "MM semifinals",
+        "MM grand final"
+      ],
+      "data_or_draw_locks": [],
+      "notes": "MM champion determined."
+    },
+    {
+      "week": 20,
+      "regional_league_activity": [],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [
+        "MM return / rest / patch adaptation"
+      ],
+      "data_or_draw_locks": [],
+      "notes": "Transition week before summer regional leagues."
+    },
+    {
+      "week": 21,
+      "regional_league_activity": [
+        "Summer regional season begins",
+        "L_MEAF Split 4 begins"
+      ],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [],
+      "data_or_draw_locks": [],
+      "notes": ""
+    },
+    {
+      "week": 22,
+      "regional_league_activity": [
+        "Summer regular season",
+        "L_MEAF Split 4"
+      ],
+      "regional_cup_activity": [
+        "COPA Round of 16",
+        "APEX Round of 16",
+        "EGT Round of 16"
+      ],
+      "national_team_activity": [],
+      "international_event_activity": [],
+      "data_or_draw_locks": [],
+      "notes": "Cup Monday-Wednesday blackout applies."
+    },
+    {
+      "week": 23,
+      "regional_league_activity": [
+        "Summer regular season",
+        "L_MEAF Split 4 concludes"
+      ],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [],
+      "data_or_draw_locks": [],
+      "notes": ""
+    },
+    {
+      "week": 24,
+      "regional_league_activity": [
+        "Summer regular season or buffer depending on league"
+      ],
+      "regional_cup_activity": [
+        "COPA quarterfinals",
+        "APEX quarterfinals",
+        "EGT quarterfinals"
+      ],
+      "national_team_activity": [],
+      "international_event_activity": [],
+      "data_or_draw_locks": [],
+      "notes": "L_TW/L_JP and L_MEAF have lighter or empty windows; cup Monday-Wednesday blackout applies."
+    },
+    {
+      "week": 25,
+      "regional_league_activity": [],
+      "regional_cup_activity": [],
+      "national_team_activity": [
+        "Intermatch 2",
+        "WE qualifier phase 2 begins",
+        "Europe/APAC/Americas remaining group matches",
+        "MEAF final qualifier begins"
+      ],
+      "international_event_activity": [],
+      "data_or_draw_locks": [],
+      "notes": "No regional league matches."
+    },
+    {
+      "week": 26,
+      "regional_league_activity": [],
+      "regional_cup_activity": [],
+      "national_team_activity": [
+        "Intermatch 2",
+        "WE qualifier phase 2 concludes",
+        "Regional playoffs for Europe/APAC/Americas WE qualifiers",
+        "MEAF final qualifier concludes"
+      ],
+      "international_event_activity": [],
+      "data_or_draw_locks": [
+        "WE direct qualifiers and IQ participants locked"
+      ],
+      "notes": ""
+    },
+    {
+      "week": 27,
+      "regional_league_activity": [
+        "Summer regional season resumes",
+        "L_MEAF Split 5 begins",
+        "L_TR buffer week"
+      ],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [],
+      "data_or_draw_locks": [],
+      "notes": "Regional leagues resume after Intermatch 2."
+    },
+    {
+      "week": 28,
+      "regional_league_activity": [
+        "Summer regular season",
+        "L_MEAF Split 5"
+      ],
+      "regional_cup_activity": [
+        "COPA semifinals",
+        "APEX semifinals",
+        "EGT semifinals"
+      ],
+      "national_team_activity": [],
+      "international_event_activity": [],
+      "data_or_draw_locks": [],
+      "notes": "Cup Monday-Wednesday blackout applies."
+    },
+    {
+      "week": 29,
+      "regional_league_activity": [
+        "Summer regular season",
+        "L_MEAF Split 5 concludes"
+      ],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [],
+      "data_or_draw_locks": [],
+      "notes": ""
+    },
+    {
+      "week": 30,
+      "regional_league_activity": [
+        "Summer regular season",
+        "L_MEAF post-split buffer"
+      ],
+      "regional_cup_activity": [
+        "APEX grand final",
+        "COPA grand final",
+        "EGT grand final"
+      ],
+      "national_team_activity": [],
+      "international_event_activity": [],
+      "data_or_draw_locks": [
+        "Week 30 national-team ranking snapshot for IQ draw",
+        "APEX/COPA/EGT champions locked for WT special slots"
+      ],
+      "notes": "Cup finals are distributed across Monday-Wednesday."
+    },
+    {
+      "week": 31,
+      "regional_league_activity": [],
+      "regional_cup_activity": [],
+      "national_team_activity": [
+        "Intermatch 3",
+        "IQ begins",
+        "EEC begins",
+        "TPC begins",
+        "Optional national-team friendlies"
+      ],
+      "international_event_activity": [],
+      "data_or_draw_locks": [],
+      "notes": "No regional league matches."
+    },
+    {
+      "week": 32,
+      "regional_league_activity": [],
+      "regional_cup_activity": [],
+      "national_team_activity": [
+        "Intermatch 3",
+        "IQ concludes",
+        "EEC concludes",
+        "TPC concludes",
+        "Optional national-team friendlies"
+      ],
+      "international_event_activity": [],
+      "data_or_draw_locks": [
+        "WE 24-team field locked"
+      ],
+      "notes": ""
+    },
+    {
+      "week": 33,
+      "regional_league_activity": [
+        "Summer final regional block",
+        "Early summer playoffs for selected leagues",
+        "L_MEAF final playoffs begin"
+      ],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [],
+      "data_or_draw_locks": [
+        "Week 33 national-team ratings for WE seeding"
+      ],
+      "notes": ""
+    },
+    {
+      "week": 34,
+      "regional_league_activity": [
+        "Summer final regional block / playoffs",
+        "L_TW/L_JP summer finals",
+        "L_MEAF final playoffs conclude",
+        "Buffer week for several 10-team leagues"
+      ],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [],
+      "data_or_draw_locks": [],
+      "notes": ""
+    },
+    {
+      "week": 35,
+      "regional_league_activity": [
+        "Summer playoffs for major and mid-size leagues",
+        "L_SEA and L_TR summer finals",
+        "L_TW/L_JP and L_MEAF already complete"
+      ],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [],
+      "data_or_draw_locks": [],
+      "notes": "Some leagues have optional tiebreakers or early playoff starts depending on detailed PRDs."
+    },
+    {
+      "week": 36,
+      "regional_league_activity": [
+        "Summer playoffs continue for major and mid-size leagues",
+        "L_KR playoffs begin/final phase depending on bracket"
+      ],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [],
+      "data_or_draw_locks": [],
+      "notes": "Several smaller leagues are already complete."
+    },
+    {
+      "week": 37,
+      "regional_league_activity": [
+        "Final regional playoff week",
+        "Summer champions and final WT regional slots locked"
+      ],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [],
+      "data_or_draw_locks": [
+        "Regional standings and WT league-slot inheritance inputs locked"
+      ],
+      "notes": ""
+    },
+    {
+      "week": 38,
+      "regional_league_activity": [],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [
+        "WT prep / draw / travel / media week"
+      ],
+      "data_or_draw_locks": [
+        "WT field and group draw validated"
+      ],
+      "notes": ""
+    },
+    {
+      "week": 39,
+      "regional_league_activity": [],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [
+        "WT group stage Week 1"
+      ],
+      "data_or_draw_locks": [],
+      "notes": ""
+    },
+    {
+      "week": 40,
+      "regional_league_activity": [],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [
+        "WT group stage Week 2"
+      ],
+      "data_or_draw_locks": [],
+      "notes": ""
+    },
+    {
+      "week": 41,
+      "regional_league_activity": [],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [
+        "WT Round of 16"
+      ],
+      "data_or_draw_locks": [],
+      "notes": ""
+    },
+    {
+      "week": 42,
+      "regional_league_activity": [],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [
+        "WT quarterfinals"
+      ],
+      "data_or_draw_locks": [],
+      "notes": ""
+    },
+    {
+      "week": 43,
+      "regional_league_activity": [],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [
+        "WT semifinals",
+        "WT grand final"
+      ],
+      "data_or_draw_locks": [],
+      "notes": "WT champion determined on Sunday."
+    },
+    {
+      "week": 44,
+      "regional_league_activity": [],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [
+        "WT recovery",
+        "WE prep / travel / media week"
+      ],
+      "data_or_draw_locks": [],
+      "notes": ""
+    },
+    {
+      "week": 45,
+      "regional_league_activity": [],
+      "regional_cup_activity": [],
+      "national_team_activity": [
+        "WE main event group stage begins"
+      ],
+      "international_event_activity": [
+        "WE group stage"
+      ],
+      "data_or_draw_locks": [],
+      "notes": ""
+    },
+    {
+      "week": 46,
+      "regional_league_activity": [],
+      "regional_cup_activity": [],
+      "national_team_activity": [
+        "WE group stage concludes",
+        "WE Round of 16 begins/concludes depending on final event schedule"
+      ],
+      "international_event_activity": [
+        "WE group stage / Round of 16"
+      ],
+      "data_or_draw_locks": [],
+      "notes": ""
+    },
+    {
+      "week": 47,
+      "regional_league_activity": [],
+      "regional_cup_activity": [],
+      "national_team_activity": [
+        "WE quarterfinals"
+      ],
+      "international_event_activity": [
+        "WE quarterfinals"
+      ],
+      "data_or_draw_locks": [],
+      "notes": ""
+    },
+    {
+      "week": 48,
+      "regional_league_activity": [],
+      "regional_cup_activity": [],
+      "national_team_activity": [
+        "WE semifinals",
+        "WE grand final"
+      ],
+      "international_event_activity": [
+        "WE semifinals and final"
+      ],
+      "data_or_draw_locks": [],
+      "notes": "Best national team of the year determined."
+    },
+    {
+      "week": 49,
+      "regional_league_activity": [],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [
+        "Offseason begins"
+      ],
+      "data_or_draw_locks": [],
+      "notes": "Roster moves, player rest, preseason content, rules review."
+    },
+    {
+      "week": 50,
+      "regional_league_activity": [],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [
+        "Offseason"
+      ],
+      "data_or_draw_locks": [],
+      "notes": ""
+    },
+    {
+      "week": 51,
+      "regional_league_activity": [],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [
+        "Offseason"
+      ],
+      "data_or_draw_locks": [],
+      "notes": ""
+    },
+    {
+      "week": 52,
+      "regional_league_activity": [],
+      "regional_cup_activity": [],
+      "national_team_activity": [],
+      "international_event_activity": [
+        "Offseason / next season preparation"
+      ],
+      "data_or_draw_locks": [],
+      "notes": ""
+    }
+  ],
+  "conflict_rules": [
+    "During cup blackout weeks W5, W9, W11, W22, W24, W28, and W30, regional league matches cannot be scheduled on Monday, Tuesday, or Wednesday.",
+    "Intermatch windows W7-W8, W25-W26, and W31-W32 are national-team windows; regular regional league matches should not be scheduled there.",
+    "MM uses W17-W19, with W16 reserved for arrival/seeding/draw and W20 reserved for recovery and return logistics.",
+    "WT uses W39-W43 and is the top-priority club event after regional seasons conclude.",
+    "WE uses W45-W48 and is the top-priority national-team event after WT.",
+    "If a league-specific PRD has a more detailed day-level schedule, that document overrides the high-level weekly entry in this master pipeline, as long as the global blackout windows are preserved."
+  ],
+  "ai_usage_notes": [
+    "Use this file first to locate the relevant week and competition lane.",
+    "Then open the referenced component PRD or JSON spec for exact match counts, brackets, and day-level rules.",
+    "This master file intentionally describes weeks at orchestration level; league-specific files remain the source of truth for day-by-day match scheduling.",
+    "When conflicts arise, prioritize global blackout windows, then international event windows, then league-specific PRD constraints."
+  ]
+}

@@ -1,0 +1,873 @@
+{
+  "document_title": "L_BR / L_SA 10-Team Bo3 League Format PRD",
+  "version": "1.0",
+  "target_leagues": [
+    {
+      "code": "L_BR",
+      "name_ko": "브라질",
+      "name_en": "Brazil"
+    },
+    {
+      "code": "L_SA",
+      "name_ko": "중남미",
+      "name_en": "South/Central Latin America"
+    }
+  ],
+  "format_type": "shared_league_format",
+  "calendar_year_weeks": 52,
+  "global_constraints": {
+    "regional_windows": [
+      {
+        "name": "Spring Regional Block 1",
+        "weeks": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "name": "Spring Regional Block 2",
+        "weeks": [
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ]
+      },
+      {
+        "name": "Summer Regional Block 1",
+        "weeks": [
+          21,
+          22,
+          23,
+          24
+        ]
+      },
+      {
+        "name": "Summer Regional Block 2",
+        "weeks": [
+          27,
+          28,
+          29,
+          30
+        ]
+      },
+      {
+        "name": "Summer Regional Block 3",
+        "weeks": [
+          33,
+          34,
+          35,
+          36,
+          37
+        ]
+      }
+    ],
+    "cup_weeks": [
+      5,
+      9,
+      11,
+      22,
+      24,
+      28,
+      30
+    ],
+    "cup_week_regional_blackout_days": [
+      "Monday",
+      "Tuesday",
+      "Wednesday"
+    ],
+    "note": "The default L_BR/L_SA regular season uses only Saturday and Sunday, so it avoids all cup-week blackouts."
+  },
+  "league_structure": {
+    "teams": 10,
+    "venue_model": "single_venue",
+    "concurrent_matches_allowed": false,
+    "split_system": "Spring/Summer, separate champions",
+    "splits_per_year": 2
+  },
+  "regular_season": {
+    "format": "single_round_robin",
+    "match_type": "Bo3",
+    "duration_weeks": 9,
+    "team_matches_per_split": 9,
+    "total_matches_per_split": 45,
+    "rounds_per_split": 9,
+    "matches_per_round": 5,
+    "weekly_pattern": [
+      {
+        "day": "Saturday",
+        "matches": 2,
+        "match_type": "Bo3"
+      },
+      {
+        "day": "Sunday",
+        "matches": 3,
+        "match_type": "Bo3"
+      }
+    ],
+    "teams_play_once_per_round": true,
+    "recommended_reasoning": "One full round per weekend. This maximizes weekend usage while keeping the single-venue daily load reasonable."
+  },
+  "playoffs": {
+    "same_as": "L_KR playoff structure",
+    "qualified_teams": 6,
+    "duration_weeks": 3,
+    "match_type": "Bo5",
+    "matches_per_day_limit": 1,
+    "total_matches": 8,
+    "bracket_reset": false,
+    "fixed_final_weekend_rules": {
+      "round_4_final_qualifier_day": "Saturday",
+      "round_5_grand_final_day": "Sunday"
+    },
+    "seeding": [
+      {
+        "seed": 1,
+        "starts_in": "Round 2"
+      },
+      {
+        "seed": 2,
+        "starts_in": "Round 2"
+      },
+      {
+        "seed": 3,
+        "starts_in": "Round 1"
+      },
+      {
+        "seed": 4,
+        "starts_in": "Round 1"
+      },
+      {
+        "seed": 5,
+        "starts_in": "Round 1"
+      },
+      {
+        "seed": 6,
+        "starts_in": "Round 1"
+      }
+    ],
+    "bracket_matches": [
+      {
+        "match_id": "M1",
+        "round": "Round 1",
+        "match": "Seed 3 vs Seed 6",
+        "match_type": "Bo5"
+      },
+      {
+        "match_id": "M2",
+        "round": "Round 1",
+        "match": "Seed 4 vs Seed 5",
+        "match_type": "Bo5"
+      },
+      {
+        "match_id": "M3",
+        "round": "Round 2",
+        "match": "Seed 1 vs Winner of M1",
+        "match_type": "Bo5"
+      },
+      {
+        "match_id": "M4",
+        "round": "Round 2",
+        "match": "Seed 2 vs Winner of M2",
+        "match_type": "Bo5"
+      },
+      {
+        "match_id": "M5",
+        "round": "Round 3 - Winners Final",
+        "match": "Winner of M3 vs Winner of M4",
+        "match_type": "Bo5"
+      },
+      {
+        "match_id": "M6",
+        "round": "Round 3 - Lower Match",
+        "match": "Loser of M3 vs Loser of M4",
+        "match_type": "Bo5"
+      },
+      {
+        "match_id": "M7",
+        "round": "Round 4 - Final Qualifier",
+        "match": "Loser of M5 vs Winner of M6",
+        "match_type": "Bo5"
+      },
+      {
+        "match_id": "M8",
+        "round": "Round 5 - Grand Final",
+        "match": "Winner of M5 vs Winner of M7",
+        "match_type": "Bo5"
+      }
+    ],
+    "relative_schedule": [
+      {
+        "playoff_week": 1,
+        "day": "Thursday",
+        "match_id": "M1"
+      },
+      {
+        "playoff_week": 1,
+        "day": "Friday",
+        "match_id": "M2"
+      },
+      {
+        "playoff_week": 1,
+        "day": "Saturday",
+        "match_id": "M3"
+      },
+      {
+        "playoff_week": 1,
+        "day": "Sunday",
+        "match_id": "M4"
+      },
+      {
+        "playoff_week": 2,
+        "day": "Saturday",
+        "match_id": "M5"
+      },
+      {
+        "playoff_week": 2,
+        "day": "Sunday",
+        "match_id": "M6"
+      },
+      {
+        "playoff_week": 3,
+        "day": "Saturday",
+        "match_id": "M7"
+      },
+      {
+        "playoff_week": 3,
+        "day": "Sunday",
+        "match_id": "M8"
+      }
+    ]
+  },
+  "splits": {
+    "spring": {
+      "regular_season_weeks": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        9,
+        10,
+        11
+      ],
+      "regular_season_schedule": [
+        {
+          "split": "Spring",
+          "week": 1,
+          "day": "Saturday",
+          "round": "R1",
+          "slot": "A",
+          "matches": 2,
+          "match_type": "Bo3",
+          "note": "First half of the weekly round; single venue, no concurrent matches."
+        },
+        {
+          "split": "Spring",
+          "week": 1,
+          "day": "Sunday",
+          "round": "R1",
+          "slot": "B",
+          "matches": 3,
+          "match_type": "Bo3",
+          "note": "Second half of the weekly round; all teams complete one match for the round."
+        },
+        {
+          "split": "Spring",
+          "week": 2,
+          "day": "Saturday",
+          "round": "R2",
+          "slot": "A",
+          "matches": 2,
+          "match_type": "Bo3",
+          "note": "First half of the weekly round; single venue, no concurrent matches."
+        },
+        {
+          "split": "Spring",
+          "week": 2,
+          "day": "Sunday",
+          "round": "R2",
+          "slot": "B",
+          "matches": 3,
+          "match_type": "Bo3",
+          "note": "Second half of the weekly round; all teams complete one match for the round."
+        },
+        {
+          "split": "Spring",
+          "week": 3,
+          "day": "Saturday",
+          "round": "R3",
+          "slot": "A",
+          "matches": 2,
+          "match_type": "Bo3",
+          "note": "First half of the weekly round; single venue, no concurrent matches."
+        },
+        {
+          "split": "Spring",
+          "week": 3,
+          "day": "Sunday",
+          "round": "R3",
+          "slot": "B",
+          "matches": 3,
+          "match_type": "Bo3",
+          "note": "Second half of the weekly round; all teams complete one match for the round."
+        },
+        {
+          "split": "Spring",
+          "week": 4,
+          "day": "Saturday",
+          "round": "R4",
+          "slot": "A",
+          "matches": 2,
+          "match_type": "Bo3",
+          "note": "First half of the weekly round; single venue, no concurrent matches."
+        },
+        {
+          "split": "Spring",
+          "week": 4,
+          "day": "Sunday",
+          "round": "R4",
+          "slot": "B",
+          "matches": 3,
+          "match_type": "Bo3",
+          "note": "Second half of the weekly round; all teams complete one match for the round."
+        },
+        {
+          "split": "Spring",
+          "week": 5,
+          "day": "Saturday",
+          "round": "R5",
+          "slot": "A",
+          "matches": 2,
+          "match_type": "Bo3",
+          "note": "First half of the weekly round; single venue, no concurrent matches."
+        },
+        {
+          "split": "Spring",
+          "week": 5,
+          "day": "Sunday",
+          "round": "R5",
+          "slot": "B",
+          "matches": 3,
+          "match_type": "Bo3",
+          "note": "Second half of the weekly round; all teams complete one match for the round."
+        },
+        {
+          "split": "Spring",
+          "week": 6,
+          "day": "Saturday",
+          "round": "R6",
+          "slot": "A",
+          "matches": 2,
+          "match_type": "Bo3",
+          "note": "First half of the weekly round; single venue, no concurrent matches."
+        },
+        {
+          "split": "Spring",
+          "week": 6,
+          "day": "Sunday",
+          "round": "R6",
+          "slot": "B",
+          "matches": 3,
+          "match_type": "Bo3",
+          "note": "Second half of the weekly round; all teams complete one match for the round."
+        },
+        {
+          "split": "Spring",
+          "week": 9,
+          "day": "Saturday",
+          "round": "R7",
+          "slot": "A",
+          "matches": 2,
+          "match_type": "Bo3",
+          "note": "First half of the weekly round; single venue, no concurrent matches."
+        },
+        {
+          "split": "Spring",
+          "week": 9,
+          "day": "Sunday",
+          "round": "R7",
+          "slot": "B",
+          "matches": 3,
+          "match_type": "Bo3",
+          "note": "Second half of the weekly round; all teams complete one match for the round."
+        },
+        {
+          "split": "Spring",
+          "week": 10,
+          "day": "Saturday",
+          "round": "R8",
+          "slot": "A",
+          "matches": 2,
+          "match_type": "Bo3",
+          "note": "First half of the weekly round; single venue, no concurrent matches."
+        },
+        {
+          "split": "Spring",
+          "week": 10,
+          "day": "Sunday",
+          "round": "R8",
+          "slot": "B",
+          "matches": 3,
+          "match_type": "Bo3",
+          "note": "Second half of the weekly round; all teams complete one match for the round."
+        },
+        {
+          "split": "Spring",
+          "week": 11,
+          "day": "Saturday",
+          "round": "R9",
+          "slot": "A",
+          "matches": 2,
+          "match_type": "Bo3",
+          "note": "First half of the weekly round; single venue, no concurrent matches."
+        },
+        {
+          "split": "Spring",
+          "week": 11,
+          "day": "Sunday",
+          "round": "R9",
+          "slot": "B",
+          "matches": 3,
+          "match_type": "Bo3",
+          "note": "Second half of the weekly round; all teams complete one match for the round."
+        }
+      ],
+      "buffer_week": 12,
+      "buffer_usage": [
+        "tiebreakers",
+        "postponed matches",
+        "playoff media day",
+        "bracket confirmation"
+      ],
+      "playoff_weeks": [
+        13,
+        14,
+        15
+      ],
+      "playoff_schedule": [
+        {
+          "split": "Spring",
+          "week": 13,
+          "playoff_week": 1,
+          "day": "Thursday",
+          "round": "Round 1",
+          "match_id": "M1",
+          "match": "Seed 3 vs Seed 6",
+          "match_type": "Bo5",
+          "matches": 1
+        },
+        {
+          "split": "Spring",
+          "week": 13,
+          "playoff_week": 1,
+          "day": "Friday",
+          "round": "Round 1",
+          "match_id": "M2",
+          "match": "Seed 4 vs Seed 5",
+          "match_type": "Bo5",
+          "matches": 1
+        },
+        {
+          "split": "Spring",
+          "week": 13,
+          "playoff_week": 1,
+          "day": "Saturday",
+          "round": "Round 2",
+          "match_id": "M3",
+          "match": "Seed 1 vs Winner of M1",
+          "match_type": "Bo5",
+          "matches": 1
+        },
+        {
+          "split": "Spring",
+          "week": 13,
+          "playoff_week": 1,
+          "day": "Sunday",
+          "round": "Round 2",
+          "match_id": "M4",
+          "match": "Seed 2 vs Winner of M2",
+          "match_type": "Bo5",
+          "matches": 1
+        },
+        {
+          "split": "Spring",
+          "week": 14,
+          "playoff_week": 2,
+          "day": "Saturday",
+          "round": "Round 3 - Winners Final",
+          "match_id": "M5",
+          "match": "Winner of M3 vs Winner of M4",
+          "match_type": "Bo5",
+          "matches": 1
+        },
+        {
+          "split": "Spring",
+          "week": 14,
+          "playoff_week": 2,
+          "day": "Sunday",
+          "round": "Round 3 - Lower Match",
+          "match_id": "M6",
+          "match": "Loser of M3 vs Loser of M4",
+          "match_type": "Bo5",
+          "matches": 1
+        },
+        {
+          "split": "Spring",
+          "week": 15,
+          "playoff_week": 3,
+          "day": "Saturday",
+          "round": "Round 4 - Final Qualifier",
+          "match_id": "M7",
+          "match": "Loser of M5 vs Winner of M6",
+          "match_type": "Bo5",
+          "matches": 1
+        },
+        {
+          "split": "Spring",
+          "week": 15,
+          "playoff_week": 3,
+          "day": "Sunday",
+          "round": "Round 5 - Grand Final",
+          "match_id": "M8",
+          "match": "Winner of M5 vs Winner of M7",
+          "match_type": "Bo5",
+          "matches": 1
+        }
+      ],
+      "champion_decided": {
+        "week": 15,
+        "day": "Sunday"
+      }
+    },
+    "summer": {
+      "regular_season_weeks": [
+        21,
+        22,
+        23,
+        24,
+        27,
+        28,
+        29,
+        30,
+        33
+      ],
+      "regular_season_schedule": [
+        {
+          "split": "Summer",
+          "week": 21,
+          "day": "Saturday",
+          "round": "R1",
+          "slot": "A",
+          "matches": 2,
+          "match_type": "Bo3",
+          "note": "First half of the weekly round; single venue, no concurrent matches."
+        },
+        {
+          "split": "Summer",
+          "week": 21,
+          "day": "Sunday",
+          "round": "R1",
+          "slot": "B",
+          "matches": 3,
+          "match_type": "Bo3",
+          "note": "Second half of the weekly round; all teams complete one match for the round."
+        },
+        {
+          "split": "Summer",
+          "week": 22,
+          "day": "Saturday",
+          "round": "R2",
+          "slot": "A",
+          "matches": 2,
+          "match_type": "Bo3",
+          "note": "First half of the weekly round; single venue, no concurrent matches."
+        },
+        {
+          "split": "Summer",
+          "week": 22,
+          "day": "Sunday",
+          "round": "R2",
+          "slot": "B",
+          "matches": 3,
+          "match_type": "Bo3",
+          "note": "Second half of the weekly round; all teams complete one match for the round."
+        },
+        {
+          "split": "Summer",
+          "week": 23,
+          "day": "Saturday",
+          "round": "R3",
+          "slot": "A",
+          "matches": 2,
+          "match_type": "Bo3",
+          "note": "First half of the weekly round; single venue, no concurrent matches."
+        },
+        {
+          "split": "Summer",
+          "week": 23,
+          "day": "Sunday",
+          "round": "R3",
+          "slot": "B",
+          "matches": 3,
+          "match_type": "Bo3",
+          "note": "Second half of the weekly round; all teams complete one match for the round."
+        },
+        {
+          "split": "Summer",
+          "week": 24,
+          "day": "Saturday",
+          "round": "R4",
+          "slot": "A",
+          "matches": 2,
+          "match_type": "Bo3",
+          "note": "First half of the weekly round; single venue, no concurrent matches."
+        },
+        {
+          "split": "Summer",
+          "week": 24,
+          "day": "Sunday",
+          "round": "R4",
+          "slot": "B",
+          "matches": 3,
+          "match_type": "Bo3",
+          "note": "Second half of the weekly round; all teams complete one match for the round."
+        },
+        {
+          "split": "Summer",
+          "week": 27,
+          "day": "Saturday",
+          "round": "R5",
+          "slot": "A",
+          "matches": 2,
+          "match_type": "Bo3",
+          "note": "First half of the weekly round; single venue, no concurrent matches."
+        },
+        {
+          "split": "Summer",
+          "week": 27,
+          "day": "Sunday",
+          "round": "R5",
+          "slot": "B",
+          "matches": 3,
+          "match_type": "Bo3",
+          "note": "Second half of the weekly round; all teams complete one match for the round."
+        },
+        {
+          "split": "Summer",
+          "week": 28,
+          "day": "Saturday",
+          "round": "R6",
+          "slot": "A",
+          "matches": 2,
+          "match_type": "Bo3",
+          "note": "First half of the weekly round; single venue, no concurrent matches."
+        },
+        {
+          "split": "Summer",
+          "week": 28,
+          "day": "Sunday",
+          "round": "R6",
+          "slot": "B",
+          "matches": 3,
+          "match_type": "Bo3",
+          "note": "Second half of the weekly round; all teams complete one match for the round."
+        },
+        {
+          "split": "Summer",
+          "week": 29,
+          "day": "Saturday",
+          "round": "R7",
+          "slot": "A",
+          "matches": 2,
+          "match_type": "Bo3",
+          "note": "First half of the weekly round; single venue, no concurrent matches."
+        },
+        {
+          "split": "Summer",
+          "week": 29,
+          "day": "Sunday",
+          "round": "R7",
+          "slot": "B",
+          "matches": 3,
+          "match_type": "Bo3",
+          "note": "Second half of the weekly round; all teams complete one match for the round."
+        },
+        {
+          "split": "Summer",
+          "week": 30,
+          "day": "Saturday",
+          "round": "R8",
+          "slot": "A",
+          "matches": 2,
+          "match_type": "Bo3",
+          "note": "First half of the weekly round; single venue, no concurrent matches."
+        },
+        {
+          "split": "Summer",
+          "week": 30,
+          "day": "Sunday",
+          "round": "R8",
+          "slot": "B",
+          "matches": 3,
+          "match_type": "Bo3",
+          "note": "Second half of the weekly round; all teams complete one match for the round."
+        },
+        {
+          "split": "Summer",
+          "week": 33,
+          "day": "Saturday",
+          "round": "R9",
+          "slot": "A",
+          "matches": 2,
+          "match_type": "Bo3",
+          "note": "First half of the weekly round; single venue, no concurrent matches."
+        },
+        {
+          "split": "Summer",
+          "week": 33,
+          "day": "Sunday",
+          "round": "R9",
+          "slot": "B",
+          "matches": 3,
+          "match_type": "Bo3",
+          "note": "Second half of the weekly round; all teams complete one match for the round."
+        }
+      ],
+      "buffer_week": 34,
+      "buffer_usage": [
+        "tiebreakers",
+        "postponed matches",
+        "playoff media day",
+        "bracket confirmation"
+      ],
+      "playoff_weeks": [
+        35,
+        36,
+        37
+      ],
+      "playoff_schedule": [
+        {
+          "split": "Summer",
+          "week": 35,
+          "playoff_week": 1,
+          "day": "Thursday",
+          "round": "Round 1",
+          "match_id": "M1",
+          "match": "Seed 3 vs Seed 6",
+          "match_type": "Bo5",
+          "matches": 1
+        },
+        {
+          "split": "Summer",
+          "week": 35,
+          "playoff_week": 1,
+          "day": "Friday",
+          "round": "Round 1",
+          "match_id": "M2",
+          "match": "Seed 4 vs Seed 5",
+          "match_type": "Bo5",
+          "matches": 1
+        },
+        {
+          "split": "Summer",
+          "week": 35,
+          "playoff_week": 1,
+          "day": "Saturday",
+          "round": "Round 2",
+          "match_id": "M3",
+          "match": "Seed 1 vs Winner of M1",
+          "match_type": "Bo5",
+          "matches": 1
+        },
+        {
+          "split": "Summer",
+          "week": 35,
+          "playoff_week": 1,
+          "day": "Sunday",
+          "round": "Round 2",
+          "match_id": "M4",
+          "match": "Seed 2 vs Winner of M2",
+          "match_type": "Bo5",
+          "matches": 1
+        },
+        {
+          "split": "Summer",
+          "week": 36,
+          "playoff_week": 2,
+          "day": "Saturday",
+          "round": "Round 3 - Winners Final",
+          "match_id": "M5",
+          "match": "Winner of M3 vs Winner of M4",
+          "match_type": "Bo5",
+          "matches": 1
+        },
+        {
+          "split": "Summer",
+          "week": 36,
+          "playoff_week": 2,
+          "day": "Sunday",
+          "round": "Round 3 - Lower Match",
+          "match_id": "M6",
+          "match": "Loser of M3 vs Loser of M4",
+          "match_type": "Bo5",
+          "matches": 1
+        },
+        {
+          "split": "Summer",
+          "week": 37,
+          "playoff_week": 3,
+          "day": "Saturday",
+          "round": "Round 4 - Final Qualifier",
+          "match_id": "M7",
+          "match": "Loser of M5 vs Winner of M6",
+          "match_type": "Bo5",
+          "matches": 1
+        },
+        {
+          "split": "Summer",
+          "week": 37,
+          "playoff_week": 3,
+          "day": "Sunday",
+          "round": "Round 5 - Grand Final",
+          "match_id": "M8",
+          "match": "Winner of M5 vs Winner of M7",
+          "match_type": "Bo5",
+          "matches": 1
+        }
+      ],
+      "champion_decided": {
+        "week": 37,
+        "day": "Sunday"
+      }
+    }
+  },
+  "standings_tiebreakers_recommended": [
+    "match_win_percentage",
+    "match_wins",
+    "head_to_head_record",
+    "game_differential",
+    "shortest_average_game_time_in_wins_if_needed",
+    "Bo3_tiebreaker_match"
+  ],
+  "match_count_summary": {
+    "per_split": {
+      "regular_season_bo3": 45,
+      "playoff_bo5": 8,
+      "total_matches": 53
+    },
+    "annual": {
+      "regular_season_bo3": 90,
+      "playoff_bo5": 16,
+      "total_matches": 106
+    }
+  }
+}

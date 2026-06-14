@@ -1,0 +1,374 @@
+{
+  "document_name": "L_MEAF League Format PRD",
+  "version": "1.0",
+  "league_codes": [
+    "L_MEAF"
+  ],
+  "league_overview": {
+    "teams": 8,
+    "venue_model": "single_venue",
+    "season_structure": "five_split_tournament_circuit_with_points",
+    "primary_matchdays": [
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "events": [
+      "Split 1",
+      "Split 2",
+      "Split 3",
+      "MM Qualifier",
+      "Split 4",
+      "Split 5",
+      "Final Playoff"
+    ]
+  },
+  "points_system": {
+    "1": 8,
+    "2": 5,
+    "3": 4,
+    "4": 3,
+    "5-6": 1,
+    "7-8": 0,
+    "placement_mapping": {
+      "1": "Grand Final winner",
+      "2": "Grand Final loser",
+      "3": "Lower Final loser",
+      "4": "Lower Semifinal loser",
+      "5-6": "Lower Round 2 losers",
+      "7-8": "Lower Round 1 losers"
+    }
+  },
+  "split_tournament": {
+    "count": 5,
+    "teams": 8,
+    "format": "double_elimination",
+    "duration_weeks": {
+      "default": 3,
+      "maximum": 4
+    },
+    "bracket_reset": false,
+    "match_formats": {
+      "all_non_final_matches": "Bo3",
+      "grand_final": "Bo5"
+    },
+    "recommended_seed_bracket": [
+      {
+        "match": "UB QF A",
+        "pairing": "Seed 1 vs Seed 8"
+      },
+      {
+        "match": "UB QF B",
+        "pairing": "Seed 4 vs Seed 5"
+      },
+      {
+        "match": "UB QF C",
+        "pairing": "Seed 2 vs Seed 7"
+      },
+      {
+        "match": "UB QF D",
+        "pairing": "Seed 3 vs Seed 6"
+      }
+    ],
+    "seeding_rules": {
+      "split_1": "preseason_seeding_or_administrative_draw",
+      "split_2_to_5": "current_cumulative_points_before_split",
+      "tie_breaker": [
+        "most_recent_split_placement",
+        "head_to_head_if_applicable",
+        "administrative_draw"
+      ]
+    },
+    "match_count": {
+      "upper_quarterfinals": 4,
+      "lower_round_1": 2,
+      "upper_semifinals": 2,
+      "lower_round_2": 2,
+      "upper_final": 1,
+      "lower_semifinal": 1,
+      "lower_final": 1,
+      "grand_final": 1,
+      "total": 14
+    },
+    "default_schedule_template": [
+      {
+        "split_week": "A",
+        "day": "Friday",
+        "stage": "Upper Quarterfinals A-B",
+        "matches": 2,
+        "format": "Bo3"
+      },
+      {
+        "split_week": "A",
+        "day": "Saturday",
+        "stage": "Upper Quarterfinals C-D",
+        "matches": 2,
+        "format": "Bo3"
+      },
+      {
+        "split_week": "A",
+        "day": "Sunday",
+        "stage": "Lower Round 1",
+        "matches": 2,
+        "format": "Bo3"
+      },
+      {
+        "split_week": "B",
+        "day": "Friday",
+        "stage": "Upper Semifinals",
+        "matches": 2,
+        "format": "Bo3"
+      },
+      {
+        "split_week": "B",
+        "day": "Saturday",
+        "stage": "Lower Round 2",
+        "matches": 2,
+        "format": "Bo3"
+      },
+      {
+        "split_week": "B",
+        "day": "Sunday",
+        "stage": "Upper Final + Lower Semifinal",
+        "matches": 2,
+        "format": "Bo3"
+      },
+      {
+        "split_week": "C",
+        "day": "Friday",
+        "stage": "Lower Final",
+        "matches": 1,
+        "format": "Bo3"
+      },
+      {
+        "split_week": "C",
+        "day": "Saturday",
+        "stage": "Media / buffer day",
+        "matches": 0,
+        "format": null
+      },
+      {
+        "split_week": "C",
+        "day": "Sunday",
+        "stage": "Grand Final",
+        "matches": 1,
+        "format": "Bo5"
+      }
+    ]
+  },
+  "annual_calendar": [
+    {
+      "weeks": "1-3",
+      "event": "Split 1",
+      "regional_event": true
+    },
+    {
+      "weeks": "4-6",
+      "event": "Split 2",
+      "regional_event": true
+    },
+    {
+      "weeks": "7-8",
+      "event": "IM 1",
+      "regional_event": false
+    },
+    {
+      "weeks": "9-11",
+      "event": "Split 3",
+      "regional_event": true
+    },
+    {
+      "weeks": "12",
+      "event": "MM Qualifier",
+      "regional_event": true
+    },
+    {
+      "weeks": "13-15",
+      "event": "Buffer / rest / MM preparation",
+      "regional_event": false
+    },
+    {
+      "weeks": "16-20",
+      "event": "MM window",
+      "regional_event": false
+    },
+    {
+      "weeks": "21-23",
+      "event": "Split 4",
+      "regional_event": true
+    },
+    {
+      "weeks": "24",
+      "event": "Buffer",
+      "regional_event": false
+    },
+    {
+      "weeks": "25-26",
+      "event": "IM 2",
+      "regional_event": false
+    },
+    {
+      "weeks": "27-29",
+      "event": "Split 5",
+      "regional_event": true
+    },
+    {
+      "weeks": "30",
+      "event": "Buffer / final playoff qualification lock",
+      "regional_event": false
+    },
+    {
+      "weeks": "31-32",
+      "event": "IM 3",
+      "regional_event": false
+    },
+    {
+      "weeks": "33-34",
+      "event": "Final Playoff",
+      "regional_event": true
+    },
+    {
+      "weeks": "35-37",
+      "event": "Buffer / rest / international preparation",
+      "regional_event": false
+    }
+  ],
+  "cup_week_compatibility": {
+    "restricted_weeks": [
+      5,
+      9,
+      11,
+      22,
+      24,
+      28,
+      30
+    ],
+    "restricted_days": [
+      "Monday",
+      "Tuesday",
+      "Wednesday"
+    ],
+    "l_meaf_primary_days": [
+      "Friday",
+      "Saturday",
+      "Sunday"
+    ],
+    "status": "compatible"
+  },
+  "mm_qualifier": {
+    "timing": "Week 12",
+    "basis": "cumulative_points_after_splits_1_to_3",
+    "field_size": 3,
+    "auto_qualification": {
+      "team": "Split 3 champion",
+      "rule": "guaranteed_entry_even_if_not_top_3_by_points",
+      "if_not_top_3": "insert_champion_and_displace_lowest_ranked_point_qualifier"
+    },
+    "tiebreakers": [
+      "better_split_3_placement",
+      "more_split_wins_across_splits_1_to_3",
+      "more_top_2_finishes_across_splits_1_to_3",
+      "head_to_head_if_applicable",
+      "administrative_tiebreaker_match_or_draw"
+    ],
+    "seeding": "seed_by_cumulative_points_after_field_is_determined",
+    "matches": [
+      {
+        "day": "Saturday",
+        "match": "Seed 2 vs Seed 3",
+        "format": "Bo5"
+      },
+      {
+        "day": "Sunday",
+        "match": "Seed 1 vs Saturday winner",
+        "format": "Bo5"
+      }
+    ],
+    "winner": "qualifies_for_MM"
+  },
+  "final_playoff": {
+    "timing": "Weeks 33-34",
+    "basis": "cumulative_points_after_splits_1_to_5",
+    "field_size": 5,
+    "format": "L_JP_L_TW_style_stepladder",
+    "match_format": "Bo5",
+    "auto_qualification": {
+      "team": "Split 5 champion",
+      "rule": "guaranteed_entry_as_seed_1_even_if_not_top_5_by_points",
+      "if_not_top_5": "insert_champion_as_seed_1_and_displace_lowest_ranked_point_qualifier"
+    },
+    "tiebreakers": [
+      "better_split_5_placement",
+      "more_split_wins_across_splits_1_to_5",
+      "more_top_2_finishes_across_splits_1_to_5",
+      "higher_points_in_splits_4_to_5",
+      "head_to_head_if_applicable",
+      "administrative_tiebreaker_match_or_draw"
+    ],
+    "seeding": {
+      "seed_1": "Split 5 champion",
+      "seed_2": "highest_remaining_point_qualifier",
+      "seed_3": "second_highest_remaining_point_qualifier",
+      "seed_4": "third_highest_remaining_point_qualifier",
+      "seed_5": "fourth_highest_remaining_point_qualifier"
+    },
+    "matches": [
+      {
+        "round": 1,
+        "day": "Saturday",
+        "match": "Seed 4 vs Seed 5",
+        "format": "Bo5"
+      },
+      {
+        "round": 2,
+        "day": "Sunday",
+        "match": "Seed 3 vs Round 1 winner",
+        "format": "Bo5"
+      },
+      {
+        "round": 3,
+        "day": "Saturday",
+        "match": "Seed 2 vs Round 2 winner",
+        "format": "Bo5"
+      },
+      {
+        "round": 4,
+        "day": "Sunday",
+        "match": "Seed 1 vs Round 3 winner",
+        "format": "Bo5"
+      }
+    ],
+    "winner": "L_MEAF_season_champion"
+  },
+  "annual_match_count": {
+    "split_tournaments": {
+      "events": 5,
+      "matches_per_event": 14,
+      "total": 70
+    },
+    "mm_qualifier": {
+      "events": 1,
+      "matches": 2
+    },
+    "final_playoff": {
+      "events": 1,
+      "matches": 4
+    },
+    "total_matches": 76,
+    "format_breakdown": {
+      "split_bo3_matches": 65,
+      "split_grand_final_bo5_matches": 5,
+      "mm_qualifier_bo5_matches": 2,
+      "final_playoff_bo5_matches": 4
+    }
+  },
+  "operating_principles": [
+    "L_MEAF is a tournament circuit rather than a round-robin league.",
+    "Split tournaments are the only source of circuit points by default.",
+    "Split 3 champion protection supports MM qualification relevance.",
+    "Split 5 champion protection supports late-season stakes and grants Seed 1 in the Final Playoff.",
+    "Friday-Saturday-Sunday is the preferred event rhythm.",
+    "Bracket reset is not used by default in split Grand Finals.",
+    "MM Qualifier and Final Playoff do not award additional circuit points unless added by league office."
+  ]
+}

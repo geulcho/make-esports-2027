@@ -1,0 +1,91 @@
+{
+  "version": "1.0",
+  "title": "MAKE Esports Combat Engine Spec",
+
+  "stats": {
+    "fields": ["MAC", "DRF", "TMF", "LAN", "MEC"],
+    "range": { "min": 50, "max": 99 },
+    "descriptions": {
+      "MAC": "Macro — 조합 주도권, Early 전투 횟수 및 Late 핵심",
+      "DRF": "Draft — 메타 적응력, BaseCP 기반값 결정",
+      "TMF": "Teamfight — 집단전, Mid 핵심",
+      "LAN": "Laning — 라인전, Early 핵심",
+      "MEC": "Mechanics — 기계적 실력, 전 페이즈 보조"
+    }
+  },
+
+  "meta": {
+    "all_combos": ["A", "B", "C", "D", "E", "F", "G"],
+    "active_per_match": 2,
+    "drf_bonus_on_hit": 10,
+    "drf_penalty_on_miss": -5,
+    "eff_drf_clamp": { "min": 20, "max": 100 },
+    "base_cp_formula": "effDRF * 1.5 + rand(1, 5)"
+  },
+
+  "phases": [
+    {
+      "id": 1,
+      "name": "Early Game",
+      "core_stats": ["LAN", "MEC"],
+      "fight_count": {
+        "rule": "MAC 우위 팀의 CP가 더 높으면 2회, 아니면 1회"
+      },
+      "power_formula": "CP + LAN + MEC + rand(1, 50)",
+      "reward_momentum": { "min": 2, "max": 3 },
+      "reward_cp": "same as momentum reward",
+      "cold_game_threshold": null
+    },
+    {
+      "id": 2,
+      "name": "Mid Game",
+      "core_stats": ["TMF", "MEC"],
+      "fight_count": { "min": 2, "max": 4 },
+      "power_formula": "CP + TMF + MEC + rand(1, 50)",
+      "reward_momentum": { "min": 1, "max": 2 },
+      "reward_cp": "same as momentum reward",
+      "cold_game_threshold": 10,
+      "cold_game_note": "모멘텀 격차 >= 10이면 즉시 세트 종료"
+    },
+    {
+      "id": 3,
+      "name": "Late Game",
+      "core_stats": ["MAC", "MEC"],
+      "fight_count": { "min": 2, "max": 3 },
+      "power_formula": "CP + MAC + MEC + rand(1, 50)",
+      "reward_momentum": { "min": 1, "max": 2 },
+      "reward_cp": "same as momentum reward",
+      "end_conditions": [
+        { "priority": 1, "condition": "momentum_gap >= 7", "label": "넥서스 파괴" },
+        { "priority": 2, "condition": "either_team_momentum >= 15", "label": "모멘텀 임계치" },
+        { "priority": 3, "condition": "fights_exhausted", "label": "판정승" }
+      ]
+    }
+  ],
+
+  "fight_resolution": {
+    "formula": "P(A wins) = pA^2 / (pA^2 + pB^2)",
+    "note": "Power² 확률 — 강팀 유리하나 항상 역전 가능"
+  },
+
+  "series": {
+    "format": "Bo3",
+    "sets_to_win": 2
+  },
+
+  "elo": {
+    "K": 32,
+    "formula": "delta = K * (result - expected)",
+    "expected_formula": "1 / (1 + 10^((eloB - eloA) / 400))",
+    "applied_per": "series",
+    "symmetric": true
+  },
+
+  "odds": {
+    "house_edge": 0.05,
+    "formula_a": "0.95 / pA",
+    "formula_b": "0.95 / pB",
+    "minimum": 1.01,
+    "type": "decimal"
+  }
+}

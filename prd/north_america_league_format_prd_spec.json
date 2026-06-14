@@ -1,0 +1,709 @@
+{
+  "document_name": "북미 리그 진행 방식 PRD",
+  "english_title": "North America League Format PRD",
+  "version": "v1.0",
+  "purpose": "Machine-readable and human-readable specification for a 24-team North American franchised esports league format.",
+  "league": {
+    "teams_total": 24,
+    "divisions": [
+      {
+        "name": "West",
+        "teams": 12
+      },
+      {
+        "name": "East",
+        "teams": 12
+      }
+    ],
+    "all_teams_have_home_markets": true,
+    "simultaneous_matches_allowed": true,
+    "standard_match_format": "Bo5"
+  },
+  "calendar_constraints": {
+    "regional_windows": [
+      {
+        "weeks": "1-6",
+        "length_weeks": 6,
+        "role": "First-half regular season rounds 1-12"
+      },
+      {
+        "weeks": "9-15",
+        "length_weeks": 7,
+        "role": "First-half regular season rounds 13-22 plus MM qualifier"
+      },
+      {
+        "weeks": "21-24",
+        "length_weeks": 4,
+        "role": "Second-half regular season rounds 1-9"
+      },
+      {
+        "weeks": "27-30",
+        "length_weeks": 4,
+        "role": "Second-half regular season rounds 10-18"
+      },
+      {
+        "weeks": "33-37",
+        "length_weeks": 5,
+        "role": "Second-half regular season rounds 19-23 plus final playoffs"
+      }
+    ],
+    "cup_weeks": [
+      5,
+      9,
+      11,
+      22,
+      24,
+      28,
+      30
+    ],
+    "cup_week_forbidden_days": [
+      "Monday",
+      "Tuesday",
+      "Wednesday"
+    ],
+    "regional_league_total_weeks": 26
+  },
+  "definitions": {
+    "match": "One Bo5 match unless otherwise specified.",
+    "playoff_best_of_n": "Each game in a playoff best-of-N series is one Bo5 match.",
+    "three_match_best_of_two_wins": "Up to three Bo5 matches; first team to win two Bo5 matches wins the series.",
+    "five_match_best_of_three_wins": "Up to five Bo5 matches; first team to win three Bo5 matches wins the series."
+  },
+  "first_half_regular_season": {
+    "format": "Intra-division double round robin",
+    "match_format": "Bo5",
+    "matches_per_team": 22,
+    "matches_per_division": 132,
+    "matches_total": 264,
+    "duration_weeks": 11,
+    "rounds": 22,
+    "matches_per_round": 12,
+    "default_days": [
+      "Thursday",
+      "Sunday"
+    ],
+    "schedule": [
+      {
+        "week": 1,
+        "day": "Thursday",
+        "round": 1,
+        "matches": 12
+      },
+      {
+        "week": 1,
+        "day": "Sunday",
+        "round": 2,
+        "matches": 12
+      },
+      {
+        "week": 2,
+        "day": "Thursday",
+        "round": 3,
+        "matches": 12
+      },
+      {
+        "week": 2,
+        "day": "Sunday",
+        "round": 4,
+        "matches": 12
+      },
+      {
+        "week": 3,
+        "day": "Thursday",
+        "round": 5,
+        "matches": 12
+      },
+      {
+        "week": 3,
+        "day": "Sunday",
+        "round": 6,
+        "matches": 12
+      },
+      {
+        "week": 4,
+        "day": "Thursday",
+        "round": 7,
+        "matches": 12
+      },
+      {
+        "week": 4,
+        "day": "Sunday",
+        "round": 8,
+        "matches": 12
+      },
+      {
+        "week": 5,
+        "day": "Thursday",
+        "round": 9,
+        "matches": 12,
+        "cup_week": true
+      },
+      {
+        "week": 5,
+        "day": "Sunday",
+        "round": 10,
+        "matches": 12,
+        "cup_week": true
+      },
+      {
+        "week": 6,
+        "day": "Thursday",
+        "round": 11,
+        "matches": 12
+      },
+      {
+        "week": 6,
+        "day": "Sunday",
+        "round": 12,
+        "matches": 12
+      },
+      {
+        "week": 9,
+        "day": "Thursday",
+        "round": 13,
+        "matches": 12,
+        "cup_week": true
+      },
+      {
+        "week": 9,
+        "day": "Sunday",
+        "round": 14,
+        "matches": 12,
+        "cup_week": true
+      },
+      {
+        "week": 10,
+        "day": "Thursday",
+        "round": 15,
+        "matches": 12
+      },
+      {
+        "week": 10,
+        "day": "Sunday",
+        "round": 16,
+        "matches": 12
+      },
+      {
+        "week": 11,
+        "day": "Thursday",
+        "round": 17,
+        "matches": 12,
+        "cup_week": true
+      },
+      {
+        "week": 11,
+        "day": "Sunday",
+        "round": 18,
+        "matches": 12,
+        "cup_week": true
+      },
+      {
+        "week": 12,
+        "day": "Thursday",
+        "round": 19,
+        "matches": 12
+      },
+      {
+        "week": 12,
+        "day": "Sunday",
+        "round": 20,
+        "matches": 12
+      },
+      {
+        "week": 13,
+        "day": "Thursday",
+        "round": 21,
+        "matches": 12
+      },
+      {
+        "week": 13,
+        "day": "Saturday",
+        "round": 22,
+        "matches": 12
+      },
+      {
+        "week": 13,
+        "day": "Sunday",
+        "round": "Tiebreaker reserve",
+        "matches": "as_needed"
+      }
+    ]
+  },
+  "mm_qualifier": {
+    "duration_weeks": 2,
+    "qualifiers": {
+      "West": 4,
+      "East": 4,
+      "total": 8
+    },
+    "representatives_to_MM": 1,
+    "match_format": "Single Bo5",
+    "all_matches_on_separate_days": true,
+    "matches_total": 7,
+    "bracket": [
+      {
+        "stage": "West Semifinal A",
+        "matchup": "West #1 vs West #4",
+        "format": "Single Bo5",
+        "venue": "West #1 home"
+      },
+      {
+        "stage": "East Semifinal A",
+        "matchup": "East #1 vs East #4",
+        "format": "Single Bo5",
+        "venue": "East #1 home"
+      },
+      {
+        "stage": "West Semifinal B",
+        "matchup": "West #2 vs West #3",
+        "format": "Single Bo5",
+        "venue": "West #2 home"
+      },
+      {
+        "stage": "East Semifinal B",
+        "matchup": "East #2 vs East #3",
+        "format": "Single Bo5",
+        "venue": "East #2 home"
+      },
+      {
+        "stage": "West Final",
+        "matchup": "West semifinal winners",
+        "format": "Single Bo5",
+        "venue": "Higher seed home"
+      },
+      {
+        "stage": "East Final",
+        "matchup": "East semifinal winners",
+        "format": "Single Bo5",
+        "venue": "Higher seed home"
+      },
+      {
+        "stage": "Final MM Qualification Match",
+        "matchup": "West winner vs East winner",
+        "format": "Single Bo5",
+        "venue": "Better first-half record home"
+      }
+    ],
+    "schedule": [
+      {
+        "week": 14,
+        "day": "Thursday",
+        "match": "West Semifinal A",
+        "matches": 1
+      },
+      {
+        "week": 14,
+        "day": "Friday",
+        "match": "East Semifinal A",
+        "matches": 1
+      },
+      {
+        "week": 14,
+        "day": "Saturday",
+        "match": "West Semifinal B",
+        "matches": 1
+      },
+      {
+        "week": 14,
+        "day": "Sunday",
+        "match": "East Semifinal B",
+        "matches": 1
+      },
+      {
+        "week": 15,
+        "day": "Thursday",
+        "match": "West Final",
+        "matches": 1
+      },
+      {
+        "week": 15,
+        "day": "Friday",
+        "match": "East Final",
+        "matches": 1
+      },
+      {
+        "week": 15,
+        "day": "Sunday",
+        "match": "Final MM Qualification Match",
+        "matches": 1
+      }
+    ]
+  },
+  "second_half_regular_season": {
+    "format": "24-team single round robin",
+    "match_format": "Bo5",
+    "first_half_records_retained": true,
+    "playoff_qualification_basis": "Cumulative standings, evaluated by division",
+    "matches_per_team": 23,
+    "matches_total": 276,
+    "duration_weeks": 10,
+    "rounds": 23,
+    "matches_per_round": 12,
+    "schedule": [
+      {
+        "week": 21,
+        "day": "Thursday",
+        "round": 1,
+        "matches": 12
+      },
+      {
+        "week": 21,
+        "day": "Saturday",
+        "round": 2,
+        "matches": 12
+      },
+      {
+        "week": 21,
+        "day": "Sunday",
+        "round": 3,
+        "matches": 12
+      },
+      {
+        "week": 22,
+        "day": "Thursday",
+        "round": 4,
+        "matches": 12,
+        "cup_week": true
+      },
+      {
+        "week": 22,
+        "day": "Sunday",
+        "round": 5,
+        "matches": 12,
+        "cup_week": true
+      },
+      {
+        "week": 23,
+        "day": "Thursday",
+        "round": 6,
+        "matches": 12
+      },
+      {
+        "week": 23,
+        "day": "Sunday",
+        "round": 7,
+        "matches": 12
+      },
+      {
+        "week": 24,
+        "day": "Thursday",
+        "round": 8,
+        "matches": 12,
+        "cup_week": true
+      },
+      {
+        "week": 24,
+        "day": "Sunday",
+        "round": 9,
+        "matches": 12,
+        "cup_week": true
+      },
+      {
+        "week": 27,
+        "day": "Thursday",
+        "round": 10,
+        "matches": 12
+      },
+      {
+        "week": 27,
+        "day": "Saturday",
+        "round": 11,
+        "matches": 12
+      },
+      {
+        "week": 27,
+        "day": "Sunday",
+        "round": 12,
+        "matches": 12
+      },
+      {
+        "week": 28,
+        "day": "Thursday",
+        "round": 13,
+        "matches": 12,
+        "cup_week": true
+      },
+      {
+        "week": 28,
+        "day": "Sunday",
+        "round": 14,
+        "matches": 12,
+        "cup_week": true
+      },
+      {
+        "week": 29,
+        "day": "Thursday",
+        "round": 15,
+        "matches": 12
+      },
+      {
+        "week": 29,
+        "day": "Sunday",
+        "round": 16,
+        "matches": 12
+      },
+      {
+        "week": 30,
+        "day": "Thursday",
+        "round": 17,
+        "matches": 12,
+        "cup_week": true
+      },
+      {
+        "week": 30,
+        "day": "Sunday",
+        "round": 18,
+        "matches": 12,
+        "cup_week": true
+      },
+      {
+        "week": 33,
+        "day": "Thursday",
+        "round": 19,
+        "matches": 12
+      },
+      {
+        "week": 33,
+        "day": "Saturday",
+        "round": 20,
+        "matches": 12
+      },
+      {
+        "week": 33,
+        "day": "Sunday",
+        "round": 21,
+        "matches": 12
+      },
+      {
+        "week": 34,
+        "day": "Thursday",
+        "round": 22,
+        "matches": 12
+      },
+      {
+        "week": 34,
+        "day": "Saturday",
+        "round": 23,
+        "matches": 12
+      },
+      {
+        "week": 34,
+        "day": "Sunday",
+        "round": "Tiebreaker reserve",
+        "matches": "as_needed"
+      }
+    ]
+  },
+  "final_playoffs": {
+    "duration_weeks": 3,
+    "qualified_teams": {
+      "West": 8,
+      "East": 8,
+      "total": 16
+    },
+    "all_matches_format": "Bo5 match units",
+    "stages": [
+      {
+        "name": "Division Quarterfinals",
+        "series_count": 8,
+        "matchups_per_division": [
+          "#1 vs #8",
+          "#2 vs #7",
+          "#3 vs #6",
+          "#4 vs #5"
+        ],
+        "format": "3-match best-of-2-wins",
+        "advantage": "Higher seed starts with 1 series win",
+        "actual_bo5_matches_per_series": "1-2"
+      },
+      {
+        "name": "Division Semifinals",
+        "series_count": 4,
+        "format": "3-match best-of-2-wins",
+        "matchups_per_division": [
+          "Winner #1/#8 vs Winner #4/#5",
+          "Winner #2/#7 vs Winner #3/#6"
+        ]
+      },
+      {
+        "name": "Division Finals",
+        "series_count": 2,
+        "format": "3-match best-of-2-wins"
+      },
+      {
+        "name": "Grand Final",
+        "series_count": 1,
+        "format": "5-match best-of-3-wins"
+      }
+    ],
+    "playoff_match_count_range": {
+      "minimum_bo5_matches": 23,
+      "maximum_bo5_matches": 39
+    },
+    "venue_rules": {
+      "division_rounds": "Higher seed hosts all matches in the series.",
+      "grand_final": "2-2-1 home format: matches 1,2,5 at home-advantage team; matches 3,4 at opposing team."
+    },
+    "schedule": [
+      {
+        "week": 35,
+        "day": "Monday",
+        "stage": "Division Quarterfinals Match 1",
+        "matches": 8,
+        "venue": "Higher seed home"
+      },
+      {
+        "week": 35,
+        "day": "Tuesday",
+        "stage": "Division Quarterfinals Match 2 if needed",
+        "matches": "up_to_8",
+        "venue": "Higher seed home"
+      },
+      {
+        "week": 35,
+        "day": "Wednesday",
+        "stage": "Travel/bracket processing",
+        "matches": 0
+      },
+      {
+        "week": 35,
+        "day": "Thursday",
+        "stage": "Division Semifinals Match 1",
+        "matches": 4,
+        "venue": "Higher seed home"
+      },
+      {
+        "week": 35,
+        "day": "Friday",
+        "stage": "Division Semifinals Match 2",
+        "matches": 4,
+        "venue": "Higher seed home"
+      },
+      {
+        "week": 35,
+        "day": "Saturday",
+        "stage": "Division Semifinals Match 3 if needed",
+        "matches": "up_to_4",
+        "venue": "Higher seed home"
+      },
+      {
+        "week": 35,
+        "day": "Sunday",
+        "stage": "Rest/media/ops buffer",
+        "matches": 0
+      },
+      {
+        "week": 36,
+        "day": "Tuesday",
+        "stage": "West/East Division Finals Match 1",
+        "matches": 2,
+        "venue": "Higher seed home"
+      },
+      {
+        "week": 36,
+        "day": "Wednesday",
+        "stage": "West/East Division Finals Match 2",
+        "matches": 2,
+        "venue": "Higher seed home"
+      },
+      {
+        "week": 36,
+        "day": "Friday",
+        "stage": "West/East Division Finals Match 3 if needed",
+        "matches": "up_to_2",
+        "venue": "Higher seed home"
+      },
+      {
+        "week": 36,
+        "day": "Saturday",
+        "stage": "Grand Final travel/media",
+        "matches": 0
+      },
+      {
+        "week": 36,
+        "day": "Sunday",
+        "stage": "Grand Final media day",
+        "matches": 0
+      },
+      {
+        "week": 37,
+        "day": "Monday",
+        "stage": "Grand Final Match 1",
+        "matches": 1,
+        "venue": "Home-advantage team home"
+      },
+      {
+        "week": 37,
+        "day": "Tuesday",
+        "stage": "Grand Final Match 2",
+        "matches": 1,
+        "venue": "Home-advantage team home"
+      },
+      {
+        "week": 37,
+        "day": "Wednesday",
+        "stage": "Travel day",
+        "matches": 0
+      },
+      {
+        "week": 37,
+        "day": "Thursday",
+        "stage": "Grand Final Match 3",
+        "matches": 1,
+        "venue": "Opposing team home"
+      },
+      {
+        "week": 37,
+        "day": "Friday",
+        "stage": "Grand Final Match 4 if needed",
+        "matches": "up_to_1",
+        "venue": "Opposing team home"
+      },
+      {
+        "week": 37,
+        "day": "Saturday",
+        "stage": "Travel day",
+        "matches": 0
+      },
+      {
+        "week": 37,
+        "day": "Sunday",
+        "stage": "Grand Final Match 5 if needed",
+        "matches": "up_to_1",
+        "venue": "Home-advantage team home"
+      }
+    ]
+  },
+  "tiebreakers": {
+    "ranking_order": [
+      "Match win rate",
+      "Match wins",
+      "Head-to-head record",
+      "Match differential",
+      "Map/game differential",
+      "Division record where applicable",
+      "Bo5 tiebreaker match"
+    ],
+    "reserve_days": [
+      {
+        "week": 13,
+        "day": "Sunday",
+        "purpose": "MM qualifier cutline and seeding"
+      },
+      {
+        "week": 34,
+        "day": "Sunday",
+        "purpose": "Final playoff cutline and seeding"
+      }
+    ]
+  },
+  "total_match_count": {
+    "first_half_regular_season": 264,
+    "mm_qualifier": 7,
+    "second_half_regular_season": 276,
+    "final_playoffs_minimum": 23,
+    "final_playoffs_maximum": 39,
+    "season_total_minimum": 570,
+    "season_total_maximum": 586
+  }
+}

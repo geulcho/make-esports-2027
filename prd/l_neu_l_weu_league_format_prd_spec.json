@@ -1,0 +1,699 @@
+{
+  "document_version": "v1.0",
+  "title": "L_NEU / L_WEU League Format PRD",
+  "league_codes": [
+    "L_NEU",
+    "L_WEU"
+  ],
+  "applies_to": [
+    "North Europe League",
+    "West Europe League"
+  ],
+  "league_structure": {
+    "teams": 12,
+    "venue_model": "single centralized arena",
+    "concurrent_matches": false,
+    "season_structure": "spring_summer_double_split",
+    "champions_per_year": 2,
+    "regular_season_match_format": "Bo1",
+    "playoff_match_formats": {
+      "upper_bracket_round_1": "Bo3",
+      "all_other_playoff_matches": "Bo5"
+    }
+  },
+  "global_calendar_constraints": {
+    "regional_windows": {
+      "spring": [
+        "Week 1-6",
+        "Week 9-15"
+      ],
+      "summer": [
+        "Week 21-24",
+        "Week 27-30",
+        "Week 33-37"
+      ]
+    },
+    "cup_weeks_no_regional_matches_monday_tuesday_wednesday": [
+      5,
+      9,
+      11,
+      22,
+      24,
+      28,
+      30
+    ],
+    "spring_champion_deadline": "Week 15 Sunday",
+    "summer_champion_deadline": "Week 37 Sunday"
+  },
+  "regular_season": {
+    "duration_weeks_per_split": 10,
+    "matchdays_per_split": 22,
+    "matches_per_matchday": 6,
+    "teams_play_once_per_matchday": true,
+    "matches_per_team": 22,
+    "total_matches_per_split": 132,
+    "effective_format": "12-team double round robin",
+    "weekly_pattern": {
+      "first_regular_season_week": [
+        "Friday",
+        "Saturday",
+        "Sunday"
+      ],
+      "middle_regular_season_weeks": [
+        "Saturday",
+        "Sunday"
+      ],
+      "last_regular_season_week": [
+        "Friday",
+        "Saturday",
+        "Sunday"
+      ]
+    }
+  },
+  "playoffs": {
+    "duration_weeks_per_split": 3,
+    "entrants": 8,
+    "format": "double_elimination",
+    "grand_final_bracket_reset": false,
+    "daily_match_limits": {
+      "Bo3": 2,
+      "Bo5": 1
+    },
+    "bracket": [
+      {
+        "id": "UB1",
+        "stage": "Upper Bracket Round 1",
+        "matchup": "Seed 1 vs Seed 8",
+        "format": "Bo3"
+      },
+      {
+        "id": "UB2",
+        "stage": "Upper Bracket Round 1",
+        "matchup": "Seed 4 vs Seed 5",
+        "format": "Bo3"
+      },
+      {
+        "id": "UB3",
+        "stage": "Upper Bracket Round 1",
+        "matchup": "Seed 2 vs Seed 7",
+        "format": "Bo3"
+      },
+      {
+        "id": "UB4",
+        "stage": "Upper Bracket Round 1",
+        "matchup": "Seed 3 vs Seed 6",
+        "format": "Bo3"
+      },
+      {
+        "id": "UB5",
+        "stage": "Upper Bracket Semifinal",
+        "matchup": "Winner UB1 vs Winner UB2",
+        "format": "Bo5"
+      },
+      {
+        "id": "UB6",
+        "stage": "Upper Bracket Semifinal",
+        "matchup": "Winner UB3 vs Winner UB4",
+        "format": "Bo5"
+      },
+      {
+        "id": "LB1",
+        "stage": "Lower Bracket Round 1",
+        "matchup": "Loser UB1 vs Loser UB2",
+        "format": "Bo5"
+      },
+      {
+        "id": "LB2",
+        "stage": "Lower Bracket Round 1",
+        "matchup": "Loser UB3 vs Loser UB4",
+        "format": "Bo5"
+      },
+      {
+        "id": "LB3",
+        "stage": "Lower Bracket Round 2",
+        "matchup": "Winner LB1 vs Loser UB6",
+        "format": "Bo5"
+      },
+      {
+        "id": "LB4",
+        "stage": "Lower Bracket Round 2",
+        "matchup": "Winner LB2 vs Loser UB5",
+        "format": "Bo5"
+      },
+      {
+        "id": "UBF",
+        "stage": "Upper Bracket Final",
+        "matchup": "Winner UB5 vs Winner UB6",
+        "format": "Bo5"
+      },
+      {
+        "id": "LB5",
+        "stage": "Lower Bracket Round 3",
+        "matchup": "Winner LB3 vs Winner LB4",
+        "format": "Bo5"
+      },
+      {
+        "id": "LBF",
+        "stage": "Lower Bracket Final",
+        "matchup": "Winner LB5 vs Loser UBF",
+        "format": "Bo5"
+      },
+      {
+        "id": "GF",
+        "stage": "Grand Final",
+        "matchup": "Winner UBF vs Winner LBF",
+        "format": "Bo5"
+      }
+    ],
+    "match_count_per_split": {
+      "Bo3": 4,
+      "Bo5": 10,
+      "total_match_objects": 14
+    }
+  },
+  "splits": {
+    "spring": {
+      "regular_season": [
+        {
+          "week": "Week 1",
+          "day": "Friday",
+          "matchday": "MD1",
+          "matches": 6,
+          "notes": "Opening regular-season week; first week uses Fri/Sat/Sun"
+        },
+        {
+          "week": "Week 1",
+          "day": "Saturday",
+          "matchday": "MD2",
+          "matches": 6,
+          "notes": "Opening weekend"
+        },
+        {
+          "week": "Week 1",
+          "day": "Sunday",
+          "matchday": "MD3",
+          "matches": 6,
+          "notes": "Opening weekend"
+        },
+        {
+          "week": "Week 2",
+          "day": "Saturday",
+          "matchday": "MD4",
+          "matches": 6,
+          "notes": "Standard regular-season week"
+        },
+        {
+          "week": "Week 2",
+          "day": "Sunday",
+          "matchday": "MD5",
+          "matches": 6,
+          "notes": "Standard regular-season week"
+        },
+        {
+          "week": "Week 3",
+          "day": "Saturday",
+          "matchday": "MD6",
+          "matches": 6,
+          "notes": "Standard regular-season week"
+        },
+        {
+          "week": "Week 3",
+          "day": "Sunday",
+          "matchday": "MD7",
+          "matches": 6,
+          "notes": "Standard regular-season week"
+        },
+        {
+          "week": "Week 4",
+          "day": "Saturday",
+          "matchday": "MD8",
+          "matches": 6,
+          "notes": "Standard regular-season week"
+        },
+        {
+          "week": "Week 4",
+          "day": "Sunday",
+          "matchday": "MD9",
+          "matches": 6,
+          "notes": "Standard regular-season week"
+        },
+        {
+          "week": "Week 5",
+          "day": "Saturday",
+          "matchday": "MD10",
+          "matches": 6,
+          "notes": "Cup week; regional matches only on weekend"
+        },
+        {
+          "week": "Week 5",
+          "day": "Sunday",
+          "matchday": "MD11",
+          "matches": 6,
+          "notes": "Cup week; regional matches only on weekend"
+        },
+        {
+          "week": "Week 6",
+          "day": "Saturday",
+          "matchday": "MD12",
+          "matches": 6,
+          "notes": "Standard regular-season week"
+        },
+        {
+          "week": "Week 6",
+          "day": "Sunday",
+          "matchday": "MD13",
+          "matches": 6,
+          "notes": "Standard regular-season week"
+        },
+        {
+          "week": "Week 9",
+          "day": "Saturday",
+          "matchday": "MD14",
+          "matches": 6,
+          "notes": "Cup week; regional matches only on weekend"
+        },
+        {
+          "week": "Week 9",
+          "day": "Sunday",
+          "matchday": "MD15",
+          "matches": 6,
+          "notes": "Cup week; regional matches only on weekend"
+        },
+        {
+          "week": "Week 10",
+          "day": "Saturday",
+          "matchday": "MD16",
+          "matches": 6,
+          "notes": "Standard regular-season week"
+        },
+        {
+          "week": "Week 10",
+          "day": "Sunday",
+          "matchday": "MD17",
+          "matches": 6,
+          "notes": "Standard regular-season week"
+        },
+        {
+          "week": "Week 11",
+          "day": "Saturday",
+          "matchday": "MD18",
+          "matches": 6,
+          "notes": "Cup week; regional matches only on weekend"
+        },
+        {
+          "week": "Week 11",
+          "day": "Sunday",
+          "matchday": "MD19",
+          "matches": 6,
+          "notes": "Cup week; regional matches only on weekend"
+        },
+        {
+          "week": "Week 12",
+          "day": "Friday",
+          "matchday": "MD20",
+          "matches": 6,
+          "notes": "Final regular-season week; uses Fri/Sat/Sun"
+        },
+        {
+          "week": "Week 12",
+          "day": "Saturday",
+          "matchday": "MD21",
+          "matches": 6,
+          "notes": "Final regular-season weekend"
+        },
+        {
+          "week": "Week 12",
+          "day": "Sunday",
+          "matchday": "MD22",
+          "matches": 6,
+          "notes": "Regular season ends"
+        }
+      ],
+      "playoffs": [
+        {
+          "week": "Week 13",
+          "day": "Thursday",
+          "stage": "Upper Bracket Round 1",
+          "match": "UB1: Seed 1 vs Seed 8 + UB2: Seed 4 vs Seed 5",
+          "format": "2 Bo3",
+          "notes": "Only upper bracket Round 1 is Bo3; two Bo3 matches may be played in one day."
+        },
+        {
+          "week": "Week 13",
+          "day": "Friday",
+          "stage": "Upper Bracket Round 1",
+          "match": "UB3: Seed 2 vs Seed 7 + UB4: Seed 3 vs Seed 6",
+          "format": "2 Bo3",
+          "notes": "Only upper bracket Round 1 is Bo3; two Bo3 matches may be played in one day."
+        },
+        {
+          "week": "Week 13",
+          "day": "Saturday",
+          "stage": "Upper Bracket Semifinal",
+          "match": "UB5: Winner UB1 vs Winner UB2",
+          "format": "1 Bo5",
+          "notes": "One Bo5 per day."
+        },
+        {
+          "week": "Week 13",
+          "day": "Sunday",
+          "stage": "Upper Bracket Semifinal",
+          "match": "UB6: Winner UB3 vs Winner UB4",
+          "format": "1 Bo5",
+          "notes": "One Bo5 per day."
+        },
+        {
+          "week": "Week 14",
+          "day": "Tuesday",
+          "stage": "Lower Bracket Round 1",
+          "match": "LB1: Loser UB1 vs Loser UB2",
+          "format": "1 Bo5",
+          "notes": "One Bo5 per day."
+        },
+        {
+          "week": "Week 14",
+          "day": "Wednesday",
+          "stage": "Lower Bracket Round 1",
+          "match": "LB2: Loser UB3 vs Loser UB4",
+          "format": "1 Bo5",
+          "notes": "One Bo5 per day."
+        },
+        {
+          "week": "Week 14",
+          "day": "Thursday",
+          "stage": "Lower Bracket Round 2",
+          "match": "LB3: Winner LB1 vs Loser UB6",
+          "format": "1 Bo5",
+          "notes": "One Bo5 per day."
+        },
+        {
+          "week": "Week 14",
+          "day": "Friday",
+          "stage": "Lower Bracket Round 2",
+          "match": "LB4: Winner LB2 vs Loser UB5",
+          "format": "1 Bo5",
+          "notes": "One Bo5 per day."
+        },
+        {
+          "week": "Week 14",
+          "day": "Saturday",
+          "stage": "Upper Bracket Final",
+          "match": "UBF: Winner UB5 vs Winner UB6",
+          "format": "1 Bo5",
+          "notes": "One Bo5 per day."
+        },
+        {
+          "week": "Week 14",
+          "day": "Sunday",
+          "stage": "Lower Bracket Round 3",
+          "match": "LB5: Winner LB3 vs Winner LB4",
+          "format": "1 Bo5",
+          "notes": "One Bo5 per day."
+        },
+        {
+          "week": "Week 15",
+          "day": "Saturday",
+          "stage": "Lower Bracket Final",
+          "match": "LBF: Winner LB5 vs Loser UBF",
+          "format": "1 Bo5",
+          "notes": "One Bo5 per day."
+        },
+        {
+          "week": "Week 15",
+          "day": "Sunday",
+          "stage": "Grand Final",
+          "match": "GF: Winner UBF vs Winner LBF",
+          "format": "1 Bo5",
+          "notes": "No bracket reset by default; Spring champion is decided."
+        }
+      ],
+      "champion_decided": "Week 15 Sunday"
+    },
+    "summer": {
+      "regular_season": [
+        {
+          "week": "Week 21",
+          "day": "Friday",
+          "matchday": "MD1",
+          "matches": 6,
+          "notes": "Opening regular-season week; first week uses Fri/Sat/Sun"
+        },
+        {
+          "week": "Week 21",
+          "day": "Saturday",
+          "matchday": "MD2",
+          "matches": 6,
+          "notes": "Opening weekend"
+        },
+        {
+          "week": "Week 21",
+          "day": "Sunday",
+          "matchday": "MD3",
+          "matches": 6,
+          "notes": "Opening weekend"
+        },
+        {
+          "week": "Week 22",
+          "day": "Saturday",
+          "matchday": "MD4",
+          "matches": 6,
+          "notes": "Cup week; regional matches only on weekend"
+        },
+        {
+          "week": "Week 22",
+          "day": "Sunday",
+          "matchday": "MD5",
+          "matches": 6,
+          "notes": "Cup week; regional matches only on weekend"
+        },
+        {
+          "week": "Week 23",
+          "day": "Saturday",
+          "matchday": "MD6",
+          "matches": 6,
+          "notes": "Standard regular-season week"
+        },
+        {
+          "week": "Week 23",
+          "day": "Sunday",
+          "matchday": "MD7",
+          "matches": 6,
+          "notes": "Standard regular-season week"
+        },
+        {
+          "week": "Week 24",
+          "day": "Saturday",
+          "matchday": "MD8",
+          "matches": 6,
+          "notes": "Cup week; regional matches only on weekend"
+        },
+        {
+          "week": "Week 24",
+          "day": "Sunday",
+          "matchday": "MD9",
+          "matches": 6,
+          "notes": "Cup week; regional matches only on weekend"
+        },
+        {
+          "week": "Week 27",
+          "day": "Saturday",
+          "matchday": "MD10",
+          "matches": 6,
+          "notes": "Standard regular-season week after IM"
+        },
+        {
+          "week": "Week 27",
+          "day": "Sunday",
+          "matchday": "MD11",
+          "matches": 6,
+          "notes": "Standard regular-season week after IM"
+        },
+        {
+          "week": "Week 28",
+          "day": "Saturday",
+          "matchday": "MD12",
+          "matches": 6,
+          "notes": "Cup week; regional matches only on weekend"
+        },
+        {
+          "week": "Week 28",
+          "day": "Sunday",
+          "matchday": "MD13",
+          "matches": 6,
+          "notes": "Cup week; regional matches only on weekend"
+        },
+        {
+          "week": "Week 29",
+          "day": "Saturday",
+          "matchday": "MD14",
+          "matches": 6,
+          "notes": "Standard regular-season week"
+        },
+        {
+          "week": "Week 29",
+          "day": "Sunday",
+          "matchday": "MD15",
+          "matches": 6,
+          "notes": "Standard regular-season week"
+        },
+        {
+          "week": "Week 30",
+          "day": "Saturday",
+          "matchday": "MD16",
+          "matches": 6,
+          "notes": "Cup week; regional matches only on weekend"
+        },
+        {
+          "week": "Week 30",
+          "day": "Sunday",
+          "matchday": "MD17",
+          "matches": 6,
+          "notes": "Cup week; regional matches only on weekend"
+        },
+        {
+          "week": "Week 33",
+          "day": "Saturday",
+          "matchday": "MD18",
+          "matches": 6,
+          "notes": "Standard regular-season week after IM"
+        },
+        {
+          "week": "Week 33",
+          "day": "Sunday",
+          "matchday": "MD19",
+          "matches": 6,
+          "notes": "Standard regular-season week after IM"
+        },
+        {
+          "week": "Week 34",
+          "day": "Friday",
+          "matchday": "MD20",
+          "matches": 6,
+          "notes": "Final regular-season week; uses Fri/Sat/Sun"
+        },
+        {
+          "week": "Week 34",
+          "day": "Saturday",
+          "matchday": "MD21",
+          "matches": 6,
+          "notes": "Final regular-season weekend"
+        },
+        {
+          "week": "Week 34",
+          "day": "Sunday",
+          "matchday": "MD22",
+          "matches": 6,
+          "notes": "Regular season ends"
+        }
+      ],
+      "playoffs": [
+        {
+          "week": "Week 35",
+          "day": "Thursday",
+          "stage": "Upper Bracket Round 1",
+          "match": "UB1: Seed 1 vs Seed 8 + UB2: Seed 4 vs Seed 5",
+          "format": "2 Bo3",
+          "notes": "Only upper bracket Round 1 is Bo3; two Bo3 matches may be played in one day."
+        },
+        {
+          "week": "Week 35",
+          "day": "Friday",
+          "stage": "Upper Bracket Round 1",
+          "match": "UB3: Seed 2 vs Seed 7 + UB4: Seed 3 vs Seed 6",
+          "format": "2 Bo3",
+          "notes": "Only upper bracket Round 1 is Bo3; two Bo3 matches may be played in one day."
+        },
+        {
+          "week": "Week 35",
+          "day": "Saturday",
+          "stage": "Upper Bracket Semifinal",
+          "match": "UB5: Winner UB1 vs Winner UB2",
+          "format": "1 Bo5",
+          "notes": "One Bo5 per day."
+        },
+        {
+          "week": "Week 35",
+          "day": "Sunday",
+          "stage": "Upper Bracket Semifinal",
+          "match": "UB6: Winner UB3 vs Winner UB4",
+          "format": "1 Bo5",
+          "notes": "One Bo5 per day."
+        },
+        {
+          "week": "Week 36",
+          "day": "Tuesday",
+          "stage": "Lower Bracket Round 1",
+          "match": "LB1: Loser UB1 vs Loser UB2",
+          "format": "1 Bo5",
+          "notes": "One Bo5 per day."
+        },
+        {
+          "week": "Week 36",
+          "day": "Wednesday",
+          "stage": "Lower Bracket Round 1",
+          "match": "LB2: Loser UB3 vs Loser UB4",
+          "format": "1 Bo5",
+          "notes": "One Bo5 per day."
+        },
+        {
+          "week": "Week 36",
+          "day": "Thursday",
+          "stage": "Lower Bracket Round 2",
+          "match": "LB3: Winner LB1 vs Loser UB6",
+          "format": "1 Bo5",
+          "notes": "One Bo5 per day."
+        },
+        {
+          "week": "Week 36",
+          "day": "Friday",
+          "stage": "Lower Bracket Round 2",
+          "match": "LB4: Winner LB2 vs Loser UB5",
+          "format": "1 Bo5",
+          "notes": "One Bo5 per day."
+        },
+        {
+          "week": "Week 36",
+          "day": "Saturday",
+          "stage": "Upper Bracket Final",
+          "match": "UBF: Winner UB5 vs Winner UB6",
+          "format": "1 Bo5",
+          "notes": "One Bo5 per day."
+        },
+        {
+          "week": "Week 36",
+          "day": "Sunday",
+          "stage": "Lower Bracket Round 3",
+          "match": "LB5: Winner LB3 vs Winner LB4",
+          "format": "1 Bo5",
+          "notes": "One Bo5 per day."
+        },
+        {
+          "week": "Week 37",
+          "day": "Saturday",
+          "stage": "Lower Bracket Final",
+          "match": "LBF: Winner LB5 vs Loser UBF",
+          "format": "1 Bo5",
+          "notes": "One Bo5 per day."
+        },
+        {
+          "week": "Week 37",
+          "day": "Sunday",
+          "stage": "Grand Final",
+          "match": "GF: Winner UBF vs Winner LBF",
+          "format": "1 Bo5",
+          "notes": "No bracket reset by default; Summer champion is decided."
+        }
+      ],
+      "champion_decided": "Week 37 Sunday"
+    }
+  },
+  "validation": {
+    "spring_regular_matchdays": 22,
+    "summer_regular_matchdays": 22,
+    "spring_regular_matches": 132,
+    "summer_regular_matches": 132,
+    "spring_playoff_scheduled_days": 12,
+    "summer_playoff_scheduled_days": 12,
+    "cup_week_conflicts": "none; regular-season matches are Friday/Saturday/Sunday only"
+  }
+}

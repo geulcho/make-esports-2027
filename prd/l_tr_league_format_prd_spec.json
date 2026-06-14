@@ -1,0 +1,780 @@
+{
+  "document": {
+    "title": "Turkey 8-Team League Format PRD",
+    "korean_title": "L_TR 8팀 리그 진행 방식 PRD",
+    "version": "1.0",
+    "created_for": "AI-readable esports league format planning",
+    "language": "ko-KR with structured English keys"
+  },
+  "leagues": [
+    "L_TR"
+  ],
+  "shared_format": false,
+  "league_structure": {
+    "teams": 8,
+    "venue_model": "single central venue",
+    "splits_per_year": [
+      "Spring",
+      "Summer"
+    ],
+    "champions_per_year": 2,
+    "regular_season_match_format": "Bo1",
+    "playoff_match_formats": [
+      "Bo3",
+      "Bo5"
+    ],
+    "regular_season_days": [
+      "Saturday",
+      "Sunday"
+    ],
+    "regular_matches_per_day": 4,
+    "team_participation": "Every team plays exactly once per regular-season matchday."
+  },
+  "regular_season": {
+    "format": "8-team double round robin",
+    "weeks": 7,
+    "matchdays": 14,
+    "matches_per_matchday": 4,
+    "matches_per_team": 14,
+    "total_matches_per_split": 56,
+    "rounds": 14,
+    "calculation": "8 teams * 14 matches per team / 2 = 56 total matches; 7 weeks * 2 matchdays * 4 matches = 56 total matches."
+  },
+  "playoffs": {
+    "duration_weeks_per_split": 3,
+    "entrants": 8,
+    "qualification": "All 8 teams qualify; regular season determines playoff seeding only.",
+    "format": "double_elimination, identical to L_WEU/L_NEU",
+    "grand_final_bracket_reset": false,
+    "daily_match_limits": {
+      "Bo3": 2,
+      "Bo5": 1
+    },
+    "format_rule": "Only Upper Bracket Round 1 is Bo3. Every other playoff match is Bo5.",
+    "bracket": [
+      {
+        "id": "UB1",
+        "stage": "Upper Bracket Round 1",
+        "stage_ko": "승자조 1라운드",
+        "matchup": "Seed 1 vs Seed 8",
+        "format": "Bo3"
+      },
+      {
+        "id": "UB2",
+        "stage": "Upper Bracket Round 1",
+        "stage_ko": "승자조 1라운드",
+        "matchup": "Seed 4 vs Seed 5",
+        "format": "Bo3"
+      },
+      {
+        "id": "UB3",
+        "stage": "Upper Bracket Round 1",
+        "stage_ko": "승자조 1라운드",
+        "matchup": "Seed 2 vs Seed 7",
+        "format": "Bo3"
+      },
+      {
+        "id": "UB4",
+        "stage": "Upper Bracket Round 1",
+        "stage_ko": "승자조 1라운드",
+        "matchup": "Seed 3 vs Seed 6",
+        "format": "Bo3"
+      },
+      {
+        "id": "UB5",
+        "stage": "Upper Bracket Semifinal",
+        "stage_ko": "승자조 4강",
+        "matchup": "Winner UB1 vs Winner UB2",
+        "format": "Bo5"
+      },
+      {
+        "id": "UB6",
+        "stage": "Upper Bracket Semifinal",
+        "stage_ko": "승자조 4강",
+        "matchup": "Winner UB3 vs Winner UB4",
+        "format": "Bo5"
+      },
+      {
+        "id": "LB1",
+        "stage": "Lower Bracket Round 1",
+        "stage_ko": "패자조 1라운드",
+        "matchup": "Loser UB1 vs Loser UB2",
+        "format": "Bo5"
+      },
+      {
+        "id": "LB2",
+        "stage": "Lower Bracket Round 1",
+        "stage_ko": "패자조 1라운드",
+        "matchup": "Loser UB3 vs Loser UB4",
+        "format": "Bo5"
+      },
+      {
+        "id": "LB3",
+        "stage": "Lower Bracket Round 2",
+        "stage_ko": "패자조 2라운드",
+        "matchup": "Winner LB1 vs Loser UB6",
+        "format": "Bo5"
+      },
+      {
+        "id": "LB4",
+        "stage": "Lower Bracket Round 2",
+        "stage_ko": "패자조 2라운드",
+        "matchup": "Winner LB2 vs Loser UB5",
+        "format": "Bo5"
+      },
+      {
+        "id": "UBF",
+        "stage": "Upper Bracket Final",
+        "stage_ko": "승자조 결승",
+        "matchup": "Winner UB5 vs Winner UB6",
+        "format": "Bo5"
+      },
+      {
+        "id": "LB5",
+        "stage": "Lower Bracket Round 3",
+        "stage_ko": "패자조 3라운드",
+        "matchup": "Winner LB3 vs Winner LB4",
+        "format": "Bo5"
+      },
+      {
+        "id": "LBF",
+        "stage": "Lower Bracket Final",
+        "stage_ko": "패자조 결승",
+        "matchup": "Winner LB5 vs Loser UBF",
+        "format": "Bo5"
+      },
+      {
+        "id": "GF",
+        "stage": "Grand Final",
+        "stage_ko": "최종 결승전",
+        "matchup": "Winner UBF vs Winner LBF",
+        "format": "Bo5"
+      }
+    ],
+    "match_count_per_split": {
+      "Bo3": 4,
+      "Bo5": 10,
+      "total_match_objects": 14
+    }
+  },
+  "global_calendar_mapping": {
+    "spring": {
+      "regular_season_weeks": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        9
+      ],
+      "regular_schedule": [
+        {
+          "week": 1,
+          "day": "Saturday",
+          "day_ko": "토요일",
+          "matchday": "MD1",
+          "round": "R1",
+          "matches": 4,
+          "match_type": "Bo1",
+          "team_participation": "Each of the 8 teams plays exactly once on this matchday.",
+          "note": "스프링 정규시즌 개막"
+        },
+        {
+          "week": 1,
+          "day": "Sunday",
+          "day_ko": "일요일",
+          "matchday": "MD2",
+          "round": "R2",
+          "matches": 4,
+          "match_type": "Bo1",
+          "team_participation": "Each of the 8 teams plays exactly once on this matchday.",
+          "note": "정규시즌 표준 매치데이"
+        },
+        {
+          "week": 2,
+          "day": "Saturday",
+          "day_ko": "토요일",
+          "matchday": "MD3",
+          "round": "R3",
+          "matches": 4,
+          "match_type": "Bo1",
+          "team_participation": "Each of the 8 teams plays exactly once on this matchday.",
+          "note": "정규시즌 표준 매치데이"
+        },
+        {
+          "week": 2,
+          "day": "Sunday",
+          "day_ko": "일요일",
+          "matchday": "MD4",
+          "round": "R4",
+          "matches": 4,
+          "match_type": "Bo1",
+          "team_participation": "Each of the 8 teams plays exactly once on this matchday.",
+          "note": "정규시즌 표준 매치데이"
+        },
+        {
+          "week": 3,
+          "day": "Saturday",
+          "day_ko": "토요일",
+          "matchday": "MD5",
+          "round": "R5",
+          "matches": 4,
+          "match_type": "Bo1",
+          "team_participation": "Each of the 8 teams plays exactly once on this matchday.",
+          "note": "정규시즌 표준 매치데이"
+        },
+        {
+          "week": 3,
+          "day": "Sunday",
+          "day_ko": "일요일",
+          "matchday": "MD6",
+          "round": "R6",
+          "matches": 4,
+          "match_type": "Bo1",
+          "team_participation": "Each of the 8 teams plays exactly once on this matchday.",
+          "note": "정규시즌 표준 매치데이"
+        },
+        {
+          "week": 4,
+          "day": "Saturday",
+          "day_ko": "토요일",
+          "matchday": "MD7",
+          "round": "R7",
+          "matches": 4,
+          "match_type": "Bo1",
+          "team_participation": "Each of the 8 teams plays exactly once on this matchday.",
+          "note": "정규시즌 표준 매치데이"
+        },
+        {
+          "week": 4,
+          "day": "Sunday",
+          "day_ko": "일요일",
+          "matchday": "MD8",
+          "round": "R8",
+          "matches": 4,
+          "match_type": "Bo1",
+          "team_participation": "Each of the 8 teams plays exactly once on this matchday.",
+          "note": "정규시즌 표준 매치데이"
+        },
+        {
+          "week": 5,
+          "day": "Saturday",
+          "day_ko": "토요일",
+          "matchday": "MD9",
+          "round": "R9",
+          "matches": 4,
+          "match_type": "Bo1",
+          "team_participation": "Each of the 8 teams plays exactly once on this matchday.",
+          "note": "컵 주간이나 주말 진행이므로 월/화/수 제한과 충돌 없음"
+        },
+        {
+          "week": 5,
+          "day": "Sunday",
+          "day_ko": "일요일",
+          "matchday": "MD10",
+          "round": "R10",
+          "matches": 4,
+          "match_type": "Bo1",
+          "team_participation": "Each of the 8 teams plays exactly once on this matchday.",
+          "note": "컵 주간이나 주말 진행이므로 월/화/수 제한과 충돌 없음"
+        },
+        {
+          "week": 6,
+          "day": "Saturday",
+          "day_ko": "토요일",
+          "matchday": "MD11",
+          "round": "R11",
+          "matches": 4,
+          "match_type": "Bo1",
+          "team_participation": "Each of the 8 teams plays exactly once on this matchday.",
+          "note": "정규시즌 표준 매치데이"
+        },
+        {
+          "week": 6,
+          "day": "Sunday",
+          "day_ko": "일요일",
+          "matchday": "MD12",
+          "round": "R12",
+          "matches": 4,
+          "match_type": "Bo1",
+          "team_participation": "Each of the 8 teams plays exactly once on this matchday.",
+          "note": "정규시즌 표준 매치데이"
+        },
+        {
+          "week": 9,
+          "day": "Saturday",
+          "day_ko": "토요일",
+          "matchday": "MD13",
+          "round": "R13",
+          "matches": 4,
+          "match_type": "Bo1",
+          "team_participation": "Each of the 8 teams plays exactly once on this matchday.",
+          "note": "컵 주간이나 주말 진행이므로 월/화/수 제한과 충돌 없음"
+        },
+        {
+          "week": 9,
+          "day": "Sunday",
+          "day_ko": "일요일",
+          "matchday": "MD14",
+          "round": "R14",
+          "matches": 4,
+          "match_type": "Bo1",
+          "team_participation": "Each of the 8 teams plays exactly once on this matchday.",
+          "note": "컵 주간이나 주말 진행이므로 월/화/수 제한과 충돌 없음; 스프링 정규시즌 종료"
+        }
+      ],
+      "playoff_weeks": [
+        10,
+        11,
+        12
+      ],
+      "playoff_schedule": [
+        {
+          "week": 10,
+          "day": "Thursday",
+          "day_ko": "목요일",
+          "stage": "Upper Bracket Round 1",
+          "match": "UB1: Seed 1 vs Seed 8 + UB2: Seed 4 vs Seed 5",
+          "matches": 2,
+          "format": "Bo3",
+          "note": "승자조 1라운드만 Bo3. 하루 2경기 가능."
+        },
+        {
+          "week": 10,
+          "day": "Friday",
+          "day_ko": "금요일",
+          "stage": "Upper Bracket Round 1",
+          "match": "UB3: Seed 2 vs Seed 7 + UB4: Seed 3 vs Seed 6",
+          "matches": 2,
+          "format": "Bo3",
+          "note": "승자조 1라운드만 Bo3. 하루 2경기 가능."
+        },
+        {
+          "week": 10,
+          "day": "Saturday",
+          "day_ko": "토요일",
+          "stage": "Upper Bracket Semifinal",
+          "match": "UB5: Winner UB1 vs Winner UB2",
+          "matches": 1,
+          "format": "Bo5",
+          "note": "Bo5는 하루 1경기."
+        },
+        {
+          "week": 10,
+          "day": "Sunday",
+          "day_ko": "일요일",
+          "stage": "Upper Bracket Semifinal",
+          "match": "UB6: Winner UB3 vs Winner UB4",
+          "matches": 1,
+          "format": "Bo5",
+          "note": "Bo5는 하루 1경기."
+        },
+        {
+          "week": 11,
+          "day": "Thursday",
+          "day_ko": "목요일",
+          "stage": "Lower Bracket Round 1",
+          "match": "LB1: Loser UB1 vs Loser UB2",
+          "matches": 1,
+          "format": "Bo5",
+          "note": "Week 11은 컵 주간이므로 월/화/수를 피하고 목요일부터 진행."
+        },
+        {
+          "week": 11,
+          "day": "Friday",
+          "day_ko": "금요일",
+          "stage": "Lower Bracket Round 1",
+          "match": "LB2: Loser UB3 vs Loser UB4",
+          "matches": 1,
+          "format": "Bo5",
+          "note": "Bo5는 하루 1경기."
+        },
+        {
+          "week": 11,
+          "day": "Saturday",
+          "day_ko": "토요일",
+          "stage": "Lower Bracket Round 2",
+          "match": "LB3: Winner LB1 vs Loser UB6",
+          "matches": 1,
+          "format": "Bo5",
+          "note": "Bo5는 하루 1경기."
+        },
+        {
+          "week": 11,
+          "day": "Sunday",
+          "day_ko": "일요일",
+          "stage": "Lower Bracket Round 2",
+          "match": "LB4: Winner LB2 vs Loser UB5",
+          "matches": 1,
+          "format": "Bo5",
+          "note": "Bo5는 하루 1경기."
+        },
+        {
+          "week": 12,
+          "day": "Tuesday",
+          "day_ko": "화요일",
+          "stage": "Upper Bracket Final",
+          "match": "UBF: Winner UB5 vs Winner UB6",
+          "matches": 1,
+          "format": "Bo5",
+          "note": "승자조 결승."
+        },
+        {
+          "week": 12,
+          "day": "Wednesday",
+          "day_ko": "수요일",
+          "stage": "Lower Bracket Round 3",
+          "match": "LB5: Winner LB3 vs Winner LB4",
+          "matches": 1,
+          "format": "Bo5",
+          "note": "패자조 잔류팀 결정."
+        },
+        {
+          "week": 12,
+          "day": "Saturday",
+          "day_ko": "토요일",
+          "stage": "Lower Bracket Final",
+          "match": "LBF: Winner LB5 vs Loser UBF",
+          "matches": 1,
+          "format": "Bo5",
+          "note": "최종 결승 진출팀 결정."
+        },
+        {
+          "week": 12,
+          "day": "Sunday",
+          "day_ko": "일요일",
+          "stage": "Grand Final",
+          "match": "GF: Winner UBF vs Winner LBF",
+          "matches": 1,
+          "format": "Bo5",
+          "note": "브래킷 리셋 없음. 스프링 우승팀 결정."
+        }
+      ],
+      "champion_decided_by": "Week 12 Sunday",
+      "note": "The spring league ends earlier than the Week 15 hard deadline because the 8-team format is compact."
+    },
+    "summer": {
+      "regular_season_weeks": [
+        21,
+        22,
+        23,
+        24,
+        28,
+        29,
+        30
+      ],
+      "regular_schedule": [
+        {
+          "week": 21,
+          "day": "Saturday",
+          "day_ko": "토요일",
+          "matchday": "MD1",
+          "round": "R1",
+          "matches": 4,
+          "match_type": "Bo1",
+          "team_participation": "Each of the 8 teams plays exactly once on this matchday.",
+          "note": "서머 정규시즌 개막"
+        },
+        {
+          "week": 21,
+          "day": "Sunday",
+          "day_ko": "일요일",
+          "matchday": "MD2",
+          "round": "R2",
+          "matches": 4,
+          "match_type": "Bo1",
+          "team_participation": "Each of the 8 teams plays exactly once on this matchday.",
+          "note": "정규시즌 표준 매치데이"
+        },
+        {
+          "week": 22,
+          "day": "Saturday",
+          "day_ko": "토요일",
+          "matchday": "MD3",
+          "round": "R3",
+          "matches": 4,
+          "match_type": "Bo1",
+          "team_participation": "Each of the 8 teams plays exactly once on this matchday.",
+          "note": "컵 주간이나 주말 진행이므로 월/화/수 제한과 충돌 없음"
+        },
+        {
+          "week": 22,
+          "day": "Sunday",
+          "day_ko": "일요일",
+          "matchday": "MD4",
+          "round": "R4",
+          "matches": 4,
+          "match_type": "Bo1",
+          "team_participation": "Each of the 8 teams plays exactly once on this matchday.",
+          "note": "컵 주간이나 주말 진행이므로 월/화/수 제한과 충돌 없음"
+        },
+        {
+          "week": 23,
+          "day": "Saturday",
+          "day_ko": "토요일",
+          "matchday": "MD5",
+          "round": "R5",
+          "matches": 4,
+          "match_type": "Bo1",
+          "team_participation": "Each of the 8 teams plays exactly once on this matchday.",
+          "note": "정규시즌 표준 매치데이"
+        },
+        {
+          "week": 23,
+          "day": "Sunday",
+          "day_ko": "일요일",
+          "matchday": "MD6",
+          "round": "R6",
+          "matches": 4,
+          "match_type": "Bo1",
+          "team_participation": "Each of the 8 teams plays exactly once on this matchday.",
+          "note": "정규시즌 표준 매치데이"
+        },
+        {
+          "week": 24,
+          "day": "Saturday",
+          "day_ko": "토요일",
+          "matchday": "MD7",
+          "round": "R7",
+          "matches": 4,
+          "match_type": "Bo1",
+          "team_participation": "Each of the 8 teams plays exactly once on this matchday.",
+          "note": "컵 주간이나 주말 진행이므로 월/화/수 제한과 충돌 없음"
+        },
+        {
+          "week": 24,
+          "day": "Sunday",
+          "day_ko": "일요일",
+          "matchday": "MD8",
+          "round": "R8",
+          "matches": 4,
+          "match_type": "Bo1",
+          "team_participation": "Each of the 8 teams plays exactly once on this matchday.",
+          "note": "컵 주간이나 주말 진행이므로 월/화/수 제한과 충돌 없음"
+        },
+        {
+          "week": 28,
+          "day": "Saturday",
+          "day_ko": "토요일",
+          "matchday": "MD9",
+          "round": "R9",
+          "matches": 4,
+          "match_type": "Bo1",
+          "team_participation": "Each of the 8 teams plays exactly once on this matchday.",
+          "note": "컵 주간이나 주말 진행이므로 월/화/수 제한과 충돌 없음"
+        },
+        {
+          "week": 28,
+          "day": "Sunday",
+          "day_ko": "일요일",
+          "matchday": "MD10",
+          "round": "R10",
+          "matches": 4,
+          "match_type": "Bo1",
+          "team_participation": "Each of the 8 teams plays exactly once on this matchday.",
+          "note": "컵 주간이나 주말 진행이므로 월/화/수 제한과 충돌 없음"
+        },
+        {
+          "week": 29,
+          "day": "Saturday",
+          "day_ko": "토요일",
+          "matchday": "MD11",
+          "round": "R11",
+          "matches": 4,
+          "match_type": "Bo1",
+          "team_participation": "Each of the 8 teams plays exactly once on this matchday.",
+          "note": "정규시즌 표준 매치데이"
+        },
+        {
+          "week": 29,
+          "day": "Sunday",
+          "day_ko": "일요일",
+          "matchday": "MD12",
+          "round": "R12",
+          "matches": 4,
+          "match_type": "Bo1",
+          "team_participation": "Each of the 8 teams plays exactly once on this matchday.",
+          "note": "정규시즌 표준 매치데이"
+        },
+        {
+          "week": 30,
+          "day": "Saturday",
+          "day_ko": "토요일",
+          "matchday": "MD13",
+          "round": "R13",
+          "matches": 4,
+          "match_type": "Bo1",
+          "team_participation": "Each of the 8 teams plays exactly once on this matchday.",
+          "note": "컵 주간이나 주말 진행이므로 월/화/수 제한과 충돌 없음"
+        },
+        {
+          "week": 30,
+          "day": "Sunday",
+          "day_ko": "일요일",
+          "matchday": "MD14",
+          "round": "R14",
+          "matches": 4,
+          "match_type": "Bo1",
+          "team_participation": "Each of the 8 teams plays exactly once on this matchday.",
+          "note": "컵 주간이나 주말 진행이므로 월/화/수 제한과 충돌 없음; 서머 정규시즌 종료"
+        }
+      ],
+      "playoff_weeks": [
+        33,
+        34,
+        35
+      ],
+      "playoff_schedule": [
+        {
+          "week": 33,
+          "day": "Thursday",
+          "day_ko": "목요일",
+          "stage": "Upper Bracket Round 1",
+          "match": "UB1: Seed 1 vs Seed 8 + UB2: Seed 4 vs Seed 5",
+          "matches": 2,
+          "format": "Bo3",
+          "note": "승자조 1라운드만 Bo3. 하루 2경기 가능."
+        },
+        {
+          "week": 33,
+          "day": "Friday",
+          "day_ko": "금요일",
+          "stage": "Upper Bracket Round 1",
+          "match": "UB3: Seed 2 vs Seed 7 + UB4: Seed 3 vs Seed 6",
+          "matches": 2,
+          "format": "Bo3",
+          "note": "승자조 1라운드만 Bo3. 하루 2경기 가능."
+        },
+        {
+          "week": 33,
+          "day": "Saturday",
+          "day_ko": "토요일",
+          "stage": "Upper Bracket Semifinal",
+          "match": "UB5: Winner UB1 vs Winner UB2",
+          "matches": 1,
+          "format": "Bo5",
+          "note": "Bo5는 하루 1경기."
+        },
+        {
+          "week": 33,
+          "day": "Sunday",
+          "day_ko": "일요일",
+          "stage": "Upper Bracket Semifinal",
+          "match": "UB6: Winner UB3 vs Winner UB4",
+          "matches": 1,
+          "format": "Bo5",
+          "note": "Bo5는 하루 1경기."
+        },
+        {
+          "week": 34,
+          "day": "Tuesday",
+          "day_ko": "화요일",
+          "stage": "Lower Bracket Round 1",
+          "match": "LB1: Loser UB1 vs Loser UB2",
+          "matches": 1,
+          "format": "Bo5",
+          "note": "Bo5는 하루 1경기."
+        },
+        {
+          "week": 34,
+          "day": "Wednesday",
+          "day_ko": "수요일",
+          "stage": "Lower Bracket Round 1",
+          "match": "LB2: Loser UB3 vs Loser UB4",
+          "matches": 1,
+          "format": "Bo5",
+          "note": "Bo5는 하루 1경기."
+        },
+        {
+          "week": 34,
+          "day": "Thursday",
+          "day_ko": "목요일",
+          "stage": "Lower Bracket Round 2",
+          "match": "LB3: Winner LB1 vs Loser UB6",
+          "matches": 1,
+          "format": "Bo5",
+          "note": "Bo5는 하루 1경기."
+        },
+        {
+          "week": 34,
+          "day": "Friday",
+          "day_ko": "금요일",
+          "stage": "Lower Bracket Round 2",
+          "match": "LB4: Winner LB2 vs Loser UB5",
+          "matches": 1,
+          "format": "Bo5",
+          "note": "Bo5는 하루 1경기."
+        },
+        {
+          "week": 34,
+          "day": "Saturday",
+          "day_ko": "토요일",
+          "stage": "Upper Bracket Final",
+          "match": "UBF: Winner UB5 vs Winner UB6",
+          "matches": 1,
+          "format": "Bo5",
+          "note": "승자조 결승."
+        },
+        {
+          "week": 34,
+          "day": "Sunday",
+          "day_ko": "일요일",
+          "stage": "Lower Bracket Round 3",
+          "match": "LB5: Winner LB3 vs Winner LB4",
+          "matches": 1,
+          "format": "Bo5",
+          "note": "패자조 잔류팀 결정."
+        },
+        {
+          "week": 35,
+          "day": "Saturday",
+          "day_ko": "토요일",
+          "stage": "Lower Bracket Final",
+          "match": "LBF: Winner LB5 vs Loser UBF",
+          "matches": 1,
+          "format": "Bo5",
+          "note": "최종 결승 진출팀 결정."
+        },
+        {
+          "week": 35,
+          "day": "Sunday",
+          "day_ko": "일요일",
+          "stage": "Grand Final",
+          "match": "GF: Winner UBF vs Winner LBF",
+          "matches": 1,
+          "format": "Bo5",
+          "note": "브래킷 리셋 없음. 서머 우승팀 결정."
+        }
+      ],
+      "champion_decided_by": "Week 35 Sunday",
+      "note": "Week 27 is left as a post-IM buffer; playoffs are placed after the Week 31~32 IM window to avoid interrupting the bracket."
+    }
+  },
+  "cup_week_constraints": {
+    "cup_weeks": [
+      5,
+      9,
+      11,
+      22,
+      24,
+      28,
+      30
+    ],
+    "restricted_days": [
+      "Monday",
+      "Tuesday",
+      "Wednesday"
+    ],
+    "compliance": "Regular season is only on weekends. Spring playoff Week 11 uses only Thursday through Sunday. No scheduled L_TR match violates the Monday/Tuesday/Wednesday cup-week restriction."
+  },
+  "ranking_and_tiebreakers": {
+    "ranking_order": [
+      "match win rate",
+      "match wins",
+      "head-to-head",
+      "tiebreaker match if necessary"
+    ],
+    "note": "All teams qualify for playoffs, so tiebreakers mainly determine seeding and side-selection privileges."
+  }
+}
