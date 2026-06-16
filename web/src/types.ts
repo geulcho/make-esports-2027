@@ -180,3 +180,72 @@ export interface CupState {
   champion: string | null;
   completed: boolean;
 }
+
+// ─── Midseason Mayhem types ───────────────────────────────────────────────────
+
+export type MMFormat = 'Bo1' | 'Bo3' | 'Bo5';
+
+export interface MMMatch {
+  id: string;
+  teamA: string;
+  teamB: string;
+  format: MMFormat;
+  scoreA: number;
+  scoreB: number;
+  winner: string | null;
+  oddsA: number;
+  oddsB: number;
+}
+
+export interface MMSubRound {
+  key: string;         // 'R1' | 'R2W' | 'R2L' | 'R3A' | 'R3B' | 'R3C' | 'R4A' | 'R4B' | 'R5'
+  label: string;       // display label (e.g. '1라운드')
+  roundCol: number;    // 1–5, which display column this belongs to
+  recordGroup: string; // '0-0' | '1-0' | etc.
+  format: MMFormat;
+  stakes: 'advancement' | 'elimination' | 'decisive' | 'non-decisive';
+  week: number;        // season week number (17 or 18)
+  day: string;         // 'Monday' | 'Tuesday' | etc.
+  matches: MMMatch[];
+  completed: boolean;
+}
+
+export interface MMParticipant {
+  clubId: string;
+  leagueId: string;
+  w16Elo: number;
+  seedBand: 1 | 2 | 3 | 4;  // 0 = not yet seeded
+  swissWins: number;
+  swissLosses: number;
+  swissGameDiff: number;     // total games won minus lost across Swiss
+  qualified: boolean;        // reached 3 wins
+  eliminated: boolean;       // reached 3 losses
+  priorOpponents: string[];  // clubIds played so far (no-rematch rule)
+  qualResult: {              // how they qualified for MM (league final result)
+    repScore: number;
+    oppScore: number;
+    opponent: string | null;
+    isSeries: boolean;       // true = series score, false = single-match game score
+  } | null;
+}
+
+export interface MMKnockoutMatch {
+  slot: 'QF1' | 'QF2' | 'QF3' | 'QF4' | 'SF1' | 'SF2' | 'GF';
+  side: 'A' | 'B' | null;
+  teamA: string | null;
+  teamB: string | null;
+  scoreA: number;
+  scoreB: number;
+  winner: string | null;
+  oddsA: number;
+  oddsB: number;
+}
+
+export interface MMState {
+  season: number;
+  participants: MMParticipant[];
+  swissRounds: MMSubRound[];
+  knockoutMatches: MMKnockoutMatch[];
+  champion: string | null;
+  phase: 'pre' | 'swiss' | 'knockout' | 'completed';
+}
