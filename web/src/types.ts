@@ -147,3 +147,36 @@ export interface LeagueSimState {
   meafSplits?: PlayoffState[];      // archived completed split brackets [0]=split1…[4]=split5
   meafMMQual?: PlayoffState;        // MM qualifier bracket
 }
+
+// ─── Regional Cup types ───────────────────────────────────────────────────────
+
+export interface CupMatch {
+  id: string;
+  teamA: string | null;
+  teamB: string | null;
+  scoreA: number;
+  scoreB: number;
+  winner: string | null;
+  oddsA: number;
+  oddsB: number;
+}
+
+export interface CupRound {
+  stage: string;          // 'r1' | 'r64' | 'r32' | 'r16' | 'qf' | 'sf' | 'final' | 'r1s' | 'r2n' | 'r2s' | 'r2'
+  label: string;
+  weekNum: number;
+  matches: CupMatch[];
+  matchesPerSlot: number[];
+  slotsCompleted: number;
+  slotsTotal: number;
+  completed: boolean;
+}
+
+export interface CupState {
+  cupId: string;                            // 'EGT' | 'COPA' | 'APEX'
+  currentStage: string;
+  rounds: CupRound[];
+  directEntrants: Record<string, string[]>; // stage → team ids (from prev-year standings)
+  champion: string | null;
+  completed: boolean;
+}

@@ -12,6 +12,12 @@ import { meafRanksFromSplit } from '../engine/bracket';
 const REGIONS = ['APAC', 'EMEA', 'AMER'];
 type TabKey = 'standings' | 'qualifier' | 'playoffs' | 'results' | 'teams' | 'season_review';
 
+const REGION_CUP: Record<string, { id: string; label: string; color: string }> = {
+  APAC: { id: 'APEX', label: 'APEX', color: 'text-amber-400 hover:text-amber-300' },
+  EMEA: { id: 'EGT',  label: 'EGT',  color: 'text-blue-400 hover:text-blue-300'  },
+  AMER: { id: 'COPA', label: 'COPA', color: 'text-green-400 hover:text-green-300' },
+};
+
 // ─── Odds helpers ─────────────────────────────────────────────────────────────
 
 /** Red-shade class for an upset winner's odds. Returns '' when not applicable. */
@@ -166,26 +172,55 @@ function StandingsTableNEUWEU({ records }: { records: TeamRecord[] }) {
 
 // ─── Season Review ────────────────────────────────────────────────────────────
 
-// International qualification spots per league: finalRank → badge[]
-// Edit these to configure how many teams each league sends to each tournament.
-const INTL_SPOTS: Record<string, Record<number, string[]>> = {
-  L_NA:   { 1: ['WT'], 2: ['WT'], 3: ['WT'], 4: ['VSC'] },
-  L_KR:   { 1: ['WT'], 2: ['WT'], 3: ['VSC'] },
-  L_CN:   { 1: ['WT'], 2: ['WT'], 3: ['VSC'] },
-  L_WEU:  { 1: ['WT'], 2: ['WT'], 3: ['VSC'] },
-  L_NEU:  { 1: ['WT'], 2: ['VSC'] },
-  L_SEA:  { 1: ['WT'], 2: ['VSC'] },
-  L_BR:   { 1: ['WT'], 2: ['VSC'] },
-  L_DE:   { 1: ['VSC'] },
-  L_EEU:  { 1: ['VSC'] },
-  L_SEU:  { 1: ['VSC'] },
-  L_RU:   { 1: ['VSC'] },
-  L_TR:   { 1: ['VSC'] },
-  L_MEAF: { 1: ['VSC'] },
-  L_TW:   { 1: ['VSC'] },
-  L_JP:   { 1: ['VSC'] },
-  L_SA:   { 1: ['VSC'] },
+// WT slots per league (coeff ranks 1–4: 3 slots, 5–8: 2 slots, 9–16: 1 slot)
+const WT_SLOTS: Record<string, number> = {
+  L_KR: 3, L_NA: 3, L_CN: 3, L_NEU: 3,
+  L_WEU: 2, L_DE: 2, L_SEU: 2, L_TW: 2,
+  L_RU: 1, L_BR: 1, L_SEA: 1, L_JP: 1,
+  L_EEU: 1, L_SA: 1, L_TR: 1, L_MEAF: 1,
 };
+
+// VSC regional qualifier slots per league
+const VSC_SLOTS: Record<string, number> = {
+  L_CN: 3, L_KR: 2, L_NA: 4, L_BR: 2, L_SA: 2,
+  L_TW: 1, L_JP: 1, L_SEA: 1,
+  L_NEU: 2, L_WEU: 2, L_DE: 2, L_SEU: 2,
+  L_EEU: 2, L_RU: 2, L_TR: 2, L_MEAF: 2,
+};
+
+// Compute dynamic WT/VSC badge map applying cup champion cascade
+function computeLeagueBadges(
+  leagueId: string,
+  orderedTeamIds: string[],
+  cupChampions: Record<string, string | null | undefined>,
+): Record<string, string[]> {
+  const wtBase  = WT_SLOTS[leagueId]  ?? 0;
+  const vscBase = VSC_SLOTS[leagueId] ?? 0;
+  if (wtBase === 0 && vscBase === 0) return {};
+
+  const wtSet = new Set<string>(orderedTeamIds.slice(0, wtBase));
+
+  for (const cupId of ['MM', 'APEX', 'EGT', 'COPA']) {
+    const champion = cupChampions[cupId];
+    if (!champion) continue;
+    if (clubById(champion)?.league_id !== leagueId) continue;
+    if (wtSet.has(champion)) {
+      for (const id of orderedTeamIds) {
+        if (!wtSet.has(id)) { wtSet.add(id); break; }
+      }
+    } else {
+      wtSet.add(champion);
+    }
+  }
+
+  const result: Record<string, string[]> = {};
+  let vscLeft = vscBase;
+  for (const id of orderedTeamIds) {
+    if (wtSet.has(id)) result[id] = ['WT'];
+    else if (vscLeft > 0) { result[id] = ['VSC']; vscLeft--; }
+  }
+  return result;
+}
 
 const STAGE_LABELS: Record<string, string> = {
   champion: 'Champion',
@@ -209,7 +244,6 @@ interface FinalEntry {
 }
 
 function computeFinalRankings(leagueId: string, state: LeagueSimState): FinalEntry[] {
-  const spots = INTL_SPOTS[leagueId] ?? {};
   const regStandings = state.fullLeagueState?.standings ?? state.standings;
 
   const getRecord = (id: string): TeamRecord | undefined =>
@@ -224,7 +258,7 @@ function computeFinalRankings(leagueId: string, state: LeagueSimState): FinalEnt
   const make = (id: string, rank: number, stage: string): FinalEntry => ({
     rank, clubId: id, stage,
     record: getRecord(id),
-    badges: spots[rank] ?? [],
+    badges: [],
   });
 
   const po = state.playoffs;
@@ -268,11 +302,20 @@ function computeFinalRankings(leagueId: string, state: LeagueSimState): FinalEnt
 }
 
 function SeasonReview({ leagueId, state }: { leagueId: string; state: LeagueSimState }) {
+  const cupStates = useStore(s => s.cupStates);
   const entries = computeFinalRankings(leagueId, state);
 
   if (entries.length === 0) {
     return <p className="text-center text-slate-500 py-12 text-sm">Season not yet started</p>;
   }
+
+  const orderedTeamIds = entries.map(e => e.clubId);
+  const cupChampions = {
+    APEX: cupStates['APEX']?.champion,
+    EGT:  cupStates['EGT']?.champion,
+    COPA: cupStates['COPA']?.champion,
+  };
+  const badgeMap = computeLeagueBadges(leagueId, orderedTeamIds, cupChampions);
 
   return (
     <div>
@@ -324,7 +367,7 @@ function SeasonReview({ leagueId, state }: { leagueId: string; state: LeagueSimS
                 </td>
                 <td className="py-2">
                   <div className="flex gap-1 flex-wrap">
-                    {e.badges.map(b => (
+                    {(badgeMap[e.clubId] ?? []).map(b => (
                       <span key={b} className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${
                         b === 'WT'
                           ? 'bg-purple-500/10 text-purple-400 border-purple-500/20'
@@ -985,8 +1028,8 @@ function lkrSplitRanks(po: PlayoffState, regStandings: { clubId: string }[]): Ma
 }
 
 function LKRSeasonReview({ state }: { state: LeagueSimState }) {
+  const cupStates = useStore(s => s.cupStates);
   const allClubs = clubsByLeague('L_KR');
-  const spots    = INTL_SPOTS['L_KR'] ?? {};
 
   const springReg  = state.springStandings ?? [];
   const summerReg  = state.fullLeagueState?.standings ?? state.standings;
@@ -1013,6 +1056,14 @@ function LKRSeasonReview({ state }: { state: LeagueSimState }) {
     return { clubId: club.id, sPts, uPts, total: sPts + uPts, summerRank: uRank };
   });
   combined.sort((a, b) => b.total !== a.total ? b.total - a.total : a.summerRank - b.summerRank);
+
+  const lkrOrderedIds = combined.map(c => c.clubId);
+  const lkrCupChampions = {
+    APEX: cupStates['APEX']?.champion,
+    EGT:  cupStates['EGT']?.champion,
+    COPA: cupStates['COPA']?.champion,
+  };
+  const lkrBadgeMap = computeLeagueBadges('L_KR', lkrOrderedIds, lkrCupChampions);
 
   return (
     <div>
@@ -1042,7 +1093,7 @@ function LKRSeasonReview({ state }: { state: LeagueSimState }) {
             const rec      = recordMap.get(c.clubId);
             const sd       = rec ? rec.setsFor - rec.setsAgainst : null;
             const isChamp  = summerRanks.get(c.clubId)?.stage === 'champion';
-            const badges   = spots[rank] ?? [];
+            const badges   = lkrBadgeMap[c.clubId] ?? [];
             return (
               <tr key={c.clubId} className={`border-b border-bg-border/50 hover:bg-bg-hover ${isChamp ? 'bg-tier-s/5' : ''}`}>
                 <td className="py-2 text-slate-500 text-xs font-mono">{rank}</td>
@@ -1080,8 +1131,8 @@ function LKRSeasonReview({ state }: { state: LeagueSimState }) {
 // ─── L_BR / L_SA Season Review ────────────────────────────────────────────────
 
 function BRSASeasonReview({ leagueId, state }: { leagueId: string; state: LeagueSimState }) {
+  const cupStates = useStore(s => s.cupStates);
   const allClubs = clubsByLeague(leagueId);
-  const spots    = INTL_SPOTS[leagueId] ?? {};
 
   const springReg  = state.springStandings ?? [];
   const summerReg  = state.fullLeagueState?.standings ?? state.standings;
@@ -1107,6 +1158,14 @@ function BRSASeasonReview({ leagueId, state }: { leagueId: string; state: League
     return { clubId: club.id, sPts, uPts, total: sPts + uPts, summerRank: uRank };
   });
   combined.sort((a, b) => b.total !== a.total ? b.total - a.total : a.summerRank - b.summerRank);
+
+  const brsaOrderedIds = combined.map(c => c.clubId);
+  const brsaCupChampions = {
+    APEX: cupStates['APEX']?.champion,
+    EGT:  cupStates['EGT']?.champion,
+    COPA: cupStates['COPA']?.champion,
+  };
+  const brsaBadgeMap = computeLeagueBadges(leagueId, brsaOrderedIds, brsaCupChampions);
 
   return (
     <div>
@@ -1136,7 +1195,7 @@ function BRSASeasonReview({ leagueId, state }: { leagueId: string; state: League
             const rec      = recordMap.get(c.clubId);
             const gd       = rec ? rec.setsFor - rec.setsAgainst : null;
             const isChamp  = summerRanks.get(c.clubId)?.stage === 'champion';
-            const badges   = spots[rank] ?? [];
+            const badges   = brsaBadgeMap[c.clubId] ?? [];
             return (
               <tr key={c.clubId} className={`border-b border-bg-border/50 hover:bg-bg-hover ${isChamp ? 'bg-tier-s/5' : ''}`}>
                 <td className="py-2 text-slate-500 text-xs font-mono">{rank}</td>
@@ -1791,8 +1850,8 @@ const NEU_STAGE_LABELS: Record<string, string> = {
 };
 
 function NEUWEUSeasonReview({ leagueId, state }: { leagueId: string; state: LeagueSimState }) {
+  const cupStates = useStore(s => s.cupStates);
   const allClubs = clubsByLeague(leagueId);
-  const spots    = INTL_SPOTS[leagueId] ?? {};
 
   const springReg = state.springStandings ?? [];
   const summerReg = state.fullLeagueState?.standings ?? state.standings;
@@ -1824,13 +1883,18 @@ function NEUWEUSeasonReview({ leagueId, state }: { leagueId: string; state: Leag
 
   rows.sort((a, b) => {
     if (b.total !== a.total) return b.total - a.total;
-    // 1. Summer playoff rank (lower = better)
     if (a.uRank !== b.uRank) return a.uRank - b.uRank;
-    // 2. Summer regular season points
     if (b.uRegPts !== a.uRegPts) return b.uRegPts - a.uRegPts;
-    // 3. Annual regular season points
     return (b.sRegPts + b.uRegPts) - (a.sRegPts + a.uRegPts);
   });
+
+  const neuOrderedIds = rows.map(r => r.clubId);
+  const neuCupChampions = {
+    APEX: cupStates['APEX']?.champion,
+    EGT:  cupStates['EGT']?.champion,
+    COPA: cupStates['COPA']?.champion,
+  };
+  const neuBadgeMap = computeLeagueBadges(leagueId, neuOrderedIds, neuCupChampions);
 
   const hasSpring = springReg.length > 0;
   const hasSummer = summerReg.length > 0;
@@ -1887,7 +1951,7 @@ function NEUWEUSeasonReview({ leagueId, state }: { leagueId: string; state: Leag
               const club = clubById(row.clubId);
               if (!club) return null;
               const rank = idx + 1;
-              const badges = spots[rank] ?? [];
+              const badges = neuBadgeMap[row.clubId] ?? [];
               const isSummerChamp = row.uStage === 'champion';
               const isAnyChamp = isSummerChamp || row.sStage === 'champion';
               const sScD = row.sRec ? row.sRec.momFor - row.sRec.momAgainst : null;
@@ -1965,8 +2029,8 @@ const TR_SUMMER_PO_PTS: Record<number, number> = {
 };
 
 function TRSeasonReview({ state }: { state: LeagueSimState }) {
+  const cupStates = useStore(s => s.cupStates);
   const allClubs = clubsByLeague('L_TR');
-  const spots    = INTL_SPOTS['L_TR'] ?? {};
 
   const springReg = state.springStandings ?? [];
   const summerReg = state.fullLeagueState?.standings ?? state.standings;
@@ -2002,6 +2066,14 @@ function TRSeasonReview({ state }: { state: LeagueSimState }) {
     if (b.uRegPts !== a.uRegPts) return b.uRegPts - a.uRegPts;
     return (b.sRegPts + b.uRegPts) - (a.sRegPts + a.uRegPts);
   });
+
+  const trOrderedIds = rows.map(r => r.clubId);
+  const trCupChampions = {
+    APEX: cupStates['APEX']?.champion,
+    EGT:  cupStates['EGT']?.champion,
+    COPA: cupStates['COPA']?.champion,
+  };
+  const trBadgeMap = computeLeagueBadges('L_TR', trOrderedIds, trCupChampions);
 
   const hasSpring = springReg.length > 0;
   const hasSummer = summerReg.length > 0;
@@ -2054,7 +2126,7 @@ function TRSeasonReview({ state }: { state: LeagueSimState }) {
               const club = clubById(row.clubId);
               if (!club) return null;
               const rank = idx + 1;
-              const badges = spots[rank] ?? [];
+              const badges = trBadgeMap[row.clubId] ?? [];
               const isSummerChamp = row.uStage === 'champion';
               const isAnyChamp = isSummerChamp || row.sStage === 'champion';
               const sTotal = row.sPOPts + row.sRegPts;
@@ -2568,8 +2640,8 @@ function twjpRanksFromPO(po: PlayoffState, regStandings: { clubId: string }[]): 
 }
 
 function TWJPSeasonReview({ leagueId, state }: { leagueId: string; state: LeagueSimState }) {
+  const cupStates = useStore(s => s.cupStates);
   const allClubs = clubsByLeague(leagueId);
-  const spots    = INTL_SPOTS[leagueId] ?? {};
 
   const summerReg = state.fullLeagueState?.standings ?? state.standings;
   const summerPO  = state.playoffs;
@@ -2591,6 +2663,14 @@ function TWJPSeasonReview({ leagueId, state }: { leagueId: string; state: League
     }))
     .sort((a, b) => a.rank - b.rank);
 
+  const twjpOrderedIds = ranked.map(r => r.clubId);
+  const twjpCupChampions = {
+    APEX: cupStates['APEX']?.champion,
+    EGT:  cupStates['EGT']?.champion,
+    COPA: cupStates['COPA']?.champion,
+  };
+  const twjpBadgeMap = computeLeagueBadges(leagueId, twjpOrderedIds, twjpCupChampions);
+
   return (
     <div>
       <table className="w-full text-sm">
@@ -2609,7 +2689,7 @@ function TWJPSeasonReview({ leagueId, state }: { leagueId: string; state: League
             const club = clubById(clubId);
             const rec  = recordMap.get(clubId);
             const gd   = rec ? rec.setsFor - rec.setsAgainst : null;
-            const badges = spots[rank] ?? [];
+            const badges = twjpBadgeMap[clubId] ?? [];
             return (
               <tr key={clubId} className="border-b border-bg-border/30 hover:bg-bg-panel/30">
                 <td className="py-2 text-slate-400">{rank}</td>
@@ -2784,7 +2864,7 @@ function splitRankCls(rank: number): string {
 }
 
 function MEAFSeasonReview({ state }: { state: LeagueSimState }) {
-  const spots    = INTL_SPOTS['L_MEAF'] ?? {};
+  const cupStates = useStore(s => s.cupStates);
   const allClubs = clubsByLeague('L_MEAF');
 
   const finalPO   = (state.currentPhase === 'final_playoff' || state.currentPhase === 'complete')
@@ -2814,9 +2894,7 @@ function MEAFSeasonReview({ state }: { state: LeagueSimState }) {
       return null;
     });
 
-    const badges = fpRank !== null ? (spots[fpRank] ?? []) : [];
-
-    return { club, clubId: id, totalPts, fpRank, fpStage, splitRanks, badges };
+    return { club, clubId: id, totalPts, fpRank, fpStage, splitRanks };
   });
 
   rows.sort((a, b) => {
@@ -2825,6 +2903,14 @@ function MEAFSeasonReview({ state }: { state: LeagueSimState }) {
     if (b.fpRank !== null) return 1;
     return b.totalPts - a.totalPts;
   });
+
+  const meafOrderedIds = rows.map(r => r.clubId);
+  const meafCupChampions = {
+    APEX: cupStates['APEX']?.champion,
+    EGT:  cupStates['EGT']?.champion,
+    COPA: cupStates['COPA']?.champion,
+  };
+  const meafBadgeMap = computeLeagueBadges('L_MEAF', meafOrderedIds, meafCupChampions);
 
   const fpLabel = (stage: string | null, rank: number | null): string => {
     if (!stage || rank === null) return '—';
@@ -2854,7 +2940,8 @@ function MEAFSeasonReview({ state }: { state: LeagueSimState }) {
           </tr>
         </thead>
         <tbody>
-          {rows.map(({ club, clubId, fpRank, fpStage, splitRanks, totalPts, badges }, idx) => {
+          {rows.map(({ club, clubId, fpRank, fpStage, splitRanks, totalPts }, idx) => {
+              const badges = meafBadgeMap[clubId] ?? [];
             const isChamp = champion === clubId;
             return (
               <tr key={clubId} className={`border-b border-bg-border/30 hover:bg-bg-panel/30 ${isChamp ? 'bg-tier-s/5' : ''}`}>
@@ -2941,8 +3028,8 @@ function deRanksFromPO(po: PlayoffState | undefined, reg: TeamRecord[]): Map<str
 }
 
 function DESeasonReview({ leagueId, state }: { leagueId: string; state: LeagueSimState }) {
+  const cupStates = useStore(s => s.cupStates);
   const allLeagueClubs = clubsByLeague(leagueId);
-  const spots = INTL_SPOTS[leagueId] ?? {};
 
   const springReg = state.springStandings ?? [];
   const summerReg = state.fullLeagueState?.standings ?? state.standings;
@@ -2978,6 +3065,14 @@ function DESeasonReview({ leagueId, state }: { leagueId: string; state: LeagueSi
     if (b.uRegPts !== a.uRegPts) return b.uRegPts - a.uRegPts;
     return (b.sRegPts + b.uRegPts) - (a.sRegPts + a.uRegPts);
   });
+
+  const deOrderedIds = rows.map(r => r.clubId);
+  const deCupChampions = {
+    APEX: cupStates['APEX']?.champion,
+    EGT:  cupStates['EGT']?.champion,
+    COPA: cupStates['COPA']?.champion,
+  };
+  const deBadgeMap = computeLeagueBadges(leagueId, deOrderedIds, deCupChampions);
 
   const hasSpring = springReg.length > 0;
   const hasSummer = summerReg.length > 0;
@@ -3034,7 +3129,7 @@ function DESeasonReview({ leagueId, state }: { leagueId: string; state: LeagueSi
               const club = clubById(row.clubId);
               if (!club) return null;
               const rank = idx + 1;
-              const badges = spots[rank] ?? [];
+              const badges = deBadgeMap[row.clubId] ?? [];
               const isSummerChamp = row.uStage === 'champion';
               const isAnyChamp = isSummerChamp || row.sStage === 'champion';
               const sScD = row.sRec ? row.sRec.momFor - row.sRec.momAgainst : null;
@@ -3189,7 +3284,18 @@ export function TeamsLeagues() {
           if (regionLeagues.length === 0) return null;
           return (
             <div key={region} className="mb-2">
-              <div className="px-4 py-1 text-xs font-bold text-slate-500 uppercase tracking-wider">{region}</div>
+              <div className="px-4 py-1 flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{region}</span>
+                {REGION_CUP[region] && (
+                  <Link
+                    to={`/cups/${REGION_CUP[region].id}`}
+                    className={`text-[10px] font-bold uppercase tracking-wider ${REGION_CUP[region].color} transition-colors`}
+                    onClick={e => e.stopPropagation()}
+                  >
+                    {REGION_CUP[region].label}
+                  </Link>
+                )}
+              </div>
               {regionLeagues.map(l => (
                 <div
                   key={l.id}

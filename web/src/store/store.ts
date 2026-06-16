@@ -1,10 +1,11 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { LeagueSimState, SeasonHistoryEntry } from '../types';
+import type { LeagueSimState, SeasonHistoryEntry, CupState } from '../types';
 import { allClubs } from '../data/clubs';
 import { initAllLeagues, advanceLeagueToRound, pickMeta } from '../engine/simulator';
 import { addDays, getNextMonday, getWeekInfo, getWeekNum, getSeasonIndex } from '../engine/calendar';
 import { allSimKeys, targetRoundsForKey } from '../engine/matchSchedule';
+import { initAllCups, advanceCup, allCupSimKeys, targetSlotsForCupKey } from '../engine/cup';
 
 const clubMap = new Map(allClubs.map(c => [c.id, c]));
 
@@ -20,6 +21,7 @@ interface Store {
   leagueStates: Record<string, LeagueSimState>;
   completedRounds: Record<string, number>;
   seasonHistory: SeasonHistoryEntry[];
+  cupStates: Record<string, CupState>;
   followedTeams: string[];
   followedLeagues: string[];
   advanceOneDay: () => void;
@@ -38,6 +40,7 @@ const defaultState = () => ({
   leagueStates: initAllLeagues(),
   completedRounds: {} as Record<string, number>,
   seasonHistory: [] as SeasonHistoryEntry[],
+  cupStates: initAllCups([], 0, clubMap),
   followedTeams: [] as string[],
   followedLeagues: [] as string[],
 });
@@ -49,16 +52,18 @@ function advanceTo(
   completedRounds: Record<string, number>,
   currentMeta: string[],
   seasonHistory: SeasonHistoryEntry[],
+  cupStates: Record<string, CupState>,
 ) {
   if (targetDate <= currentDate) {
-    return { leagueStates, completedRounds, activeMeta: currentMeta, seasonHistory };
+    return { leagueStates, completedRounds, activeMeta: currentMeta, seasonHistory, cupStates };
   }
 
   let ls = leagueStates;
   let cr = completedRounds;
   let sh = seasonHistory;
+  let cups = cupStates;
 
-  // Season rollover: save final standings from the current season, then reset
+  // Season rollover
   const currentSeason = getSeasonIndex(currentDate);
   const targetSeason  = getSeasonIndex(targetDate);
   if (targetSeason > currentSeason) {
@@ -75,11 +80,13 @@ function advanceTo(
     sh = newHistory;
     ls = initAllLeagues();
     cr = {};
+    cups = initAllCups(sh, targetSeason, clubMap);
   }
 
   const meta = metaPeriod(targetDate) !== metaPeriod(currentDate) ? pickMeta() : currentMeta;
-  const keys = allSimKeys();
 
+  // League advancement
+  const keys = allSimKeys();
   const targetRoundsMap: Record<string, number> = {};
   for (const key of keys) {
     targetRoundsMap[key.storeKey] = targetRoundsForKey(key, targetDate);
@@ -87,14 +94,28 @@ function advanceTo(
 
   const newLeagueStates: Record<string, LeagueSimState> = {};
   for (const [leagueId, state] of Object.entries(ls)) {
-    newLeagueStates[leagueId] = advanceLeagueToRound(
-      state, cr, targetRoundsMap, meta, clubMap,
-    );
+    newLeagueStates[leagueId] = advanceLeagueToRound(state, cr, targetRoundsMap, meta, clubMap);
+  }
+
+  // Cup advancement
+  const cupKeys = allCupSimKeys();
+  const targetCupRoundsMap: Record<string, number> = {};
+  for (const key of cupKeys) {
+    targetCupRoundsMap[key.storeKey] = targetSlotsForCupKey(key.storeKey, targetDate);
+  }
+
+  const newCupStates: Record<string, CupState> = {};
+  for (const [cupId, cupState] of Object.entries(cups)) {
+    newCupStates[cupId] = advanceCup(cupState, targetCupRoundsMap, meta, clubMap);
   }
 
   const newCompleted = { ...cr };
   for (const key of keys) {
     const t = targetRoundsMap[key.storeKey];
+    if (t !== undefined) newCompleted[key.storeKey] = t;
+  }
+  for (const key of cupKeys) {
+    const t = targetCupRoundsMap[key.storeKey];
     if (t !== undefined) newCompleted[key.storeKey] = t;
   }
 
@@ -103,6 +124,7 @@ function advanceTo(
     completedRounds: newCompleted,
     activeMeta: meta,
     seasonHistory: sh,
+    cupStates: newCupStates,
   };
 }
 
@@ -112,21 +134,21 @@ export const useStore = create<Store>()(
       ...defaultState(),
 
       advanceOneDay() {
-        const { gameDate, leagueStates, completedRounds, activeMeta, seasonHistory } = get();
+        const { gameDate, leagueStates, completedRounds, activeMeta, seasonHistory, cupStates } = get();
         const target = addDays(gameDate, 1);
-        set({ gameDate: target, ...advanceTo(gameDate, target, leagueStates, completedRounds, activeMeta, seasonHistory) });
+        set({ gameDate: target, ...advanceTo(gameDate, target, leagueStates, completedRounds, activeMeta, seasonHistory, cupStates) });
       },
 
       advanceThreeDays() {
-        const { gameDate, leagueStates, completedRounds, activeMeta, seasonHistory } = get();
+        const { gameDate, leagueStates, completedRounds, activeMeta, seasonHistory, cupStates } = get();
         const target = addDays(gameDate, 3);
-        set({ gameDate: target, ...advanceTo(gameDate, target, leagueStates, completedRounds, activeMeta, seasonHistory) });
+        set({ gameDate: target, ...advanceTo(gameDate, target, leagueStates, completedRounds, activeMeta, seasonHistory, cupStates) });
       },
 
       advanceToNextMonday() {
-        const { gameDate, leagueStates, completedRounds, activeMeta, seasonHistory } = get();
+        const { gameDate, leagueStates, completedRounds, activeMeta, seasonHistory, cupStates } = get();
         const target = getNextMonday(gameDate);
-        set({ gameDate: target, ...advanceTo(gameDate, target, leagueStates, completedRounds, activeMeta, seasonHistory) });
+        set({ gameDate: target, ...advanceTo(gameDate, target, leagueStates, completedRounds, activeMeta, seasonHistory, cupStates) });
       },
 
       resetSeason() {
@@ -152,13 +174,14 @@ export const useStore = create<Store>()(
       },
     }),
     {
-      name: 'make-esports-store-v16',
+      name: 'make-esports-store-v17',
       partialize: state => ({
         gameDate: state.gameDate,
         activeMeta: state.activeMeta,
         leagueStates: state.leagueStates,
         completedRounds: state.completedRounds,
         seasonHistory: state.seasonHistory,
+        cupStates: state.cupStates,
         followedTeams: state.followedTeams,
         followedLeagues: state.followedLeagues,
       }),
