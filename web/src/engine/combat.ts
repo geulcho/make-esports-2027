@@ -67,6 +67,7 @@ export function simulateMatch(
   clubA: Club,
   clubB: Club,
   meta: string[],
+  winsNeeded = 2,
 ): MatchResult {
   const pA = 1 / (1 + Math.pow(10, (clubB.elo_rating - clubA.elo_rating) / 400));
   const pB = 1 - pA;
@@ -76,7 +77,7 @@ export function simulateMatch(
   let scoreA = 0, scoreB = 0;
   const sets: SetResult[] = [];
 
-  while (scoreA < 2 && scoreB < 2) {
+  while (scoreA < winsNeeded && scoreB < winsNeeded) {
     const s = simulateSet(clubA, clubB, meta);
     sets.push(s);
     if (s.momA > s.momB) scoreA++;

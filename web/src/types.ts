@@ -71,12 +71,76 @@ export interface DivisionSim {
   results: PhaseResult[];
 }
 
-export interface LeagueSimState {
-  leagueId: string;
-  // For non-division leagues: populated directly
-  // For division leagues: derived from divisionStates
+// Full-league sim state (for cross-division phases like L_NA second half)
+export interface FullLeagueSim {
   standings: TeamRecord[];
   results: PhaseResult[];
-  // Division leagues only
-  divisionStates?: Record<string, DivisionSim>;
+}
+
+// ─── Bracket types ────────────────────────────────────────────────────────────
+
+export interface BracketMatch {
+  id: string;
+  stage: string;
+  teamA: string | null;
+  teamB: string | null;
+  result: MatchResult | null;
+  winner: string | null;
+}
+
+export interface QualifierState {
+  matches: BracketMatch[];
+  mmRepresentative: string | null;
+  completed: boolean;
+}
+
+export type PlayoffStage = 'qf' | 'sf' | 'divfinal' | 'grandfinal' | 'playin' | 'upper' | 'lower' | 'finalq';
+
+export interface PlayoffSeries {
+  id: string;
+  stage: PlayoffStage;
+  division: 'WEST' | 'EAST' | 'DRAGON' | 'PHOENIX' | null;
+  teamA: string | null;
+  teamB: string | null;
+  winsA: number;      // earned wins in this series
+  winsB: number;
+  winsToAdvance: number; // total wins needed (2 for QF/SF/DivF, 3 for GF)
+  startWinsA: number; // initial advantage (1 for QF higher seed)
+  matches: MatchResult[];
+  winner: string | null;
+}
+
+export interface PlayoffState {
+  series: PlayoffSeries[];
+  champion: string | null;
+  completed: boolean;
+}
+
+// ─── Season history (for COPA seeding) ───────────────────────────────────────
+
+export interface SeasonHistoryEntry {
+  season: number;
+  leagueId: string;
+  finalStandings: TeamRecord[];
+  mmRepresentative: string | null;
+  champion: string | null;
+}
+
+// ─── League sim state ─────────────────────────────────────────────────────────
+
+export interface LeagueSimState {
+  leagueId: string;
+  standings: TeamRecord[];     // current display standings
+  results: PhaseResult[];      // accumulated results (all phases)
+  divisionStates?: Record<string, DivisionSim>;  // per-division (first half)
+  fullLeagueState?: FullLeagueSim;               // full-league (second half)
+  mmQualifier?: QualifierState;                  // MM qualifier bracket
+  playoffs?: PlayoffState;                       // current playoffs bracket
+  currentPhase: string;        // 'default'|'first_half'|'qualifier'|'second_half'|'playoffs'|'complete'
+                               // L_KR: 'spring'|'spring_playoffs'|'summer'|'summer_playoffs'|'complete'
+  // Spring-Summer two-split fields (L_KR and similar leagues)
+  springStandings?: TeamRecord[];   // archived spring regular season standings
+  springResults?: PhaseResult[];    // archived spring results
+  springPlayoffs?: PlayoffState;    // archived spring playoff bracket
+  springChampion?: string | null;   // spring split champion
 }

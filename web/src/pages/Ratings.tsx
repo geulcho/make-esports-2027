@@ -87,7 +87,7 @@ export function Ratings() {
                 <td className="py-2 text-slate-500 text-xs">{idx + 1}</td>
                 <td className="py-2">
                   <Link to={`/teams/${club.id}`} className="flex items-center gap-2 hover:text-tier-s transition-colors">
-                    <TeamDot club={club} />
+                    <TeamDot club={club} showAbbr={false} />
                     <span className="text-slate-300">{club.name}</span>
                   </Link>
                 </td>

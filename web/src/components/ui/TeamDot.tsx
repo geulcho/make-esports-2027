@@ -10,10 +10,10 @@ export function TeamDot({ club, showAbbr = true, className = '' }: Props) {
   return (
     <span className={`inline-flex items-center gap-1.5 ${className}`}>
       <span
-        className="inline-flex items-center justify-center w-6 h-6 rounded text-xs font-bold flex-shrink-0"
+        className="inline-flex items-center justify-center w-7 h-6 rounded text-[10px] font-bold flex-shrink-0 tracking-tight"
         style={{ background: club.colors.bg, color: club.colors.text }}
       >
-        {club.abbr.slice(0, 2)}
+        {club.abbr.slice(0, 3)}
       </span>
       {showAbbr && <span className="text-sm text-slate-200 truncate">{club.abbr}</span>}
     </span>

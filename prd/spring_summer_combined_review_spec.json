@@ -1,0 +1,48 @@
+{
+  "document_title": "Spring-Summer Combined Season Review System",
+  "version": "1.0",
+  "applies_to": "All leagues with spring + summer two-split structure",
+  "description": "Combined annual ranking using accumulated spring and summer placement points. Summer champion is guaranteed 1st overall via the 20-point bonus (max any non-champion can earn = 19).",
+
+  "points_table": {
+    "spring": {
+      "1st": 9,
+      "2nd": 7,
+      "3rd": 5,
+      "4th": 3,
+      "5th": 1,
+      "6th": 1,
+      "7th_to_last": 0
+    },
+    "summer": {
+      "1st": 20,
+      "2nd": 10,
+      "3rd": 8,
+      "4th": 5,
+      "5th": 2,
+      "6th": 2,
+      "7th_to_last": 0
+    }
+  },
+
+  "ranking_rules": {
+    "primary_sort": "total_points (spring + summer) descending",
+    "tiebreaker": "summer_rank ascending (lower summer rank = higher combined rank)",
+    "notes": [
+      "Summer champion always receives 20 summer points, guaranteeing 1st overall (max competing total = 19).",
+      "No special-case logic needed — purely additive."
+    ]
+  },
+
+  "season_review_display": {
+    "columns": ["rank", "team", "spring_pts", "summer_pts", "total_pts", "set_wins", "set_losses", "set_diff", "intl_tickets"],
+    "set_stats": "combined across both splits (spring regular + spring playoffs + summer regular + summer playoffs)",
+    "intl_tickets": "distributed based on combined rank, using per-league INTL_SPOTS config"
+  },
+
+  "example_max_points": {
+    "summer_champion_spring_last_place": 20,
+    "spring_champion_summer_runner_up": 19,
+    "conclusion": "Summer champion is always ranked 1st"
+  }
+}

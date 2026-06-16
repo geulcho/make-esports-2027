@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useStore } from '../store/store';
 import { clubById, featuredLeagues, leagueConfigs } from '../data/clubs';
-import { TierBadge } from '../components/ui/TierBadge';
 import { TeamDot } from '../components/ui/TeamDot';
 import { SeriesScore } from '../components/ui/SeriesScore';
 import type { MatchResult } from '../types';
@@ -20,6 +19,7 @@ export function Home() {
 
   const allRecentMatches: MatchResult[] = [];
   for (const state of Object.values(leagueStates)) {
+    if (!state?.results?.length) continue;
     const last = state.results[state.results.length - 1];
     if (last) allRecentMatches.push(...last.matches);
   }
@@ -98,12 +98,11 @@ export function Home() {
                 <tr className="text-xs text-slate-500 border-b border-bg-border">
                   <th className="text-left py-2 w-6">#</th>
                   <th className="text-left py-2">Team</th>
+                  <th className="text-center py-2 w-10">G</th>
                   <th className="text-center py-2 w-10">W</th>
                   <th className="text-center py-2 w-10">L</th>
                   <th className="text-center py-2 w-14">SD</th>
                   <th className="text-center py-2 w-14">ScD</th>
-                  <th className="text-center py-2 w-16">ELO</th>
-                  <th className="text-center py-2 w-14">Tier</th>
                 </tr>
               </thead>
               <tbody>
@@ -120,10 +119,11 @@ export function Home() {
                       <td className="py-2 text-slate-500 text-xs">{idx + 1}</td>
                       <td className="py-2">
                         <Link to={`/teams/${club.id}`} className="flex items-center gap-2 hover:text-tier-s transition-colors">
-                          <TeamDot club={club} />
+                          <TeamDot club={club} showAbbr={false} />
                           <span className="text-slate-300">{club.name}</span>
                         </Link>
                       </td>
+                      <td className="py-2 text-center text-slate-400">{rec.wins + rec.losses}</td>
                       <td className="py-2 text-center text-status-up font-bold">{rec.wins}</td>
                       <td className="py-2 text-center text-status-down">{rec.losses}</td>
                       <td className={`py-2 text-center text-xs ${sd >= 0 ? 'text-status-up' : 'text-status-down'}`}>
@@ -132,8 +132,6 @@ export function Home() {
                       <td className={`py-2 text-center text-xs ${scd >= 0 ? 'text-slate-400' : 'text-slate-500'}`}>
                         {scd >= 0 ? '+' : ''}{scd}
                       </td>
-                      <td className="py-2 text-center text-xs text-accent-blue">{rec.elo}</td>
-                      <td className="py-2 text-center"><TierBadge tier={club.tier} /></td>
                     </tr>
                   );
                 })}
