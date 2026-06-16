@@ -443,17 +443,7 @@ export function CupDetail() {
           <p className="text-slate-600 text-sm">Matches begin Week 5.</p>
         ) : (
           <>
-            {/* Pre-R16 rounds — most recent first */}
-            {[...preR16Rounds].reverse().map(round => (
-              <RoundSection
-                key={round.stage}
-                round={round}
-                roundIdx={state.rounds.indexOf(round)}
-                state={state}
-              />
-            ))}
-
-            {/* R16+ bracket */}
+            {/* R16+ bracket — shown first */}
             {hasR16 && (
               <section className="mb-8">
                 <div className="flex items-baseline gap-3 mb-4">
@@ -466,8 +456,18 @@ export function CupDetail() {
 
             {/* Not yet reached R16 but all pre-R16 done — waiting for next cup week */}
             {!hasR16 && preR16Rounds.length > 0 && preR16Rounds.every(r => r.completed) && (
-              <p className="text-slate-600 text-sm italic">Round of 16 bracket will be drawn Week 22.</p>
+              <p className="text-slate-600 text-sm italic mb-8">Round of 16 bracket will be drawn Week 22.</p>
             )}
+
+            {/* Pre-R16 rounds — most recent first */}
+            {[...preR16Rounds].reverse().map(round => (
+              <RoundSection
+                key={round.stage}
+                round={round}
+                roundIdx={state.rounds.indexOf(round)}
+                state={state}
+              />
+            ))}
           </>
         )}
       </div>
