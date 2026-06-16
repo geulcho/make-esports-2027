@@ -624,3 +624,174 @@ export function advancePlayoffToSlot(
   const champion = get(series, 'grand_final').winner ?? null;
   return { series, champion, completed: champion !== null };
 }
+
+// ─── L_TW / L_JP Playoffs — 5-team stepladder (all Bo5) ─────────────────────
+// R1: 4v5, R2: 3 vs R1W, R3: 2 vs R2W, Final: 1 vs R3W. One series per slot.
+
+const TWJP_PO_SLOT_SERIES: readonly (readonly string[])[] = [
+  ['sl_r1'],    // Slot 0: Round 1 (4v5)
+  ['sl_r2'],    // Slot 1: Round 2 (3 vs R1W)
+  ['sl_r3'],    // Slot 2: Round 3 (2 vs R2W)
+  ['sl_final'], // Slot 3: Final   (1 vs R3W)
+];
+
+export function initTWJPPlayoffs(standings: TeamRecord[]): PlayoffState {
+  const s = standings.slice(0, 5).map(r => r.clubId);
+  return {
+    series: [
+      makeSeries('sl_r1',    'qf',         null, s[3] ?? null, s[4] ?? null, 0, 1), // 4 vs 5
+      makeSeries('sl_r2',    'sf',         null, s[2] ?? null, null,         0, 1), // 3 vs R1W
+      makeSeries('sl_r3',    'upper',      null, s[1] ?? null, null,         0, 1), // 2 vs R2W
+      makeSeries('sl_final', 'grandfinal', null, s[0] ?? null, null,         0, 1), // 1 vs R3W
+    ],
+    champion: null,
+    completed: false,
+  };
+}
+
+function resolveTWJPTeams(series: PlayoffSeries[]): PlayoffSeries[] {
+  const s = series.map(x => ({ ...x }));
+  const g = (id: string) => s.find(x => x.id === id)!;
+  const r2 = g('sl_r2');    if (!r2.teamB    && g('sl_r1').winner) r2.teamB    = g('sl_r1').winner;
+  const r3 = g('sl_r3');    if (!r3.teamB    && g('sl_r2').winner) r3.teamB    = g('sl_r2').winner;
+  const fn = g('sl_final'); if (!fn.teamB    && g('sl_r3').winner) fn.teamB    = g('sl_r3').winner;
+  return s;
+}
+
+export function advanceTWJPPlayoffToSlot(
+  state: PlayoffState,
+  completedSlots: number,
+  targetSlots: number,
+  meta: string[],
+  clubMap: Map<string, Club>,
+  standingsMap: Map<string, TeamRecord>,
+): PlayoffState {
+  if (targetSlots <= completedSlots || state.completed) return state;
+
+  let series = state.series.map(s => ({ ...s, matches: [...s.matches] }));
+
+  for (let slot = completedSlots; slot < Math.min(targetSlots, TWJP_PO_SLOT_SERIES.length); slot++) {
+    series = resolveTWJPTeams(series);
+    const ids = TWJP_PO_SLOT_SERIES[slot];
+    series = series.map(s => ids.includes(s.id) ? advanceOneSeries(s, meta, clubMap, standingsMap, 3) : s);
+  }
+
+  series = resolveTWJPTeams(series);
+
+  const champion = series.find(s => s.id === 'sl_final')?.winner ?? null;
+  return { series, champion, completed: champion !== null };
+}
+
+// ─── L_MEAF Splits — 8-team double elimination (compressed schedule) ──────────
+// Same series IDs and bracket structure as NEU/WEU (ub1..gf).
+// Bo3 for all series except gf (Bo5). 8 slots across 3 weeks (WeekA/B/C).
+
+const MEAF_SPLIT_SLOT_SERIES: readonly (readonly string[])[] = [
+  ['ub1', 'ub2'], // Slot 0  WeekA Fri  UBR1 A-side (Bo3)
+  ['ub3', 'ub4'], // Slot 1  WeekA Sat  UBR1 B-side (Bo3)
+  ['lb1', 'lb2'], // Slot 2  WeekA Sun  LBR1 (Bo3)
+  ['ub5', 'ub6'], // Slot 3  WeekB Fri  UBR2 (Bo3)
+  ['lb3', 'lb4'], // Slot 4  WeekB Sat  LBR2 (Bo3)
+  ['ubf', 'lb5'], // Slot 5  WeekB Sun  UBF + LB Semi (Bo3)
+  ['lbf'],        // Slot 6  WeekC Fri  LBF (Bo3)
+  ['gf'],         // Slot 7  WeekC Sun  GF (Bo5)
+];
+
+export function advanceMEAFSplitToSlot(
+  state: PlayoffState,
+  completedSlots: number,
+  targetSlots: number,
+  meta: string[],
+  clubMap: Map<string, Club>,
+  standingsMap: Map<string, TeamRecord>,
+): PlayoffState {
+  if (targetSlots <= completedSlots || state.completed) return state;
+
+  let series = state.series.map(s => ({ ...s, matches: [...s.matches] }));
+
+  for (let slot = completedSlots; slot < Math.min(targetSlots, MEAF_SPLIT_SLOT_SERIES.length); slot++) {
+    series = resolveNEUWEUTeams(series);
+    const ids = MEAF_SPLIT_SLOT_SERIES[slot];
+    series = series.map(s =>
+      ids.includes(s.id)
+        ? advanceOneSeries(s, meta, clubMap, standingsMap, s.id === 'gf' ? 3 : 2)
+        : s,
+    );
+  }
+
+  series = resolveNEUWEUTeams(series);
+
+  const champion = series.find(s => s.id === 'gf')?.winner ?? null;
+  return { series, champion, completed: champion !== null };
+}
+
+export function meafRanksFromSplit(po: PlayoffState): Record<string, number> {
+  const out: Record<string, number> = {};
+  const g = (id: string) => po.series.find(s => s.id === id);
+  const loserOf = (s: PlayoffSeries | undefined) =>
+    s?.winner ? (s.winner === s.teamA ? s.teamB : s.teamA) : null;
+
+  const gf_  = g('gf');
+  if (gf_?.winner) out[gf_.winner] = 1;
+  const gfL  = loserOf(gf_);  if (gfL)  out[gfL]  = 2;
+  const lbfL = loserOf(g('lbf')); if (lbfL) out[lbfL] = 3;
+  const lb5L = loserOf(g('lb5')); if (lb5L) out[lb5L] = 4;
+  const lb3L = loserOf(g('lb3')); if (lb3L) out[lb3L] = 5;
+  const lb4L = loserOf(g('lb4')); if (lb4L) out[lb4L] = 6;
+  const lb1L = loserOf(g('lb1')); if (lb1L) out[lb1L] = 7;
+  const lb2L = loserOf(g('lb2')); if (lb2L) out[lb2L] = 8;
+
+  return out;
+}
+
+// ─── L_MEAF MM Qualifier — 3-team gauntlet ────────────────────────────────────
+// W12 Sat: Seed2 vs Seed3 (Bo5); W12 Sun: Seed1 vs R1W (Bo5)
+
+const MEAF_MMQ_SLOT_SERIES: readonly (readonly string[])[] = [
+  ['mmq_r1'],    // Slot 0  W12 Sat  Seed2 vs Seed3 (Bo5)
+  ['mmq_final'], // Slot 1  W12 Sun  Seed1 vs R1W (Bo5)
+];
+
+export function initMEAFMMQual(seeds: string[]): PlayoffState {
+  // seeds[0]=Seed1 (top pts), seeds[1]=Seed2, seeds[2]=Seed3
+  return {
+    series: [
+      makeSeries('mmq_r1',    'sf',         null, seeds[1] ?? null, seeds[2] ?? null, 0, 1),
+      makeSeries('mmq_final', 'grandfinal', null, seeds[0] ?? null, null,             0, 1),
+    ],
+    champion: null,
+    completed: false,
+  };
+}
+
+function resolveMEAFMMQTeams(series: PlayoffSeries[]): PlayoffSeries[] {
+  const s = series.map(x => ({ ...x }));
+  const fin = s.find(x => x.id === 'mmq_final')!;
+  const r1  = s.find(x => x.id === 'mmq_r1')!;
+  if (!fin.teamB && r1.winner) fin.teamB = r1.winner;
+  return s;
+}
+
+export function advanceMEAFMMQualToSlot(
+  state: PlayoffState,
+  completedSlots: number,
+  targetSlots: number,
+  meta: string[],
+  clubMap: Map<string, Club>,
+  standingsMap: Map<string, TeamRecord>,
+): PlayoffState {
+  if (targetSlots <= completedSlots || state.completed) return state;
+
+  let series = state.series.map(s => ({ ...s, matches: [...s.matches] }));
+
+  for (let slot = completedSlots; slot < Math.min(targetSlots, MEAF_MMQ_SLOT_SERIES.length); slot++) {
+    series = resolveMEAFMMQTeams(series);
+    const ids = MEAF_MMQ_SLOT_SERIES[slot];
+    series = series.map(s => ids.includes(s.id) ? advanceOneSeries(s, meta, clubMap, standingsMap, 3) : s);
+  }
+
+  series = resolveMEAFMMQTeams(series);
+
+  const champion = series.find(s => s.id === 'mmq_final')?.winner ?? null;
+  return { series, champion, completed: champion !== null };
+}

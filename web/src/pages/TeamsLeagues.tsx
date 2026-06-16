@@ -7,6 +7,7 @@ import { TierBadge } from '../components/ui/TierBadge';
 import { TeamDot } from '../components/ui/TeamDot';
 import { SeriesScore } from '../components/ui/SeriesScore';
 import type { TeamRecord, BracketMatch, QualifierState, PlayoffSeries, PlayoffState, LeagueSimState } from '../types';
+import { meafRanksFromSplit } from '../engine/bracket';
 
 const REGIONS = ['APAC', 'EMEA', 'AMER'];
 type TabKey = 'standings' | 'qualifier' | 'playoffs' | 'results' | 'teams' | 'season_review';
@@ -55,6 +56,15 @@ const PHASE_BADGES: Record<string, { label: string; cls: string }> = {
   spring_playoffs_done:{ label: 'Spring Done',       cls: 'bg-green-500/10 text-green-300 border-green-500/20' },
   summer:              { label: 'Summer Regular',     cls: 'bg-amber-500/10 text-amber-400 border-amber-500/20' },
   summer_playoffs:     { label: 'Summer Playoffs',   cls: 'bg-amber-500/10 text-amber-300 border-amber-500/20' },
+  // L_MEAF
+  split1:              { label: 'Split 1',            cls: 'bg-tier-a/10 text-tier-a border-tier-a/20' },
+  split2:              { label: 'Split 2',            cls: 'bg-tier-a/10 text-tier-a border-tier-a/20' },
+  split3:              { label: 'Split 3',            cls: 'bg-tier-a/10 text-tier-a border-tier-a/20' },
+  mm_qualifier:        { label: 'MM Qualifier',       cls: 'bg-orange-500/10 text-orange-400 border-orange-500/20' },
+  mm_qualifier_done:   { label: 'MM Qual ✓',          cls: 'bg-orange-500/10 text-orange-400 border-orange-500/20' },
+  split4:              { label: 'Split 4',            cls: 'bg-amber-500/10 text-amber-400 border-amber-500/20' },
+  split5:              { label: 'Split 5',            cls: 'bg-amber-500/10 text-amber-400 border-amber-500/20' },
+  final_playoff:       { label: 'Final Playoff',      cls: 'bg-purple-500/10 text-purple-400 border-purple-500/20' },
 };
 
 // ─── Standings table ──────────────────────────────────────────────────────────
@@ -1067,6 +1077,100 @@ function LKRSeasonReview({ state }: { state: LeagueSimState }) {
   );
 }
 
+// ─── L_BR / L_SA Season Review ────────────────────────────────────────────────
+
+function BRSASeasonReview({ leagueId, state }: { leagueId: string; state: LeagueSimState }) {
+  const allClubs = clubsByLeague(leagueId);
+  const spots    = INTL_SPOTS[leagueId] ?? {};
+
+  const springReg  = state.springStandings ?? [];
+  const summerReg  = state.fullLeagueState?.standings ?? state.standings;
+  const springPO   = state.springPlayoffs;
+  const summerPO   = state.playoffs;
+
+  const springRanks = springPO?.completed ? lkrSplitRanks(springPO, springReg) : new Map<string, { rank: number; stage: string }>(springReg.map((r, i) => [r.clubId, { rank: i + 1, stage: 'regular' }]));
+  const summerRanks = summerPO?.completed ? lkrSplitRanks(summerPO, summerReg) : new Map<string, { rank: number; stage: string }>(summerReg.map((r, i) => [r.clubId, { rank: i + 1, stage: 'regular' }]));
+
+  const recordMap = new Map<string, { wins: number; losses: number; setsFor: number; setsAgainst: number }>();
+  for (const r of springReg) recordMap.set(r.clubId, { wins: r.wins, losses: r.losses, setsFor: r.setsFor, setsAgainst: r.setsAgainst });
+  for (const r of summerReg) {
+    const ex = recordMap.get(r.clubId);
+    if (ex) recordMap.set(r.clubId, { wins: ex.wins + r.wins, losses: ex.losses + r.losses, setsFor: ex.setsFor + r.setsFor, setsAgainst: ex.setsAgainst + r.setsAgainst });
+    else     recordMap.set(r.clubId, { wins: r.wins, losses: r.losses, setsFor: r.setsFor, setsAgainst: r.setsAgainst });
+  }
+
+  const combined = allClubs.map(club => {
+    const sRank = springRanks.get(club.id)?.rank ?? allClubs.length;
+    const uRank = summerRanks.get(club.id)?.rank ?? allClubs.length;
+    const sPts  = LKR_SPRING_PTS[sRank - 1] ?? 0;
+    const uPts  = LKR_SUMMER_PTS[uRank - 1] ?? 0;
+    return { clubId: club.id, sPts, uPts, total: sPts + uPts, summerRank: uRank };
+  });
+  combined.sort((a, b) => b.total !== a.total ? b.total - a.total : a.summerRank - b.summerRank);
+
+  return (
+    <div>
+      {springReg.length === 0 && <p className="text-xs text-amber-500/80 mb-3 px-1">Spring not yet played — showing summer only</p>}
+      {(!!state.playoffs && !state.playoffs.completed) && (
+        <p className="text-xs text-amber-500/80 mb-3 px-1">Season in progress — rankings reflect current standings</p>
+      )}
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="text-xs text-slate-500 border-b border-bg-border">
+            <th className="text-left py-2 w-6">#</th>
+            <th className="text-left py-2">Team</th>
+            <th className="text-center py-2 w-14">Spr Pts</th>
+            <th className="text-center py-2 w-14">Sum Pts</th>
+            <th className="text-center py-2 w-14">Total</th>
+            <th className="text-center py-2 w-12">MW</th>
+            <th className="text-center py-2 w-12">ML</th>
+            <th className="text-center py-2 w-14">GD</th>
+            <th className="text-left py-2 w-24">Int'l</th>
+          </tr>
+        </thead>
+        <tbody>
+          {combined.map((c, idx) => {
+            const club = clubById(c.clubId);
+            if (!club) return null;
+            const rank     = idx + 1;
+            const rec      = recordMap.get(c.clubId);
+            const gd       = rec ? rec.setsFor - rec.setsAgainst : null;
+            const isChamp  = summerRanks.get(c.clubId)?.stage === 'champion';
+            const badges   = spots[rank] ?? [];
+            return (
+              <tr key={c.clubId} className={`border-b border-bg-border/50 hover:bg-bg-hover ${isChamp ? 'bg-tier-s/5' : ''}`}>
+                <td className="py-2 text-slate-500 text-xs font-mono">{rank}</td>
+                <td className="py-2">
+                  <Link to={`/teams/${club.id}`} className="flex items-center gap-2 hover:text-tier-s">
+                    <TeamDot club={club} showAbbr={false} />
+                    <span className={isChamp ? 'text-tier-s font-bold' : 'text-slate-200'}>{club.name}</span>
+                    {isChamp && <span className="text-sm leading-none">🏆</span>}
+                  </Link>
+                </td>
+                <td className="py-2 text-center text-xs text-slate-400">{c.sPts > 0 ? c.sPts : <span className="text-slate-600">—</span>}</td>
+                <td className="py-2 text-center text-xs text-slate-400">{c.uPts > 0 ? c.uPts : <span className="text-slate-600">—</span>}</td>
+                <td className="py-2 text-center text-xs font-bold text-white">{c.total > 0 ? c.total : <span className="text-slate-500">0</span>}</td>
+                <td className="py-2 text-center text-xs text-status-up">{rec?.wins ?? '—'}</td>
+                <td className="py-2 text-center text-xs text-status-down">{rec?.losses ?? '—'}</td>
+                <td className={`py-2 text-center text-xs ${gd != null && gd >= 0 ? 'text-status-up' : 'text-status-down'}`}>
+                  {gd != null ? `${gd >= 0 ? '+' : ''}${gd}` : '—'}
+                </td>
+                <td className="py-2">
+                  <div className="flex gap-1 flex-wrap">
+                    {badges.map(b => (
+                      <span key={b} className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${b === 'WT' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' : 'bg-tier-a/10 text-tier-a border-tier-a/20'}`}>{b}</span>
+                    ))}
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 // ─── L_KR Playoff Bracket ─────────────────────────────────────────────────────
 
 // LCK-style SVG bracket for L_KR playoffs
@@ -1279,6 +1383,7 @@ const SERIES_DATES: Record<string, string> = {
   ub5: 'W13 Sat', ub6: 'W13 Sun',
   lb1: 'W14 Tue', lb2: 'W14 Wed', lb3: 'W14 Thu', lb4: 'W14 Fri',
   ubf: 'W14 Sat', lb5: 'W14 Sun', lbf: 'W15 Sat', gf: 'W15 Sun',
+  mmq_r1: 'W12 Sat', mmq_final: 'W12 Sun',
 };
 
 const SERIES_ROUND_LABELS: Record<string, string> = {
@@ -1286,6 +1391,7 @@ const SERIES_ROUND_LABELS: Record<string, string> = {
   ub5: 'UBR2', ub6: 'UBR2',
   lb1: 'LBR1', lb2: 'LBR1', lb3: 'LBR2', lb4: 'LBR2',
   ubf: 'UBF', lb5: 'LB Semi', lbf: 'LBF', gf: 'Grand Final',
+  mmq_r1: 'R1 · Bo5', mmq_final: 'Final · Bo5',
 };
 
 function NEUWEUSeriesCard({ s, state, seedMap }: {
@@ -1848,6 +1954,160 @@ function NEUWEUSeasonReview({ leagueId, state }: { leagueId: string; state: Leag
   );
 }
 
+// ─── L_TR Season Review ───────────────────────────────────────────────────────
+
+const TR_SPRING_PO_PTS: Record<number, number> = {
+  1: 50, 2: 35, 3: 25, 4: 18, 5: 10, 6: 10,
+  // 7th-8th: 0
+};
+const TR_SUMMER_PO_PTS: Record<number, number> = {
+  1: 160, 2: 75, 3: 55, 4: 40, 5: 25, 6: 25, 7: 10, 8: 10,
+};
+
+function TRSeasonReview({ state }: { state: LeagueSimState }) {
+  const allClubs = clubsByLeague('L_TR');
+  const spots    = INTL_SPOTS['L_TR'] ?? {};
+
+  const springReg = state.springStandings ?? [];
+  const summerReg = state.fullLeagueState?.standings ?? state.standings;
+  const springPO  = state.springPlayoffs;
+  const summerPO  = state.playoffs;
+
+  const springRanks = neuWEURanksFromPO(springPO, springReg);
+  const summerRanks = neuWEURanksFromPO(summerPO, summerReg);
+
+  const rows = allClubs.map(club => {
+    const sInfo   = springRanks.get(club.id);
+    const uInfo   = summerRanks.get(club.id);
+    const sRank   = sInfo?.rank ?? 8;
+    const uRank   = uInfo?.rank ?? 8;
+    const sRec    = springReg.find(r => r.clubId === club.id);
+    const uRec    = summerReg.find(r => r.clubId === club.id);
+    const sRegPts = (sRec?.wins ?? 0) * 10;
+    const uRegPts = (uRec?.wins ?? 0) * 10;
+    const sPOPts  = TR_SPRING_PO_PTS[sRank] ?? 0;
+    const uPOPts  = TR_SUMMER_PO_PTS[uRank] ?? 0;
+    const total   = sPOPts + sRegPts + uPOPts + uRegPts;
+    return {
+      clubId: club.id, sRank, uRank, sRec, uRec,
+      sRegPts, uRegPts, sPOPts, uPOPts, total,
+      sStage: sInfo?.stage ?? 'regular',
+      uStage: uInfo?.stage ?? 'regular',
+    };
+  });
+
+  rows.sort((a, b) => {
+    if (b.total !== a.total) return b.total - a.total;
+    if (a.uRank !== b.uRank) return a.uRank - b.uRank;
+    if (b.uRegPts !== a.uRegPts) return b.uRegPts - a.uRegPts;
+    return (b.sRegPts + b.uRegPts) - (a.sRegPts + a.uRegPts);
+  });
+
+  const hasSpring = springReg.length > 0;
+  const hasSummer = summerReg.length > 0;
+
+  return (
+    <div>
+      {(!!state.playoffs && !state.playoffs.completed) && (
+        <p className="text-xs text-amber-500/80 mb-3 px-1">Season in progress — rankings reflect current standings</p>
+      )}
+      <div className="overflow-x-auto">
+        <table className="text-xs min-w-full">
+          <thead>
+            <tr className="text-slate-600 border-b border-bg-border/30">
+              <th className="text-left py-1.5 w-6" rowSpan={2}>#</th>
+              <th className="text-left py-1.5" rowSpan={2}>Team</th>
+              {hasSpring && (
+                <th colSpan={7} className="text-center py-1 text-[10px] font-bold text-green-400/70 tracking-wider border-b border-green-500/20 border-l border-bg-border/20">
+                  🌸 Spring
+                </th>
+              )}
+              {hasSummer && (
+                <th colSpan={7} className="text-center py-1 text-[10px] font-bold text-amber-400/70 tracking-wider border-b border-amber-500/20 border-l border-bg-border/20">
+                  ☀️ Summer
+                </th>
+              )}
+              <th className="text-center py-1.5 w-16 font-bold text-slate-200 border-l border-bg-border/20" rowSpan={2}>Total</th>
+              <th className="text-left py-1.5 w-16" rowSpan={2}>Int'l</th>
+            </tr>
+            <tr className="text-slate-500 border-b border-bg-border text-[10px]">
+              {hasSpring && <>
+                <th className="text-left py-1.5 pl-2 w-20 border-l border-bg-border/20">Result</th>
+                <th className="text-center py-1.5 w-7">W</th>
+                <th className="text-center py-1.5 w-7">L</th>
+                <th className="text-center py-1.5 w-10 text-slate-600">Reg</th>
+                <th className="text-center py-1.5 w-10 text-green-500/60">PO</th>
+                <th className="text-center py-1.5 w-12 font-bold text-green-400/80">Spr</th>
+              </>}
+              {hasSummer && <>
+                <th className="text-left py-1.5 pl-2 w-20 border-l border-bg-border/20">Result</th>
+                <th className="text-center py-1.5 w-7">W</th>
+                <th className="text-center py-1.5 w-7">L</th>
+                <th className="text-center py-1.5 w-10 text-slate-600">Reg</th>
+                <th className="text-center py-1.5 w-10 text-amber-500/60">PO</th>
+                <th className="text-center py-1.5 w-12 font-bold text-amber-400/80">Sum</th>
+              </>}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, idx) => {
+              const club = clubById(row.clubId);
+              if (!club) return null;
+              const rank = idx + 1;
+              const badges = spots[rank] ?? [];
+              const isSummerChamp = row.uStage === 'champion';
+              const isAnyChamp = isSummerChamp || row.sStage === 'champion';
+              const sTotal = row.sPOPts + row.sRegPts;
+              const uTotal = row.uPOPts + row.uRegPts;
+              return (
+                <tr key={row.clubId} className={`border-b border-bg-border/40 hover:bg-bg-hover ${isSummerChamp ? 'bg-tier-s/5' : ''}`}>
+                  <td className="py-1.5 text-slate-500 font-mono">{rank}</td>
+                  <td className="py-1.5">
+                    <Link to={`/teams/${club.id}`} className="flex items-center gap-2 hover:text-tier-s">
+                      <TeamDot club={club} showAbbr={false} />
+                      <span className={isSummerChamp ? 'text-tier-s font-bold' : isAnyChamp ? 'text-slate-100 font-semibold' : 'text-slate-200'}>
+                        {club.name}
+                      </span>
+                    </Link>
+                  </td>
+                  {hasSpring && <>
+                    <td className="py-1.5 pl-2 border-l border-bg-border/20 whitespace-nowrap text-slate-400">
+                      {NEU_STAGE_LABELS[row.sStage] ?? '—'}
+                    </td>
+                    <td className="py-1.5 text-center text-status-up">{row.sRec?.wins ?? '—'}</td>
+                    <td className="py-1.5 text-center text-status-down">{row.sRec?.losses ?? '—'}</td>
+                    <td className="py-1.5 text-center text-slate-500">{row.sRegPts}</td>
+                    <td className="py-1.5 text-center text-green-500/80">{row.sPOPts}</td>
+                    <td className="py-1.5 text-center font-bold text-green-400">{sTotal}</td>
+                  </>}
+                  {hasSummer && <>
+                    <td className="py-1.5 pl-2 border-l border-bg-border/20 whitespace-nowrap text-slate-400">
+                      {NEU_STAGE_LABELS[row.uStage] ?? '—'}
+                    </td>
+                    <td className="py-1.5 text-center text-status-up">{row.uRec?.wins ?? '—'}</td>
+                    <td className="py-1.5 text-center text-status-down">{row.uRec?.losses ?? '—'}</td>
+                    <td className="py-1.5 text-center text-slate-500">{row.uRegPts}</td>
+                    <td className="py-1.5 text-center text-amber-500/80">{row.uPOPts}</td>
+                    <td className="py-1.5 text-center font-bold text-amber-400">{uTotal}</td>
+                  </>}
+                  <td className="py-1.5 text-center font-bold text-white border-l border-bg-border/20">{row.total}</td>
+                  <td className="py-1.5">
+                    <div className="flex gap-1 flex-wrap">
+                      {badges.map(b => (
+                        <span key={b} className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${b === 'WT' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' : 'bg-tier-a/10 text-tier-a border-tier-a/20'}`}>{b}</span>
+                      ))}
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
 // ─── L_DE / L_EEU / L_SEU / L_RU — 6-team DE Bracket ───────────────────────
 
 const DE6_CW  = 192;
@@ -2175,6 +2435,470 @@ function DEPlayoffsTab({ state }: { state: LeagueSimState }) {
   );
 }
 
+// ─── L_TW / L_JP Playoffs tab ────────────────────────────────────────────────
+
+function TWJPStaircaseBracket({ po, state }: { po: PlayoffState; state?: LeagueSimState }) {
+  const CW    = 192;        // card width (matches PlayoffSeriesCard w-48)
+  const CH    = 66;         // card height (approx with odds footer)
+  const COLW  = CW + 28;   // column stride
+  const VSTEP = 110;        // vertical step per round
+
+  // Col x-origins: R1=leftmost, Final=rightmost
+  const COL = [0, COLW, 2 * COLW, 3 * COLW];
+  // Row tops: staircase from bottom-left (R1) to top-right (Final)
+  const TOP = [3 * VSTEP, 2 * VSTEP, VSTEP, 0];
+
+  const TW = 3 * COLW + CW;
+  const TH = 3 * VSTEP + CH + 20;
+
+  const rounds = [
+    { id: 'sl_r1',    label: 'Round 1' },
+    { id: 'sl_r2',    label: 'Round 2' },
+    { id: 'sl_r3',    label: 'Round 3' },
+    { id: 'sl_final', label: 'Final'   },
+  ];
+
+  // Elbow connector: right-center of col i → midX → up → left-center of col i+1
+  const connectors = [0, 1, 2].map(i => {
+    const x1 = COL[i] + CW;
+    const y1 = TOP[i] + CH / 2;
+    const x2 = COL[i + 1];
+    const y2 = TOP[i + 1] + CH / 2;
+    const mx = (x1 + x2) / 2;
+    return `M ${x1} ${y1} H ${mx} V ${y2} H ${x2}`;
+  });
+
+  return (
+    <div className="overflow-x-auto">
+      <div className="relative" style={{ width: TW, height: TH }}>
+        <svg className="absolute inset-0 pointer-events-none" width={TW} height={TH}>
+          {connectors.map((d, i) => (
+            <path key={i} d={d} fill="none" stroke="#334155" strokeWidth="1.5" />
+          ))}
+        </svg>
+
+        {rounds.map(({ id, label }, i) => {
+          const s = po.series.find(x => x.id === id);
+          return (
+            <div key={id} className="absolute" style={{ left: COL[i], top: TOP[i], width: CW }}>
+              <div className="text-[9px] text-slate-600 font-medium mb-1 select-none">{label}</div>
+              {s
+                ? <PlayoffSeriesCard s={s} state={state} />
+                : <div className="border border-dashed border-bg-border/40 rounded bg-bg-base flex items-center justify-center text-[10px] text-slate-600" style={{ height: CH }}>TBD</div>
+              }
+            </div>
+          );
+        })}
+
+        {po.champion && (
+          <div className="absolute flex items-center gap-2 px-2.5 py-2 bg-tier-s/10 border border-tier-s/30 rounded-lg"
+            style={{ left: COL[3], top: TOP[3] + CH + 10, width: CW }}>
+            <span className="text-base">🏆</span>
+            <div className="min-w-0">
+              <div className="text-[9px] text-tier-s font-bold uppercase leading-none mb-0.5">Champion</div>
+              <div className="text-white font-bold text-xs truncate">{clubById(po.champion)?.name ?? po.champion}</div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function TWJPPlayoffsTab({ state }: { state: LeagueSimState }) {
+  const hasSummer = !!state.playoffs;
+  const hasSpring = !!state.springPlayoffs;
+  const [split, setSplit] = useState<'spring' | 'summer'>(() =>
+    hasSummer ? 'summer' : 'spring',
+  );
+  useEffect(() => { if (hasSummer) setSplit('summer'); }, [hasSummer]);
+
+  const po = split === 'summer' ? state.playoffs : state.springPlayoffs;
+
+  return (
+    <div className="pt-2">
+      <div className="flex gap-2 mb-4">
+        <button onClick={() => setSplit('spring')} disabled={!hasSpring}
+          className={`px-3 py-1 text-xs rounded border transition-colors ${split === 'spring' ? 'bg-green-500/20 text-green-300 border-green-500/30 font-bold' : hasSpring ? 'text-slate-400 border-bg-border hover:text-slate-200 hover:border-slate-500' : 'text-slate-600 border-bg-border/30 cursor-not-allowed'}`}>
+          🌸 Spring Playoffs
+        </button>
+        <button onClick={() => setSplit('summer')} disabled={!hasSummer}
+          className={`px-3 py-1 text-xs rounded border transition-colors ${split === 'summer' ? 'bg-amber-500/20 text-amber-300 border-amber-500/30 font-bold' : hasSummer ? 'text-slate-400 border-bg-border hover:text-slate-200 hover:border-slate-500' : 'text-slate-600 border-bg-border/30 cursor-not-allowed'}`}>
+          ☀️ Summer Playoffs
+        </button>
+      </div>
+      {po ? (
+        <TWJPStaircaseBracket po={po} state={state} />
+      ) : (
+        <p className="text-center text-slate-500 py-12 text-sm">
+          {split === 'spring' ? 'Spring playoffs start W10 Sat' : 'Summer playoffs start W33 Sat'}
+        </p>
+      )}
+    </div>
+  );
+}
+
+// ─── L_TW / L_JP Season Review ───────────────────────────────────────────────
+
+function twjpRanksFromPO(po: PlayoffState, regStandings: { clubId: string }[]): Map<string, { rank: number; stage: string }> {
+  const loserOf = (s: PlayoffSeries) => s.winner === s.teamA ? s.teamB : s.teamA;
+  const out = new Map<string, { rank: number; stage: string }>();
+  if (!po.completed) return out;
+
+  const final = po.series.find(s => s.id === 'sl_final');
+  const r3    = po.series.find(s => s.id === 'sl_r3');
+  const r2    = po.series.find(s => s.id === 'sl_r2');
+  const r1    = po.series.find(s => s.id === 'sl_r1');
+
+  if (final?.winner)          out.set(final.winner,       { rank: 1, stage: 'champion' });
+  const finalL = final ? loserOf(final) : null;
+  if (finalL)                 out.set(finalL,              { rank: 2, stage: 'finalist' });
+  const r3L = r3 ? loserOf(r3) : null;
+  if (r3L)                    out.set(r3L,                 { rank: 3, stage: 'sf' });
+  const r2L = r2 ? loserOf(r2) : null;
+  if (r2L)                    out.set(r2L,                 { rank: 4, stage: 'qf' });
+  const r1L = r1 ? loserOf(r1) : null;
+  if (r1L)                    out.set(r1L,                 { rank: 5, stage: 'qf' });
+
+  let nextRank = out.size + 1;
+  for (const { clubId } of regStandings) {
+    if (!out.has(clubId)) out.set(clubId, { rank: nextRank++, stage: 'regular' });
+  }
+  return out;
+}
+
+function TWJPSeasonReview({ leagueId, state }: { leagueId: string; state: LeagueSimState }) {
+  const allClubs = clubsByLeague(leagueId);
+  const spots    = INTL_SPOTS[leagueId] ?? {};
+
+  const summerReg = state.fullLeagueState?.standings ?? state.standings;
+  const summerPO  = state.playoffs;
+
+  const summerRanks = summerPO?.completed
+    ? twjpRanksFromPO(summerPO, summerReg)
+    : new Map<string, { rank: number; stage: string }>(summerReg.map((r, i) => [r.clubId, { rank: i + 1, stage: 'regular' }]));
+
+  const recordMap = new Map<string, { wins: number; losses: number; setsFor: number; setsAgainst: number }>();
+  for (const r of summerReg) {
+    recordMap.set(r.clubId, { wins: r.wins, losses: r.losses, setsFor: r.setsFor, setsAgainst: r.setsAgainst });
+  }
+
+  const ranked = allClubs
+    .map(club => ({
+      clubId: club.id,
+      rank:  summerRanks.get(club.id)?.rank  ?? allClubs.length,
+      stage: summerRanks.get(club.id)?.stage ?? 'regular',
+    }))
+    .sort((a, b) => a.rank - b.rank);
+
+  return (
+    <div>
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="text-slate-500 text-xs border-b border-bg-border">
+            <th className="text-left py-2 w-8">#</th>
+            <th className="text-left py-2">Team</th>
+            <th className="text-right py-2 pr-2">MW</th>
+            <th className="text-right py-2 pr-2">ML</th>
+            <th className="text-right py-2 pr-4">GD</th>
+            <th className="text-left py-2">Badges</th>
+          </tr>
+        </thead>
+        <tbody>
+          {ranked.map(({ clubId, rank, stage }) => {
+            const club = clubById(clubId);
+            const rec  = recordMap.get(clubId);
+            const gd   = rec ? rec.setsFor - rec.setsAgainst : null;
+            const badges = spots[rank] ?? [];
+            return (
+              <tr key={clubId} className="border-b border-bg-border/30 hover:bg-bg-panel/30">
+                <td className="py-2 text-slate-400">{rank}</td>
+                <td className="py-2">
+                  <div className="font-bold text-white text-xs">{club?.name ?? clubId}</div>
+                  {stage !== 'regular' && (
+                    <div className="text-[10px] text-slate-500">{STAGE_LABELS[stage] ?? stage}</div>
+                  )}
+                </td>
+                <td className="py-2 pr-2 text-right text-slate-300">{rec?.wins ?? '—'}</td>
+                <td className="py-2 pr-2 text-right text-slate-400">{rec?.losses ?? '—'}</td>
+                <td className="py-2 pr-4 text-right text-slate-400">
+                  {gd != null ? `${gd >= 0 ? '+' : ''}${gd}` : '—'}
+                </td>
+                <td className="py-2">
+                  <div className="flex gap-1 flex-wrap">
+                    {badges.map(b => (
+                      <span key={b} className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${b === 'WT' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' : 'bg-tier-a/10 text-tier-a border-tier-a/20'}`}>{b}</span>
+                    ))}
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+// ─── L_MEAF ───────────────────────────────────────────────────────────────────
+
+function MEAFStandingsTable({ records }: { records: TeamRecord[] }) {
+  return (
+    <table className="w-full text-sm">
+      <thead>
+        <tr className="text-xs text-slate-500 border-b border-bg-border">
+          <th className="text-left py-2 w-6">#</th>
+          <th className="text-left py-2">Team</th>
+          <th className="text-center py-2 w-28">Circuit Pts</th>
+        </tr>
+      </thead>
+      <tbody>
+        {records.map((rec, idx) => {
+          const club = clubById(rec.clubId);
+          if (!club) return null;
+          return (
+            <tr key={rec.clubId} className="border-b border-bg-border/50 hover:bg-bg-hover">
+              <td className="py-2 text-slate-500 text-xs">{idx + 1}</td>
+              <td className="py-2">
+                <Link to={`/teams/${club.id}`} className="flex items-center gap-2 hover:text-tier-s">
+                  <TeamDot club={club} showAbbr={false} />
+                  <span className="text-slate-200">{club.name}</span>
+                </Link>
+              </td>
+              <td className="py-2 text-center font-bold text-tier-s">{rec.wins}</td>
+            </tr>
+          );
+        })}
+        {records.length === 0 && (
+          <tr><td colSpan={3} className="py-8 text-center text-slate-500">Simulate a split to see standings</td></tr>
+        )}
+      </tbody>
+    </table>
+  );
+}
+
+function MEAFMMQBracket({ mmq, state }: { mmq: PlayoffState; state?: LeagueSimState }) {
+  const r1    = mmq.series.find(s => s.id === 'mmq_r1');
+  const final = mmq.series.find(s => s.id === 'mmq_final');
+  return (
+    <div className="space-y-4 max-w-xs">
+      <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">W12 Sat — Seed 2 vs Seed 3</div>
+      {r1 && <NEUWEUSeriesCard s={r1} state={state} />}
+      <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">W12 Sun — Seed 1 vs R1 Winner</div>
+      {final && <NEUWEUSeriesCard s={final} state={state} />}
+      {mmq.champion && (
+        <div className="mt-2 px-3 py-2 rounded bg-orange-500/10 border border-orange-500/20 text-xs text-orange-300">
+          MM Representative: <span className="font-bold">{clubById(mmq.champion)?.name ?? mmq.champion}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+type MEAFSelKey = 's1' | 's2' | 's3' | 's4' | 's5' | 'mmq' | 'fp';
+
+function MEAFPlayoffsTab({ state }: { state: LeagueSimState }) {
+  const splits = state.meafSplits ?? [];
+  const phase  = state.currentPhase;
+
+  const defaultSel = (): MEAFSelKey => {
+    if (phase === 'final_playoff' || phase === 'complete') return 'fp';
+    if (phase === 'mm_qualifier' || phase === 'mm_qualifier_done') return 'mmq';
+    if (phase === 'split5') return 's5';
+    if (phase === 'split4') return 's4';
+    if (phase === 'split3') return 's3';
+    if (phase === 'split2') return 's2';
+    return 's1';
+  };
+
+  const [sel, setSel] = useState<MEAFSelKey>(defaultSel());
+  useEffect(() => { setSel(defaultSel()); }, [phase]);
+
+  const getBracket = (key: MEAFSelKey): PlayoffState | null => {
+    switch (key) {
+      case 's1': return splits[0] ?? (phase === 'split1' ? state.playoffs ?? null : null);
+      case 's2': return splits[1] ?? (phase === 'split2' ? state.playoffs ?? null : null);
+      case 's3': return splits[2] ?? (phase === 'split3' ? state.playoffs ?? null : null);
+      case 's4': return splits[3] ?? (phase === 'split4' ? state.playoffs ?? null : null);
+      case 's5': return splits[4] ?? (phase === 'split5' ? state.playoffs ?? null : null);
+      case 'mmq': return state.meafMMQual ?? null;
+      case 'fp': return (phase === 'final_playoff' || phase === 'complete') ? state.playoffs ?? null : null;
+    }
+  };
+
+  const tabs: { key: MEAFSelKey; label: string; available: boolean }[] = [
+    { key: 's1',  label: 'S1',       available: !!(splits[0] || phase === 'split1') },
+    { key: 's2',  label: 'S2',       available: !!(splits[1] || phase === 'split2') },
+    { key: 's3',  label: 'S3',       available: !!(splits[2] || phase === 'split3') },
+    { key: 'mmq', label: 'MM Qual',  available: !!state.meafMMQual },
+    { key: 's4',  label: 'S4',       available: !!(splits[3] || phase === 'split4') },
+    { key: 's5',  label: 'S5',       available: !!(splits[4] || phase === 'split5') },
+    { key: 'fp',  label: 'Final PO', available: (phase === 'final_playoff' || phase === 'complete') && !!state.playoffs },
+  ];
+
+  const bracket = getBracket(sel);
+
+  return (
+    <div className="pt-2">
+      <div className="flex gap-1 flex-wrap mb-4">
+        {tabs.map(t => (
+          <button
+            key={t.key}
+            onClick={() => t.available && setSel(t.key)}
+            className={`px-3 py-1 text-xs rounded border transition-colors ${
+              sel === t.key
+                ? 'bg-tier-a/20 text-tier-a border-tier-a/30 font-bold'
+                : t.available
+                  ? 'text-slate-400 border-bg-border hover:text-slate-200 hover:border-slate-500'
+                  : 'text-slate-600 border-bg-border/30 cursor-not-allowed opacity-40'
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+      {bracket ? (
+        sel === 'fp'
+          ? <TWJPStaircaseBracket po={bracket} state={state} />
+          : sel === 'mmq'
+            ? <MEAFMMQBracket mmq={bracket} state={state} />
+            : <NEUWEUDEBracket po={bracket} state={state} />
+      ) : (
+        <p className="text-center text-slate-500 py-12 text-sm">
+          {sel === 'fp' ? 'Final Playoff starts W33' : sel === 'mmq' ? 'MM Qualifier starts W12' : `Split ${sel.replace('s', '')} not yet started`}
+        </p>
+      )}
+    </div>
+  );
+}
+
+const MEAF_SEASON_SPLIT_PTS = [8, 5, 4, 3, 1, 1, 0, 0];
+const MEAF_SPLIT_PHASE_ORDER = ['split1', 'split2', 'split3', 'split4', 'split5'];
+
+function splitRankCls(rank: number): string {
+  if (rank === 1) return 'text-yellow-400 font-bold';
+  if (rank === 2) return 'text-slate-300 font-bold';
+  if (rank === 3) return 'text-amber-600';
+  if (rank === 4) return 'text-sky-400';
+  return 'text-slate-500';
+}
+
+function MEAFSeasonReview({ state }: { state: LeagueSimState }) {
+  const spots    = INTL_SPOTS['L_MEAF'] ?? {};
+  const allClubs = clubsByLeague('L_MEAF');
+
+  const finalPO   = (state.currentPhase === 'final_playoff' || state.currentPhase === 'complete')
+    ? state.playoffs ?? null : null;
+  const champion  = finalPO?.champion ?? null;
+  const fpRanks   = finalPO?.completed ? twjpRanksFromPO(finalPO, state.standings) : null;
+
+  const meafSplits    = state.meafSplits ?? [];
+  const splitRankMaps = meafSplits.map(sp => meafRanksFromSplit(sp));
+
+  const activeSplitIdx  = MEAF_SPLIT_PHASE_ORDER.indexOf(state.currentPhase);
+  const activeSplitRanks = activeSplitIdx >= 0 && state.playoffs
+    ? meafRanksFromSplit(state.playoffs) : null;
+
+  const rows = allClubs.map(club => {
+    const id      = club.id;
+    const rec     = state.standings.find(r => r.clubId === id);
+    const totalPts = rec?.wins ?? 0;
+
+    const fpInfo  = fpRanks?.get(id);
+    const fpRank  = fpInfo?.rank  ?? null;
+    const fpStage = fpInfo?.stage ?? null;
+
+    const splitRanks: (number | null)[] = Array.from({ length: 5 }, (_, i) => {
+      if (i < splitRankMaps.length) return splitRankMaps[i][id] ?? null;
+      if (i === activeSplitIdx && activeSplitRanks) return activeSplitRanks[id] ?? null;
+      return null;
+    });
+
+    const badges = fpRank !== null ? (spots[fpRank] ?? []) : [];
+
+    return { club, clubId: id, totalPts, fpRank, fpStage, splitRanks, badges };
+  });
+
+  rows.sort((a, b) => {
+    if (a.fpRank !== null && b.fpRank !== null) return a.fpRank - b.fpRank;
+    if (a.fpRank !== null) return -1;
+    if (b.fpRank !== null) return 1;
+    return b.totalPts - a.totalPts;
+  });
+
+  const fpLabel = (stage: string | null, rank: number | null): string => {
+    if (!stage || rank === null) return '—';
+    if (stage === 'champion') return '🏆 Champion';
+    if (stage === 'finalist') return '2nd';
+    if (stage === 'sf') return '3rd';
+    if (rank === 4) return '4th';
+    if (rank === 5) return '5th';
+    return '—';
+  };
+
+  return (
+    <div className="overflow-x-auto">
+      <table className="text-xs min-w-full">
+        <thead>
+          <tr className="text-[10px] text-slate-500 border-b border-bg-border">
+            <th className="text-left py-2 w-6">#</th>
+            <th className="text-left py-2">Team</th>
+            <th className="text-center py-2 w-24">Final PO</th>
+            {['S1','S2','S3','S4','S5'].map((label, i) => (
+              <th key={i} className={`text-center py-2 w-12 ${i === activeSplitIdx ? 'text-amber-400/70' : ''}`}>
+                {label}
+              </th>
+            ))}
+            <th className="text-center py-2 w-14 font-bold text-slate-300 border-l border-bg-border/30">Pts</th>
+            <th className="text-left py-2 pl-2 w-14">Int'l</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(({ club, clubId, fpRank, fpStage, splitRanks, totalPts, badges }, idx) => {
+            const isChamp = champion === clubId;
+            return (
+              <tr key={clubId} className={`border-b border-bg-border/30 hover:bg-bg-panel/30 ${isChamp ? 'bg-tier-s/5' : ''}`}>
+                <td className="py-1.5 text-slate-500 font-mono">{idx + 1}</td>
+                <td className="py-1.5">
+                  <Link to={`/teams/${club.id}`} className="flex items-center gap-2 hover:text-tier-s">
+                    <TeamDot club={club} showAbbr={false} />
+                    <span className={isChamp ? 'text-tier-s font-bold' : 'text-slate-200'}>{club.name}</span>
+                  </Link>
+                </td>
+                <td className={`py-1.5 text-center ${isChamp ? 'text-tier-s font-bold' : fpRank !== null ? 'text-slate-300' : 'text-slate-600'}`}>
+                  {fpLabel(fpStage, fpRank)}
+                </td>
+                {splitRanks.map((rank, i) => {
+                  const pts = rank !== null ? (MEAF_SEASON_SPLIT_PTS[rank - 1] ?? 0) : null;
+                  const pending = i === activeSplitIdx && rank === null;
+                  return (
+                    <td key={i} className={`py-1.5 text-center tabular-nums ${rank !== null ? splitRankCls(rank) : pending ? 'text-amber-400/30' : 'text-slate-700'}`}>
+                      {rank !== null ? (
+                        <>
+                          <div>{rank}</div>
+                          <div className="text-[9px] opacity-60">{pts}p</div>
+                        </>
+                      ) : pending ? '…' : '—'}
+                    </td>
+                  );
+                })}
+                <td className="py-1.5 text-center font-bold text-tier-s border-l border-bg-border/30">{totalPts}</td>
+                <td className="py-1.5 pl-2">
+                  <div className="flex gap-1 flex-wrap">
+                    {badges.map(b => (
+                      <span key={b} className="px-1.5 py-0.5 rounded text-[10px] font-bold border bg-tier-a/10 text-tier-a border-tier-a/20">{b}</span>
+                    ))}
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 // ─── DE Season Review ─────────────────────────────────────────────────────────
 
 const DE_SPRING_PO_PTS: Record<number, number> = { 1: 60, 2: 45, 3: 30, 4: 20, 5: 10, 6: 10 };
@@ -2397,7 +3121,11 @@ export function TeamsLeagues() {
   const isLKR         = activeLeague === 'L_KR';
   const isNEUWEU      = activeLeague === 'L_NEU' || activeLeague === 'L_WEU';
   const isDE          = ['L_DE', 'L_EEU', 'L_SEU', 'L_RU'].includes(activeLeague);
-  const hasPlayoffs   = !!state?.playoffs || ((isLKR || isNEUWEU || isDE) && !!state?.springPlayoffs);
+  const isBRSA        = activeLeague === 'L_BR' || activeLeague === 'L_SA';
+  const isTR          = activeLeague === 'L_TR';
+  const isTWJP        = activeLeague === 'L_TW' || activeLeague === 'L_JP';
+  const isMEAF        = activeLeague === 'L_MEAF';
+  const hasPlayoffs   = !!state?.playoffs || ((isLKR || isNEUWEU || isDE || isBRSA || isTR || isTWJP) && !!state?.springPlayoffs) || isMEAF;
 
   // Auto-switch tab when entering qualifier or playoff phase
   useEffect(() => {
@@ -2409,10 +3137,12 @@ export function TeamsLeagues() {
       setActiveTab('qualifier');
     } else if ((phase === 'playoffs' || phase === 'spring_playoffs' || phase === 'spring_playoffs_done' || phase === 'summer_playoffs') && hasPlayoffs) {
       setActiveTab('playoffs');
+    } else if (isMEAF && phase !== 'complete' && hasPlayoffs) {
+      setActiveTab('playoffs');
     } else if (phase === 'complete' && prev !== 'complete') {
       setActiveTab('season_review');
     }
-  }, [state?.currentPhase, hasQualifier, hasPlayoffs]);
+  }, [state?.currentPhase, hasQualifier, hasPlayoffs, isMEAF]);
 
   // Reset on league change
   function switchLeague(id: string) {
@@ -2557,8 +3287,10 @@ export function TeamsLeagues() {
                   </div>
                 ))}
               </div>
-            ) : (isNEUWEU || isDE) ? (
+            ) : (isNEUWEU || isDE || isTR) ? (
               <StandingsTableNEUWEU records={getStandingsToShow()} />
+            ) : isMEAF ? (
+              <MEAFStandingsTable records={getStandingsToShow()} />
             ) : (
               <StandingsTable records={getStandingsToShow()} />
             )
@@ -2573,10 +3305,14 @@ export function TeamsLeagues() {
 
           {/* Playoffs */}
           {activeTab === 'playoffs' && (
-            isLKR ? (
+            isLKR || isBRSA ? (
               state ? <LKRPlayoffsTab state={state} /> : null
-            ) : isNEUWEU ? (
+            ) : isNEUWEU || isTR ? (
               state ? <NEUWEUPlayoffsTab state={state} /> : null
+            ) : isTWJP ? (
+              state ? <TWJPPlayoffsTab state={state} /> : null
+            ) : isMEAF ? (
+              state ? <MEAFPlayoffsTab state={state} /> : null
             ) : isDE ? (
               state ? <DEPlayoffsTab state={state} /> : null
             ) : state?.playoffs
@@ -2629,6 +3365,14 @@ export function TeamsLeagues() {
                 ? <NEUWEUSeasonReview leagueId={activeLeague} state={state} />
               : isDE
                 ? <DESeasonReview leagueId={activeLeague} state={state} />
+              : isBRSA
+                ? <BRSASeasonReview leagueId={activeLeague} state={state} />
+              : isTR
+                ? <TRSeasonReview state={state} />
+              : isTWJP
+                ? <TWJPSeasonReview leagueId={activeLeague} state={state} />
+              : isMEAF
+                ? <MEAFSeasonReview state={state} />
                 : <SeasonReview leagueId={activeLeague} state={state} />
           )}
 

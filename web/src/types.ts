@@ -143,4 +143,7 @@ export interface LeagueSimState {
   springResults?: PhaseResult[];    // archived spring results
   springPlayoffs?: PlayoffState;    // archived spring playoff bracket
   springChampion?: string | null;   // spring split champion
+  // L_MEAF circuit fields
+  meafSplits?: PlayoffState[];      // archived completed split brackets [0]=split1…[4]=split5
+  meafMMQual?: PlayoffState;        // MM qualifier bracket
 }

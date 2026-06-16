@@ -415,6 +415,172 @@ const L_DE_SUMMER_PO_SLOTS: MatchSlot[] = [
   { weekNum: 37, dow: 6 }, // W37 Sun  GF
 ];
 
+// ─── L_TR explicit schedule ───────────────────────────────────────────────────
+// 8 teams, Bo1 DRR (14 rounds), Sat+Sun only, 4 Bo1/day.
+// Spring reg: W1-6 + W9. Summer reg: W21-24 + W28-30.
+// Playoffs: 8 teams all-DE (L_NEU/L_WEU identical bracket), 12 slots.
+
+const L_TR_SPRING_SLOTS: MatchSlot[] = [
+  { weekNum: 1, dow: 5 }, { weekNum: 1, dow: 6 }, // W1  Sat/Sun
+  { weekNum: 2, dow: 5 }, { weekNum: 2, dow: 6 }, // W2  Sat/Sun
+  { weekNum: 3, dow: 5 }, { weekNum: 3, dow: 6 }, // W3  Sat/Sun
+  { weekNum: 4, dow: 5 }, { weekNum: 4, dow: 6 }, // W4  Sat/Sun
+  { weekNum: 5, dow: 5 }, { weekNum: 5, dow: 6 }, // W5  Sat/Sun
+  { weekNum: 6, dow: 5 }, { weekNum: 6, dow: 6 }, // W6  Sat/Sun
+  { weekNum: 9, dow: 5 }, { weekNum: 9, dow: 6 }, // W9  Sat/Sun
+];
+
+// Spring playoffs: 12 slots — W10 (UBR1×2 Bo3 + UBsf×2 Bo5), W11 (LBR1+LBR2), W12 (UBF+LB5+LBF+GF)
+const L_TR_SPRING_PO_SLOTS: MatchSlot[] = [
+  { weekNum: 10, dow: 3 }, // W10 Thu  UB1+UB2 (Bo3×2)
+  { weekNum: 10, dow: 4 }, // W10 Fri  UB3+UB4 (Bo3×2)
+  { weekNum: 10, dow: 5 }, // W10 Sat  UB5 (Bo5)
+  { weekNum: 10, dow: 6 }, // W10 Sun  UB6 (Bo5)
+  { weekNum: 11, dow: 3 }, // W11 Thu  LB1 (Bo5)
+  { weekNum: 11, dow: 4 }, // W11 Fri  LB2 (Bo5)
+  { weekNum: 11, dow: 5 }, // W11 Sat  LB3 (Bo5)
+  { weekNum: 11, dow: 6 }, // W11 Sun  LB4 (Bo5)
+  { weekNum: 12, dow: 1 }, // W12 Tue  UBF (Bo5)
+  { weekNum: 12, dow: 2 }, // W12 Wed  LB5 (Bo5)
+  { weekNum: 12, dow: 5 }, // W12 Sat  LBF (Bo5)
+  { weekNum: 12, dow: 6 }, // W12 Sun  GF  (Bo5)
+];
+
+const L_TR_SUMMER_SLOTS: MatchSlot[] = [
+  { weekNum: 21, dow: 5 }, { weekNum: 21, dow: 6 }, // W21
+  { weekNum: 22, dow: 5 }, { weekNum: 22, dow: 6 }, // W22
+  { weekNum: 23, dow: 5 }, { weekNum: 23, dow: 6 }, // W23
+  { weekNum: 24, dow: 5 }, { weekNum: 24, dow: 6 }, // W24
+  { weekNum: 28, dow: 5 }, { weekNum: 28, dow: 6 }, // W28
+  { weekNum: 29, dow: 5 }, { weekNum: 29, dow: 6 }, // W29
+  { weekNum: 30, dow: 5 }, { weekNum: 30, dow: 6 }, // W30
+];
+
+// Summer playoffs: 12 slots — W33 (UBR1+UBsf), W34 (LBR1+LBR2+UBF+LB5), W35 (LBF+GF)
+const L_TR_SUMMER_PO_SLOTS: MatchSlot[] = [
+  { weekNum: 33, dow: 3 }, // W33 Thu  UB1+UB2
+  { weekNum: 33, dow: 4 }, // W33 Fri  UB3+UB4
+  { weekNum: 33, dow: 5 }, // W33 Sat  UB5
+  { weekNum: 33, dow: 6 }, // W33 Sun  UB6
+  { weekNum: 34, dow: 1 }, // W34 Tue  LB1
+  { weekNum: 34, dow: 2 }, // W34 Wed  LB2
+  { weekNum: 34, dow: 3 }, // W34 Thu  LB3
+  { weekNum: 34, dow: 4 }, // W34 Fri  LB4
+  { weekNum: 34, dow: 5 }, // W34 Sat  UBF
+  { weekNum: 34, dow: 6 }, // W34 Sun  LB5
+  { weekNum: 35, dow: 5 }, // W35 Sat  LBF
+  { weekNum: 35, dow: 6 }, // W35 Sun  GF
+];
+
+// ─── L_BR / L_SA explicit schedule ───────────────────────────────────────────
+// 10 teams, Bo3 SRR, Sat+Sun only, 2 Bo3 Sat / 3 Bo3 Sun, 9 rounds = 18 slots/split.
+// Spring reg: W1-6 + W9-11. Summer reg: W21-24 + W27-30 + W33.
+// Playoffs: 6 teams, all Bo5, 8 matches, L_KR bracket (M1-M8).
+
+const L_BR_SPRING_SLOTS: MatchSlot[] = [
+  { weekNum: 1,  dow: 5 }, { weekNum: 1,  dow: 6 }, // W1  Sat/Sun
+  { weekNum: 2,  dow: 5 }, { weekNum: 2,  dow: 6 }, // W2  Sat/Sun
+  { weekNum: 3,  dow: 5 }, { weekNum: 3,  dow: 6 }, // W3  Sat/Sun
+  { weekNum: 4,  dow: 5 }, { weekNum: 4,  dow: 6 }, // W4  Sat/Sun
+  { weekNum: 5,  dow: 5 }, { weekNum: 5,  dow: 6 }, // W5  Sat/Sun
+  { weekNum: 6,  dow: 5 }, { weekNum: 6,  dow: 6 }, // W6  Sat/Sun
+  { weekNum: 9,  dow: 5 }, { weekNum: 9,  dow: 6 }, // W9  Sat/Sun
+  { weekNum: 10, dow: 5 }, { weekNum: 10, dow: 6 }, // W10 Sat/Sun
+  { weekNum: 11, dow: 5 }, { weekNum: 11, dow: 6 }, // W11 Sat/Sun
+];
+
+// Spring playoffs: 8 Bo5 matches, 1 per day (W13-15)
+const L_BR_SPRING_PO_SLOTS: MatchSlot[] = [
+  { weekNum: 13, dow: 3 }, // W13 Thu  M1: 3rd vs 6th
+  { weekNum: 13, dow: 4 }, // W13 Fri  M2: 4th vs 5th
+  { weekNum: 13, dow: 5 }, // W13 Sat  M3: 1st vs M1W
+  { weekNum: 13, dow: 6 }, // W13 Sun  M4: 2nd vs M2W
+  { weekNum: 14, dow: 5 }, // W14 Sat  M5: Winners Final
+  { weekNum: 14, dow: 6 }, // W14 Sun  M6: Lower Match
+  { weekNum: 15, dow: 5 }, // W15 Sat  M7: Final Qualifier
+  { weekNum: 15, dow: 6 }, // W15 Sun  M8: Grand Final
+];
+
+const L_BR_SUMMER_SLOTS: MatchSlot[] = [
+  { weekNum: 21, dow: 5 }, { weekNum: 21, dow: 6 }, // W21
+  { weekNum: 22, dow: 5 }, { weekNum: 22, dow: 6 }, // W22
+  { weekNum: 23, dow: 5 }, { weekNum: 23, dow: 6 }, // W23
+  { weekNum: 24, dow: 5 }, { weekNum: 24, dow: 6 }, // W24
+  { weekNum: 27, dow: 5 }, { weekNum: 27, dow: 6 }, // W27
+  { weekNum: 28, dow: 5 }, { weekNum: 28, dow: 6 }, // W28
+  { weekNum: 29, dow: 5 }, { weekNum: 29, dow: 6 }, // W29
+  { weekNum: 30, dow: 5 }, { weekNum: 30, dow: 6 }, // W30
+  { weekNum: 33, dow: 5 }, { weekNum: 33, dow: 6 }, // W33
+];
+
+// Summer playoffs: 8 Bo5 matches (W35-37)
+const L_BR_SUMMER_PO_SLOTS: MatchSlot[] = [
+  { weekNum: 35, dow: 3 }, // W35 Thu  M1
+  { weekNum: 35, dow: 4 }, // W35 Fri  M2
+  { weekNum: 35, dow: 5 }, // W35 Sat  M3
+  { weekNum: 35, dow: 6 }, // W35 Sun  M4
+  { weekNum: 36, dow: 5 }, // W36 Sat  M5 Winners Final
+  { weekNum: 36, dow: 6 }, // W36 Sun  M6 Lower Match
+  { weekNum: 37, dow: 5 }, // W37 Sat  M7 Final Qualifier
+  { weekNum: 37, dow: 6 }, // W37 Sun  M8 Grand Final
+];
+
+// ─── L_TW / L_JP explicit schedule ───────────────────────────────────────────
+// 8 teams, Bo3 DRR (14 rounds), Fri=2+Sat=3+Sun=3 per week = 3 sub-rounds/week, 21/split.
+// Spring reg: W1-6 + W9. Summer reg: W21-23 + W27-30.
+// Playoffs: top 5, stepladder Bo5, 4 slots (W10-11 spring, W33-34 summer).
+
+const L_TWJP_SPRING_SLOTS: MatchSlot[] = [
+  { weekNum: 1, dow: 4 }, { weekNum: 1, dow: 5 }, { weekNum: 1, dow: 6 }, // W1  Fri/Sat/Sun
+  { weekNum: 2, dow: 4 }, { weekNum: 2, dow: 5 }, { weekNum: 2, dow: 6 }, // W2
+  { weekNum: 3, dow: 4 }, { weekNum: 3, dow: 5 }, { weekNum: 3, dow: 6 }, // W3
+  { weekNum: 4, dow: 4 }, { weekNum: 4, dow: 5 }, { weekNum: 4, dow: 6 }, // W4
+  { weekNum: 5, dow: 4 }, { weekNum: 5, dow: 5 }, { weekNum: 5, dow: 6 }, // W5
+  { weekNum: 6, dow: 4 }, { weekNum: 6, dow: 5 }, { weekNum: 6, dow: 6 }, // W6
+  { weekNum: 9, dow: 4 }, { weekNum: 9, dow: 5 }, { weekNum: 9, dow: 6 }, // W9
+];
+
+const L_TWJP_SPRING_PO_SLOTS: MatchSlot[] = [
+  { weekNum: 10, dow: 5 }, // W10 Sat  Round 1: 4v5
+  { weekNum: 10, dow: 6 }, // W10 Sun  Round 2: 3 vs R1W
+  { weekNum: 11, dow: 5 }, // W11 Sat  Round 3: 2 vs R2W
+  { weekNum: 11, dow: 6 }, // W11 Sun  Final:   1 vs R3W
+];
+
+const L_TWJP_SUMMER_SLOTS: MatchSlot[] = [
+  { weekNum: 21, dow: 4 }, { weekNum: 21, dow: 5 }, { weekNum: 21, dow: 6 }, // W21
+  { weekNum: 22, dow: 4 }, { weekNum: 22, dow: 5 }, { weekNum: 22, dow: 6 }, // W22
+  { weekNum: 23, dow: 4 }, { weekNum: 23, dow: 5 }, { weekNum: 23, dow: 6 }, // W23
+  { weekNum: 27, dow: 4 }, { weekNum: 27, dow: 5 }, { weekNum: 27, dow: 6 }, // W27
+  { weekNum: 28, dow: 4 }, { weekNum: 28, dow: 5 }, { weekNum: 28, dow: 6 }, // W28
+  { weekNum: 29, dow: 4 }, { weekNum: 29, dow: 5 }, { weekNum: 29, dow: 6 }, // W29
+  { weekNum: 30, dow: 4 }, { weekNum: 30, dow: 5 }, { weekNum: 30, dow: 6 }, // W30
+];
+
+const L_TWJP_SUMMER_PO_SLOTS: MatchSlot[] = [
+  { weekNum: 33, dow: 5 }, // W33 Sat  Round 1
+  { weekNum: 33, dow: 6 }, // W33 Sun  Round 2
+  { weekNum: 34, dow: 5 }, // W34 Sat  Round 3
+  { weekNum: 34, dow: 6 }, // W34 Sun  Final
+];
+
+// ─── L_MEAF explicit schedule ─────────────────────────────────────────────────
+// 5 tournament splits (DE bracket) + MM Qualifier (W12) + Final Playoff (W33-34)
+// Split layout: WeekA=3 slots, WeekB=3 slots, WeekC=2 slots = 8 slots per split
+
+function meafSplitSlots(wA: number, wB: number, wC: number): MatchSlot[] {
+  return [
+    { weekNum: wA, dow: 4 }, // Fri  ub1+ub2
+    { weekNum: wA, dow: 5 }, // Sat  ub3+ub4
+    { weekNum: wA, dow: 6 }, // Sun  lb1+lb2
+    { weekNum: wB, dow: 4 }, // Fri  ub5+ub6
+    { weekNum: wB, dow: 5 }, // Sat  lb3+lb4
+    { weekNum: wB, dow: 6 }, // Sun  ubf+lb5
+    { weekNum: wC, dow: 4 }, // Fri  lbf
+    { weekNum: wC, dow: 6 }, // Sun  gf
+  ];
+}
+
 // ─── Registry ─────────────────────────────────────────────────────────────────
 
 export const LEAGUE_SCHEDULE_DEFS: Record<string, LeagueScheduleDef> = {
@@ -512,6 +678,66 @@ export const LEAGUE_SCHEDULE_DEFS: Record<string, LeagueScheduleDef> = {
       { id: 'spring_playoffs', label: 'Spring Playoffs', type: 'playoffs', scope: 'bracket',     slots: L_DE_SPRING_PO_SLOTS },
       { id: 'summer',          label: 'Summer Regular',  type: 'drr',     scope: 'full_league', slots: L_DE_SUMMER_SLOTS    },
       { id: 'summer_playoffs', label: 'Summer Playoffs', type: 'playoffs', scope: 'bracket',     slots: L_DE_SUMMER_PO_SLOTS },
+    ],
+  },
+  L_TR: {
+    leagueId: 'L_TR',
+    phases: [
+      { id: 'spring',          label: 'Spring Regular',  type: 'drr',     scope: 'full_league', slots: L_TR_SPRING_SLOTS    },
+      { id: 'spring_playoffs', label: 'Spring Playoffs', type: 'playoffs', scope: 'bracket',     slots: L_TR_SPRING_PO_SLOTS },
+      { id: 'summer',          label: 'Summer Regular',  type: 'drr',     scope: 'full_league', slots: L_TR_SUMMER_SLOTS    },
+      { id: 'summer_playoffs', label: 'Summer Playoffs', type: 'playoffs', scope: 'bracket',     slots: L_TR_SUMMER_PO_SLOTS },
+    ],
+  },
+  L_BR: {
+    leagueId: 'L_BR',
+    phases: [
+      { id: 'spring',          label: 'Spring Regular',  type: 'srr',     scope: 'full_league', slots: L_BR_SPRING_SLOTS    },
+      { id: 'spring_playoffs', label: 'Spring Playoffs', type: 'playoffs', scope: 'bracket',     slots: L_BR_SPRING_PO_SLOTS },
+      { id: 'summer',          label: 'Summer Regular',  type: 'srr',     scope: 'full_league', slots: L_BR_SUMMER_SLOTS    },
+      { id: 'summer_playoffs', label: 'Summer Playoffs', type: 'playoffs', scope: 'bracket',     slots: L_BR_SUMMER_PO_SLOTS },
+    ],
+  },
+  L_SA: {
+    leagueId: 'L_SA',
+    phases: [
+      { id: 'spring',          label: 'Spring Regular',  type: 'srr',     scope: 'full_league', slots: L_BR_SPRING_SLOTS    },
+      { id: 'spring_playoffs', label: 'Spring Playoffs', type: 'playoffs', scope: 'bracket',     slots: L_BR_SPRING_PO_SLOTS },
+      { id: 'summer',          label: 'Summer Regular',  type: 'srr',     scope: 'full_league', slots: L_BR_SUMMER_SLOTS    },
+      { id: 'summer_playoffs', label: 'Summer Playoffs', type: 'playoffs', scope: 'bracket',     slots: L_BR_SUMMER_PO_SLOTS },
+    ],
+  },
+  L_TW: {
+    leagueId: 'L_TW',
+    phases: [
+      { id: 'spring',          label: 'Spring Regular',  type: 'drr',     scope: 'full_league', slots: L_TWJP_SPRING_SLOTS    },
+      { id: 'spring_playoffs', label: 'Spring Playoffs', type: 'playoffs', scope: 'bracket',     slots: L_TWJP_SPRING_PO_SLOTS },
+      { id: 'summer',          label: 'Summer Regular',  type: 'drr',     scope: 'full_league', slots: L_TWJP_SUMMER_SLOTS    },
+      { id: 'summer_playoffs', label: 'Summer Playoffs', type: 'playoffs', scope: 'bracket',     slots: L_TWJP_SUMMER_PO_SLOTS },
+    ],
+  },
+  L_JP: {
+    leagueId: 'L_JP',
+    phases: [
+      { id: 'spring',          label: 'Spring Regular',  type: 'drr',     scope: 'full_league', slots: L_TWJP_SPRING_SLOTS    },
+      { id: 'spring_playoffs', label: 'Spring Playoffs', type: 'playoffs', scope: 'bracket',     slots: L_TWJP_SPRING_PO_SLOTS },
+      { id: 'summer',          label: 'Summer Regular',  type: 'drr',     scope: 'full_league', slots: L_TWJP_SUMMER_SLOTS    },
+      { id: 'summer_playoffs', label: 'Summer Playoffs', type: 'playoffs', scope: 'bracket',     slots: L_TWJP_SUMMER_PO_SLOTS },
+    ],
+  },
+  L_MEAF: {
+    leagueId: 'L_MEAF',
+    phases: [
+      { id: 'split1',        label: 'Split 1',       type: 'playoffs',  scope: 'bracket', slots: meafSplitSlots(1,  2,  3)  },
+      { id: 'split2',        label: 'Split 2',       type: 'playoffs',  scope: 'bracket', slots: meafSplitSlots(4,  5,  6)  },
+      { id: 'split3',        label: 'Split 3',       type: 'playoffs',  scope: 'bracket', slots: meafSplitSlots(9,  10, 11) },
+      { id: 'mm_qualifier',  label: 'MM Qualifier',  type: 'qualifier', scope: 'bracket', slots: [{ weekNum: 12, dow: 5 }, { weekNum: 12, dow: 6 }] },
+      { id: 'split4',        label: 'Split 4',       type: 'playoffs',  scope: 'bracket', slots: meafSplitSlots(21, 22, 23) },
+      { id: 'split5',        label: 'Split 5',       type: 'playoffs',  scope: 'bracket', slots: meafSplitSlots(27, 28, 29) },
+      { id: 'final_playoff', label: 'Final Playoff', type: 'playoffs',  scope: 'bracket', slots: [
+        { weekNum: 33, dow: 5 }, { weekNum: 33, dow: 6 },
+        { weekNum: 34, dow: 5 }, { weekNum: 34, dow: 6 },
+      ]},
     ],
   },
   L_NA: {

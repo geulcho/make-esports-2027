@@ -152,7 +152,7 @@ export const useStore = create<Store>()(
       },
     }),
     {
-      name: 'make-esports-store-v12',
+      name: 'make-esports-store-v16',
       partialize: state => ({
         gameDate: state.gameDate,
         activeMeta: state.activeMeta,

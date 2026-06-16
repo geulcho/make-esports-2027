@@ -1,11 +1,11 @@
 import type {
-  Club, DivisionSim, FullLeagueSim, LeagueSimState, PhaseResult, TeamRecord,
+  Club, DivisionSim, FullLeagueSim, LeagueSimState, PhaseResult, PlayoffState, TeamRecord,
 } from '../types';
 import { clubsByLeague, clubsByDivision, leagueConfigs } from '../data/clubs';
 import { simulateMatch } from './combat';
 import { getSRRRounds, getDRRRounds, getLCNHalfRounds, getLKRSpringRounds, getLKRSummerRounds } from './matchSchedule';
 import { getLeagueScheduleDef } from './leagueScheduleDefs';
-import { initQualifier, advanceQualifierToSlot, initPlayoffs, advancePlayoffToSlot, initLCNQualifier, initLCNPlayoffs, advanceLCNPlayoffToSlot, initLKRPlayoffs, advanceLKRPlayoffToSlot, initNEUWEUPlayoffs, advanceNEUWEUPlayoffToSlot, initDE6Playoffs, advanceDE6PlayoffToSlot } from './bracket';
+import { initQualifier, advanceQualifierToSlot, initPlayoffs, advancePlayoffToSlot, initLCNQualifier, initLCNPlayoffs, advanceLCNPlayoffToSlot, initLKRPlayoffs, advanceLKRPlayoffToSlot, initNEUWEUPlayoffs, advanceNEUWEUPlayoffToSlot, initDE6Playoffs, advanceDE6PlayoffToSlot, initTWJPPlayoffs, advanceTWJPPlayoffToSlot, advanceMEAFSplitToSlot, meafRanksFromSplit, initMEAFMMQual, advanceMEAFMMQualToSlot } from './bracket';
 
 export function pickMeta(): string[] {
   const combos = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
@@ -771,6 +771,127 @@ function advanceNEUWEU(
   return s;
 }
 
+// ─── L_TR phase-aware advance ─────────────────────────────────────────────────
+//
+// Two-split structure:
+//   spring (W1-9, 14 Bo1 DRR rounds) → spring_playoffs (W10-12, 12 slots, 8-team DE)
+//   summer (W21-30, 14 Bo1 DRR rounds) → summer_playoffs (W33-35, 12 slots, 8-team DE)
+// Playoffs identical to L_NEU/L_WEU: UBR1 Bo3, rest Bo5.
+
+const L_TR_DRR_TOTAL = 14;
+const L_TR_PO_TOTAL  = 12;
+
+function advanceTR(
+  state: LeagueSimState,
+  completed: Record<string, number>,
+  target: Record<string, number>,
+  meta: string[],
+  clubMap: Map<string, Club>,
+): LeagueSimState {
+  const id = state.leagueId; // 'L_TR'
+  let s = { ...state };
+
+  // ── Phase 1: Spring regular (W1-9, 14 Bo1 DRR rounds) ────────────────────
+  const skSp = `${id}::spring`;
+  const cSp  = completed[skSp] ?? 0;
+  const tSp  = Math.min(target[skSp] ?? cSp, L_TR_DRR_TOTAL);
+
+  {
+    let fl: FullLeagueSim = s.fullLeagueState ?? { standings: [], results: [] };
+    if (cSp === 0 && fl.standings.length === 0) {
+      fl = { standings: clubsByLeague(id).map(c => makeRecord(c, null)), results: [] };
+    }
+    if (tSp > cSp) {
+      const rounds = getDRRRounds(id, null);
+      const sim = simulateRoundsForGroup(fl.standings, fl.results, cSp, tSp, meta, clubMap, rounds, null, 1);
+      fl = { standings: sortStandingsNEUWEU(sim.standings, sim.results), results: sim.results };
+    }
+    s = { ...s, fullLeagueState: fl, standings: fl.standings, results: fl.results, currentPhase: 'spring' };
+  }
+
+  const springDone = (target[skSp] ?? 0) >= L_TR_DRR_TOTAL || (completed[skSp] ?? 0) >= L_TR_DRR_TOTAL;
+  if (!springDone) return s;
+
+  // ── Phase 2: Spring playoffs (W10-12, 12 slots) ───────────────────────────
+  const skSpP = `${id}::spring_playoffs`;
+  const cSpP  = completed[skSpP] ?? 0;
+  const tSpP  = Math.min(target[skSpP] ?? cSpP, L_TR_PO_TOTAL);
+
+  if ((tSpP > 0 || cSpP > 0) && !s.springStandings) {
+    const springFl = s.fullLeagueState!;
+    let po = s.playoffs;
+    if (!po) po = initNEUWEUPlayoffs(springFl.standings);
+    if (tSpP > cSpP) {
+      const poMap = new Map(springFl.standings.map(r => [r.clubId, r]));
+      po = advanceNEUWEUPlayoffToSlot(po, cSpP, tSpP, meta, clubMap, poMap);
+    }
+    s = { ...s, playoffs: po, currentPhase: po.completed ? 'spring_playoffs_done' : 'spring_playoffs' };
+  }
+
+  const springPODone = (target[skSpP] ?? 0) >= L_TR_PO_TOTAL || (completed[skSpP] ?? 0) >= L_TR_PO_TOTAL;
+  if (!springPODone) return s;
+
+  if (!s.springStandings) {
+    s = {
+      ...s,
+      springStandings: s.fullLeagueState?.standings ?? [],
+      springResults:   s.fullLeagueState?.results   ?? [],
+      springPlayoffs:  s.playoffs,
+      springChampion:  s.playoffs?.champion ?? null,
+      playoffs:        undefined,
+    };
+  }
+
+  // ── Phase 3: Summer regular (W21-30, 14 Bo1 DRR rounds) ──────────────────
+  const skSu = `${id}::summer`;
+  const cSu  = completed[skSu] ?? 0;
+  const tSu  = Math.min(target[skSu] ?? cSu, L_TR_DRR_TOTAL);
+
+  if (tSu > 0 || cSu > 0) {
+    let fl: FullLeagueSim = s.fullLeagueState ?? { standings: [], results: [] };
+    if (cSu === 0) {
+      const springFinal = s.springStandings ?? clubsByLeague(id).map(c => makeRecord(c, null));
+      fl = {
+        standings: springFinal.map(r => ({ ...r, wins: 0, losses: 0, setsFor: 0, setsAgainst: 0, momFor: 0, momAgainst: 0 })),
+        results: [],
+      };
+    }
+    if (tSu > cSu) {
+      const rounds = getDRRRounds(id, null);
+      const sim = simulateRoundsForGroup(fl.standings, fl.results, cSu, tSu, meta, clubMap, rounds, null, 1);
+      fl = { standings: sortStandingsNEUWEU(sim.standings, sim.results), results: sim.results };
+    }
+    s = {
+      ...s,
+      fullLeagueState: fl,
+      standings: fl.standings,
+      results: [...(s.springResults ?? []), ...fl.results],
+      currentPhase: 'summer',
+    };
+  }
+
+  const summerDone = (target[skSu] ?? 0) >= L_TR_DRR_TOTAL || (completed[skSu] ?? 0) >= L_TR_DRR_TOTAL;
+  if (!summerDone) return s;
+
+  // ── Phase 4: Summer playoffs (W33-35, 12 slots) ───────────────────────────
+  const skSuP = `${id}::summer_playoffs`;
+  const cSuP  = completed[skSuP] ?? 0;
+  const tSuP  = Math.min(target[skSuP] ?? cSuP, L_TR_PO_TOTAL);
+
+  if (tSuP > 0 || cSuP > 0) {
+    const summerFl = s.fullLeagueState!;
+    let po = s.playoffs;
+    if (!po) po = initNEUWEUPlayoffs(summerFl.standings);
+    if (tSuP > cSuP) {
+      const poMap = new Map(summerFl.standings.map(r => [r.clubId, r]));
+      po = advanceNEUWEUPlayoffToSlot(po, cSuP, tSuP, meta, clubMap, poMap);
+    }
+    s = { ...s, playoffs: po, currentPhase: po.completed ? 'complete' : 'summer_playoffs' };
+  }
+
+  return s;
+}
+
 // ─── L_DE / L_EEU / L_SEU / L_RU phase-aware advance ────────────────────────
 //
 // Two-split structure (identical for all 4 leagues):
@@ -892,6 +1013,413 @@ function advanceDE(
   return s;
 }
 
+// ─── L_BR / L_SA phase-aware advance ─────────────────────────────────────────
+//
+// Two-split structure (identical for both leagues):
+//   spring (W1-11, 18 Bo3 SRR slots) → spring_playoffs (W13-15, 8 slots, L_KR bracket)
+//   summer (W21-33, 18 Bo3 SRR slots) → summer_playoffs (W35-37, 8 slots, L_KR bracket)
+// Each 9-round SRR is split into 18 daily sub-rounds: Sat (2 matches) + Sun (3 matches).
+
+const L_BRSA_REG_TOTAL = 18;
+const L_BRSA_PO_TOTAL  = 8;
+
+const _brsaRoundsCache = new Map<string, [string, string][][]>();
+function getBRSARounds(leagueId: string): [string, string][][] {
+  if (_brsaRoundsCache.has(leagueId)) return _brsaRoundsCache.get(leagueId)!;
+  const srr = getSRRRounds(leagueId, null); // 9 rounds × 5 matches
+  const sub: [string, string][][] = [];
+  for (const round of srr) {
+    sub.push(round.slice(0, 2)); // Sat: 2 matches
+    sub.push(round.slice(2));    // Sun: 3 matches
+  }
+  _brsaRoundsCache.set(leagueId, sub);
+  return sub;
+}
+
+function advanceBRSA(
+  state: LeagueSimState,
+  completed: Record<string, number>,
+  target: Record<string, number>,
+  meta: string[],
+  clubMap: Map<string, Club>,
+): LeagueSimState {
+  const id = state.leagueId;
+  let s = { ...state };
+
+  // ── Phase 1: Spring regular (W1-11, 18 Bo3 SRR slots) ────────────────────
+  const skSp = `${id}::spring`;
+  const cSp  = completed[skSp] ?? 0;
+  const tSp  = Math.min(target[skSp] ?? cSp, L_BRSA_REG_TOTAL);
+
+  {
+    let fl: FullLeagueSim = s.fullLeagueState ?? { standings: [], results: [] };
+    if (cSp === 0 && fl.standings.length === 0) {
+      fl = { standings: clubsByLeague(id).map(c => makeRecord(c, null)), results: [] };
+    }
+    if (tSp > cSp) {
+      const rounds = getBRSARounds(id);
+      const sim = simulateRoundsForGroup(fl.standings, fl.results, cSp, tSp, meta, clubMap, rounds, null, 2);
+      fl = { standings: sim.standings, results: sim.results };
+    }
+    s = { ...s, fullLeagueState: fl, standings: fl.standings, results: fl.results, currentPhase: 'spring' };
+  }
+
+  const springDone = (target[skSp] ?? 0) >= L_BRSA_REG_TOTAL || (completed[skSp] ?? 0) >= L_BRSA_REG_TOTAL;
+  if (!springDone) return s;
+
+  // ── Phase 2: Spring playoffs (W13-15, 8 slots) ────────────────────────────
+  const skSpP = `${id}::spring_playoffs`;
+  const cSpP  = completed[skSpP] ?? 0;
+  const tSpP  = Math.min(target[skSpP] ?? cSpP, L_BRSA_PO_TOTAL);
+
+  if ((tSpP > 0 || cSpP > 0) && !s.springStandings) {
+    const springFl = s.fullLeagueState!;
+    let po = s.playoffs;
+    if (!po) po = initLKRPlayoffs(springFl.standings);
+    if (tSpP > cSpP) {
+      const poMap = new Map(springFl.standings.map(r => [r.clubId, r]));
+      po = advanceLKRPlayoffToSlot(po, cSpP, tSpP, meta, clubMap, poMap, 3);
+    }
+    s = { ...s, playoffs: po, currentPhase: po.completed ? 'spring_playoffs_done' : 'spring_playoffs' };
+  }
+
+  const springPODone = (target[skSpP] ?? 0) >= L_BRSA_PO_TOTAL || (completed[skSpP] ?? 0) >= L_BRSA_PO_TOTAL;
+  if (!springPODone) return s;
+
+  if (!s.springStandings) {
+    s = {
+      ...s,
+      springStandings: s.fullLeagueState?.standings ?? [],
+      springResults:   s.fullLeagueState?.results   ?? [],
+      springPlayoffs:  s.playoffs,
+      springChampion:  s.playoffs?.champion ?? null,
+      playoffs:        undefined,
+    };
+  }
+
+  // ── Phase 3: Summer regular (W21-33, 18 Bo3 SRR slots) ───────────────────
+  const skSu = `${id}::summer`;
+  const cSu  = completed[skSu] ?? 0;
+  const tSu  = Math.min(target[skSu] ?? cSu, L_BRSA_REG_TOTAL);
+
+  if (tSu > 0 || cSu > 0) {
+    let fl: FullLeagueSim = s.fullLeagueState ?? { standings: [], results: [] };
+    if (cSu === 0) {
+      const springFinal = s.springStandings ?? clubsByLeague(id).map(c => makeRecord(c, null));
+      fl = {
+        standings: springFinal.map(r => ({ ...r, wins: 0, losses: 0, setsFor: 0, setsAgainst: 0, momFor: 0, momAgainst: 0 })),
+        results: [],
+      };
+    }
+    if (tSu > cSu) {
+      const rounds = getBRSARounds(id);
+      const sim = simulateRoundsForGroup(fl.standings, fl.results, cSu, tSu, meta, clubMap, rounds, null, 2);
+      fl = { standings: sim.standings, results: sim.results };
+    }
+    s = {
+      ...s,
+      fullLeagueState: fl,
+      standings: fl.standings,
+      results: [...(s.springResults ?? []), ...fl.results],
+      currentPhase: 'summer',
+    };
+  }
+
+  const summerDone = (target[skSu] ?? 0) >= L_BRSA_REG_TOTAL || (completed[skSu] ?? 0) >= L_BRSA_REG_TOTAL;
+  if (!summerDone) return s;
+
+  // ── Phase 4: Summer playoffs (W35-37, 8 slots) ────────────────────────────
+  const skSuP = `${id}::summer_playoffs`;
+  const cSuP  = completed[skSuP] ?? 0;
+  const tSuP  = Math.min(target[skSuP] ?? cSuP, L_BRSA_PO_TOTAL);
+
+  if (tSuP > 0 || cSuP > 0) {
+    const summerFl = s.fullLeagueState!;
+    let po = s.playoffs;
+    if (!po) po = initLKRPlayoffs(summerFl.standings);
+    if (tSuP > cSuP) {
+      const poMap = new Map(summerFl.standings.map(r => [r.clubId, r]));
+      po = advanceLKRPlayoffToSlot(po, cSuP, tSuP, meta, clubMap, poMap, 3);
+    }
+    s = { ...s, playoffs: po, currentPhase: po.completed ? 'complete' : 'summer_playoffs' };
+  }
+
+  return s;
+}
+
+// ─── L_TW / L_JP phase-aware advance ─────────────────────────────────────────
+//
+// Two-split structure (identical for both leagues):
+//   spring (W1-9, 21 Bo3 DRR sub-rounds) → spring_playoffs (W10-11, 4 slots, stepladder)
+//   summer (W21-30, 21 Bo3 DRR sub-rounds) → summer_playoffs (W33-34, 4 slots, stepladder)
+// Each DRR week (2 rounds × 4 matches) is split [Fri=2, Sat=3, Sun=3] = 3 sub-rounds.
+
+const L_TWJP_REG_TOTAL = 21;
+const L_TWJP_PO_TOTAL  = 4;
+
+const _twjpRoundsCache = new Map<string, [string, string][][]>();
+function getTWJPRounds(leagueId: string): [string, string][][] {
+  if (_twjpRoundsCache.has(leagueId)) return _twjpRoundsCache.get(leagueId)!;
+  const drr = getDRRRounds(leagueId, null); // 14 rounds × 4 matches
+  const sub: [string, string][][] = [];
+  for (let w = 0; w < 7; w++) {
+    const week = [...drr[w * 2], ...drr[w * 2 + 1]]; // 8 matches
+    sub.push(week.slice(0, 2)); // Fri: 2
+    sub.push(week.slice(2, 5)); // Sat: 3
+    sub.push(week.slice(5, 8)); // Sun: 3
+  }
+  _twjpRoundsCache.set(leagueId, sub);
+  return sub;
+}
+
+function advanceTWJP(
+  state: LeagueSimState,
+  completed: Record<string, number>,
+  target: Record<string, number>,
+  meta: string[],
+  clubMap: Map<string, Club>,
+): LeagueSimState {
+  const id = state.leagueId;
+  let s = { ...state };
+
+  // ── Phase 1: Spring regular (W1-9, 21 Bo3 sub-rounds) ────────────────────
+  const skSp = `${id}::spring`;
+  const cSp  = completed[skSp] ?? 0;
+  const tSp  = Math.min(target[skSp] ?? cSp, L_TWJP_REG_TOTAL);
+
+  {
+    let fl: FullLeagueSim = s.fullLeagueState ?? { standings: [], results: [] };
+    if (cSp === 0 && fl.standings.length === 0) {
+      fl = { standings: clubsByLeague(id).map(c => makeRecord(c, null)), results: [] };
+    }
+    if (tSp > cSp) {
+      const rounds = getTWJPRounds(id);
+      const sim = simulateRoundsForGroup(fl.standings, fl.results, cSp, tSp, meta, clubMap, rounds, null, 2);
+      fl = { standings: sim.standings, results: sim.results };
+    }
+    s = { ...s, fullLeagueState: fl, standings: fl.standings, results: fl.results, currentPhase: 'spring' };
+  }
+
+  const springDone = (target[skSp] ?? 0) >= L_TWJP_REG_TOTAL || (completed[skSp] ?? 0) >= L_TWJP_REG_TOTAL;
+  if (!springDone) return s;
+
+  // ── Phase 2: Spring playoffs (W10-11, 4 slots) ───────────────────────────
+  const skSpP = `${id}::spring_playoffs`;
+  const cSpP  = completed[skSpP] ?? 0;
+  const tSpP  = Math.min(target[skSpP] ?? cSpP, L_TWJP_PO_TOTAL);
+
+  if ((tSpP > 0 || cSpP > 0) && !s.springStandings) {
+    const springFl = s.fullLeagueState!;
+    let po = s.playoffs;
+    if (!po) po = initTWJPPlayoffs(springFl.standings);
+    if (tSpP > cSpP) {
+      const poMap = new Map(springFl.standings.map(r => [r.clubId, r]));
+      po = advanceTWJPPlayoffToSlot(po, cSpP, tSpP, meta, clubMap, poMap);
+    }
+    s = { ...s, playoffs: po, currentPhase: po.completed ? 'spring_playoffs_done' : 'spring_playoffs' };
+  }
+
+  const springPODone = (target[skSpP] ?? 0) >= L_TWJP_PO_TOTAL || (completed[skSpP] ?? 0) >= L_TWJP_PO_TOTAL;
+  if (!springPODone) return s;
+
+  if (!s.springStandings) {
+    s = {
+      ...s,
+      springStandings: s.fullLeagueState?.standings ?? [],
+      springResults:   s.fullLeagueState?.results   ?? [],
+      springPlayoffs:  s.playoffs,
+      springChampion:  s.playoffs?.champion ?? null,
+      playoffs:        undefined,
+    };
+  }
+
+  // ── Phase 3: Summer regular (W21-30, 21 Bo3 sub-rounds) ──────────────────
+  const skSu = `${id}::summer`;
+  const cSu  = completed[skSu] ?? 0;
+  const tSu  = Math.min(target[skSu] ?? cSu, L_TWJP_REG_TOTAL);
+
+  if (tSu > 0 || cSu > 0) {
+    let fl: FullLeagueSim = s.fullLeagueState ?? { standings: [], results: [] };
+    if (cSu === 0) {
+      const springFinal = s.springStandings ?? clubsByLeague(id).map(c => makeRecord(c, null));
+      fl = {
+        standings: springFinal.map(r => ({ ...r, wins: 0, losses: 0, setsFor: 0, setsAgainst: 0, momFor: 0, momAgainst: 0 })),
+        results: [],
+      };
+    }
+    if (tSu > cSu) {
+      const rounds = getTWJPRounds(id);
+      const sim = simulateRoundsForGroup(fl.standings, fl.results, cSu, tSu, meta, clubMap, rounds, null, 2);
+      fl = { standings: sim.standings, results: sim.results };
+    }
+    s = {
+      ...s,
+      fullLeagueState: fl,
+      standings: fl.standings,
+      results: [...(s.springResults ?? []), ...fl.results],
+      currentPhase: 'summer',
+    };
+  }
+
+  const summerDone = (target[skSu] ?? 0) >= L_TWJP_REG_TOTAL || (completed[skSu] ?? 0) >= L_TWJP_REG_TOTAL;
+  if (!summerDone) return s;
+
+  // ── Phase 4: Summer playoffs (W33-34, 4 slots) ───────────────────────────
+  const skSuP = `${id}::summer_playoffs`;
+  const cSuP  = completed[skSuP] ?? 0;
+  const tSuP  = Math.min(target[skSuP] ?? cSuP, L_TWJP_PO_TOTAL);
+
+  if (tSuP > 0 || cSuP > 0) {
+    const summerFl = s.fullLeagueState!;
+    let po = s.playoffs;
+    if (!po) po = initTWJPPlayoffs(summerFl.standings);
+    if (tSuP > cSuP) {
+      const poMap = new Map(summerFl.standings.map(r => [r.clubId, r]));
+      po = advanceTWJPPlayoffToSlot(po, cSuP, tSuP, meta, clubMap, poMap);
+    }
+    s = { ...s, playoffs: po, currentPhase: po.completed ? 'complete' : 'summer_playoffs' };
+  }
+
+  return s;
+}
+
+// ─── L_MEAF ───────────────────────────────────────────────────────────────────
+
+const MEAF_SPLIT_TOTAL = 8;
+const MEAF_MMQ_TOTAL   = 2;
+const MEAF_FP_TOTAL    = 4;
+const MEAF_SPLIT_PTS   = [8, 5, 4, 3, 1, 1, 0, 0];
+
+function meafComputeStandings(splits: PlayoffState[], baseTeams: TeamRecord[]): TeamRecord[] {
+  const pts: Record<string, number> = {};
+  for (const t of baseTeams) pts[t.clubId] = 0;
+  for (const split of splits) {
+    const ranks = meafRanksFromSplit(split);
+    for (const [id, rank] of Object.entries(ranks)) {
+      pts[id] = (pts[id] ?? 0) + (MEAF_SPLIT_PTS[rank - 1] ?? 0);
+    }
+  }
+  return baseTeams
+    .map(t => ({ ...t, wins: pts[t.clubId] ?? 0 }))
+    .sort((a, b) => b.wins - a.wins);
+}
+
+function advanceMEAF(
+  state: LeagueSimState,
+  completed: Record<string, number>,
+  target: Record<string, number>,
+  meta: string[],
+  clubMap: Map<string, Club>,
+): LeagueSimState {
+  const id = state.leagueId;
+  let s: LeagueSimState = { ...state };
+
+  if (s.standings.length === 0) {
+    s = { ...s, standings: clubsByLeague(id).map(c => makeRecord(c, null)) };
+  }
+
+  const splitNames = ['split1', 'split2', 'split3', 'split4', 'split5'];
+
+  // Splits 1–3
+  for (let i = 0; i < 3; i++) {
+    if ((s.meafSplits ?? [])[i]) continue;
+    const sk = `${id}::${splitNames[i]}`;
+    const c = completed[sk] ?? 0;
+    const t = Math.min(target[sk] ?? c, MEAF_SPLIT_TOTAL);
+    if (t > 0 || c > 0) {
+      let po = s.playoffs ?? initNEUWEUPlayoffs(s.standings);
+      if (t > c) {
+        const poMap = new Map(s.standings.map(r => [r.clubId, r]));
+        po = advanceMEAFSplitToSlot(po, c, t, meta, clubMap, poMap);
+      }
+      s = { ...s, playoffs: po, currentPhase: splitNames[i] };
+    }
+    const done = (target[sk] ?? 0) >= MEAF_SPLIT_TOTAL || (completed[sk] ?? 0) >= MEAF_SPLIT_TOTAL;
+    if (done && s.playoffs) {
+      const newSplits = [...(s.meafSplits ?? [])];
+      newSplits[i] = s.playoffs;
+      s = { ...s, meafSplits: newSplits, standings: meafComputeStandings(newSplits, s.standings), playoffs: undefined };
+    } else {
+      return s;
+    }
+  }
+
+  // MM Qualifier
+  const skMMQ = `${id}::mm_qualifier`;
+  const cMMQ = completed[skMMQ] ?? 0;
+  const tMMQ = Math.min(target[skMMQ] ?? cMMQ, MEAF_MMQ_TOTAL);
+  if (tMMQ > 0 || cMMQ > 0) {
+    let mmq = s.meafMMQual;
+    if (!mmq) {
+      const split3Champ = (s.meafSplits ?? [])[2]?.series.find(ser => ser.id === 'gf')?.winner ?? null;
+      const sorted = [...s.standings].sort((a, b) => b.wins - a.wins);
+      const top3 = sorted.slice(0, 3).map(r => r.clubId);
+      if (split3Champ && !top3.includes(split3Champ)) top3[2] = split3Champ;
+      mmq = initMEAFMMQual(top3);
+    }
+    if (tMMQ > cMMQ) {
+      const poMap = new Map(s.standings.map(r => [r.clubId, r]));
+      mmq = advanceMEAFMMQualToSlot(mmq, cMMQ, tMMQ, meta, clubMap, poMap);
+    }
+    s = { ...s, meafMMQual: mmq, currentPhase: mmq.completed ? 'mm_qualifier_done' : 'mm_qualifier' };
+  }
+  if (!s.meafMMQual?.completed) return s;
+
+  // Splits 4–5
+  for (let i = 3; i < 5; i++) {
+    if ((s.meafSplits ?? [])[i]) continue;
+    const sk = `${id}::${splitNames[i]}`;
+    const c = completed[sk] ?? 0;
+    const t = Math.min(target[sk] ?? c, MEAF_SPLIT_TOTAL);
+    if (t > 0 || c > 0) {
+      let po = s.playoffs ?? initNEUWEUPlayoffs(s.standings);
+      if (t > c) {
+        const poMap = new Map(s.standings.map(r => [r.clubId, r]));
+        po = advanceMEAFSplitToSlot(po, c, t, meta, clubMap, poMap);
+      }
+      s = { ...s, playoffs: po, currentPhase: splitNames[i] };
+    }
+    const done = (target[sk] ?? 0) >= MEAF_SPLIT_TOTAL || (completed[sk] ?? 0) >= MEAF_SPLIT_TOTAL;
+    if (done && s.playoffs) {
+      const newSplits = [...(s.meafSplits ?? [])];
+      newSplits[i] = s.playoffs;
+      s = { ...s, meafSplits: newSplits, standings: meafComputeStandings(newSplits, s.standings), playoffs: undefined };
+    } else {
+      return s;
+    }
+  }
+
+  // Final Playoff
+  const skFP = `${id}::final_playoff`;
+  const cFP = completed[skFP] ?? 0;
+  const tFP = Math.min(target[skFP] ?? cFP, MEAF_FP_TOTAL);
+  if (tFP > 0 || cFP > 0) {
+    let po = s.playoffs;
+    if (!po) {
+      const allSplits = s.meafSplits ?? [];
+      const split5Champ = allSplits[4]?.series.find(ser => ser.id === 'gf')?.winner ?? null;
+      const sorted = [...s.standings].sort((a, b) => b.wins - a.wins);
+      const top5 = sorted.slice(0, 5).map(r => r.clubId);
+      if (split5Champ) {
+        const idx = top5.indexOf(split5Champ);
+        if (idx === -1) { top5.pop(); top5.unshift(split5Champ); }
+        else if (idx > 0) { top5.splice(idx, 1); top5.unshift(split5Champ); }
+      }
+      const seedRecords = top5.map(
+        tid => s.standings.find(r => r.clubId === tid) ?? makeRecord(clubMap.get(tid)!, null),
+      );
+      po = initTWJPPlayoffs(seedRecords);
+    }
+    if (tFP > cFP) {
+      const poMap = new Map(s.standings.map(r => [r.clubId, r]));
+      po = advanceTWJPPlayoffToSlot(po, cFP, tFP, meta, clubMap, poMap);
+    }
+    s = { ...s, playoffs: po, currentPhase: po.completed ? 'complete' : 'final_playoff' };
+  }
+
+  return s;
+}
+
 // ─── Generic advance ──────────────────────────────────────────────────────────
 
 export function advanceLeagueToRound(
@@ -907,7 +1435,11 @@ export function advanceLeagueToRound(
     if (state.leagueId === 'L_CN') return advanceLCN(state, completedMap, targetMap, meta, clubMap);
     if (state.leagueId === 'L_KR') return advanceLKR(state, completedMap, targetMap, meta, clubMap);
     if (state.leagueId === 'L_NEU' || state.leagueId === 'L_WEU') return advanceNEUWEU(state, completedMap, targetMap, meta, clubMap);
+    if (state.leagueId === 'L_TR') return advanceTR(state, completedMap, targetMap, meta, clubMap);
     if (state.leagueId === 'L_DE' || state.leagueId === 'L_EEU' || state.leagueId === 'L_SEU' || state.leagueId === 'L_RU') return advanceDE(state, completedMap, targetMap, meta, clubMap);
+    if (state.leagueId === 'L_BR' || state.leagueId === 'L_SA') return advanceBRSA(state, completedMap, targetMap, meta, clubMap);
+    if (state.leagueId === 'L_TW' || state.leagueId === 'L_JP') return advanceTWJP(state, completedMap, targetMap, meta, clubMap);
+    if (state.leagueId === 'L_MEAF') return advanceMEAF(state, completedMap, targetMap, meta, clubMap);
   }
 
   const lc = leagueConfigs.find(l => l.id === state.leagueId)!;
