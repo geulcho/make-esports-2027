@@ -31,7 +31,8 @@ function NatChip({ nationId, small }: { nationId: string | null; small?: boolean
 
 function RankingTab({ state }: { state: IntermatchState }) {
   const [filter, setFilter] = useState<RankFilter>('ALL');
-  const allRanked = [...allNations].sort((a, b) => b.elo_rating - a.elo_rating);
+  const elos = state.nationElos;
+  const allRanked = [...allNations].sort((a, b) => (elos[b.id] ?? b.elo_rating) - (elos[a.id] ?? a.elo_rating));
   const filtered = filter === 'ALL' ? allRanked : allRanked.filter(n => n.region === filter);
 
   return (
@@ -86,7 +87,7 @@ function RankingTab({ state }: { state: IntermatchState }) {
                     'bg-slate-600/20 text-slate-400'
                   }`}>{nat.tier}</span>
                 </td>
-                <td className="py-1.5 text-center text-slate-300 font-mono">{nat.elo_rating}</td>
+                <td className="py-1.5 text-center text-slate-300 font-mono">{Math.round(elos[nat.id] ?? nat.elo_rating)}</td>
               </tr>
             );
           })}

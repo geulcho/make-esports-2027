@@ -292,29 +292,32 @@ function simMatch(
   meta: string[],
   clubMap: Map<string, Club>,
   participants: MMParticipant[],
-): MMMatch {
-  if (match.winner) return match;
+): { played: MMMatch; eloChangeA: number } {
+  if (match.winner) return { played: match, eloChangeA: 0 };
   const pA = participants.find(p => p.clubId === match.teamA);
   const pB = participants.find(p => p.clubId === match.teamB);
   const baseA = clubMap.get(match.teamA);
   const baseB = clubMap.get(match.teamB);
-  if (!baseA || !baseB) return match;
+  if (!baseA || !baseB) return { played: match, eloChangeA: 0 };
   const ca = { ...baseA, elo_rating: pA?.w16Elo ?? baseA.elo_rating };
   const cb = { ...baseB, elo_rating: pB?.w16Elo ?? baseB.elo_rating };
   const r = simulateMatch(ca, cb, meta, winsNeeded(match.format));
   return {
-    ...match,
-    scoreA: r.scoreA,
-    scoreB: r.scoreB,
-    oddsA:  r.oddsA,
-    oddsB:  r.oddsB,
-    winner: r.scoreA > r.scoreB ? match.teamA : match.teamB,
+    played: {
+      ...match,
+      scoreA: r.scoreA,
+      scoreB: r.scoreB,
+      oddsA:  r.oddsA,
+      oddsB:  r.oddsB,
+      winner: r.scoreA > r.scoreB ? match.teamA : match.teamB,
+    },
+    eloChangeA: r.eloChangeA,
   };
 }
 
 // ─── Apply match result to state ──────────────────────────────────────────────
 
-function applySwissMatchResult(state: MMState, roundKey: string, matchId: string, played: MMMatch): MMState {
+function applySwissMatchResult(state: MMState, roundKey: string, matchId: string, played: MMMatch, eloChangeA: number): MMState {
   // Update sub-round
   const newRounds = state.swissRounds.map(sr => {
     if (sr.key !== roundKey) return sr;
@@ -323,11 +326,12 @@ function applySwissMatchResult(state: MMState, roundKey: string, matchId: string
     return { ...sr, matches: newMatches, completed };
   });
 
-  // Update participant records
+  // Update participant records + Elo
   const winner = played.winner!;
   const loser  = winner === played.teamA ? played.teamB : played.teamA;
   const wGames = winner === played.teamA ? played.scoreA : played.scoreB;
   const lGames = winner === played.teamA ? played.scoreB : played.scoreA;
+  const eloW = played.teamA === winner ? eloChangeA : -eloChangeA;
 
   const newParticipants = state.participants.map(p => {
     if (p.clubId !== winner && p.clubId !== loser) return p;
@@ -335,6 +339,7 @@ function applySwissMatchResult(state: MMState, roundKey: string, matchId: string
       const wins = p.swissWins + 1;
       return {
         ...p,
+        w16Elo:       p.w16Elo + eloW,
         swissWins:    wins,
         swissGameDiff: p.swissGameDiff + wGames - lGames,
         qualified:    wins >= 3,
@@ -345,6 +350,7 @@ function applySwissMatchResult(state: MMState, roundKey: string, matchId: string
     const losses = p.swissLosses + 1;
     return {
       ...p,
+      w16Elo:       p.w16Elo - eloW,
       swissLosses:  losses,
       swissGameDiff: p.swissGameDiff + lGames - wGames,
       eliminated:   losses >= 3,
@@ -473,8 +479,8 @@ export function advanceMMSingleMatch(
   for (const sr of state.swissRounds) {
     const match = sr.matches.find(m => m.id === matchId);
     if (match) {
-      const played = simMatch(match, meta, clubMap, state.participants);
-      return applySwissMatchResult(state, sr.key, matchId, played);
+      const { played, eloChangeA } = simMatch(match, meta, clubMap, state.participants);
+      return applySwissMatchResult(state, sr.key, matchId, played, eloChangeA);
     }
   }
 
@@ -497,7 +503,15 @@ export function advanceMMSingleMatch(
         oddsA: r.oddsA, oddsB: r.oddsB,
         winner,
       };
-      return applyKnockoutResult(state, km.slot, played);
+      // Apply Elo change to participants
+      let s2 = applyKnockoutResult(state, km.slot, played);
+      const eloW = km.teamA === winner ? r.eloChangeA : -r.eloChangeA;
+      s2 = { ...s2, participants: s2.participants.map(p => {
+        if (p.clubId === winner) return { ...p, w16Elo: p.w16Elo + eloW };
+        if (p.clubId === (winner === km.teamA ? km.teamB! : km.teamA!)) return { ...p, w16Elo: p.w16Elo - eloW };
+        return p;
+      })};
+      return s2;
     }
   }
 

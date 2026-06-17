@@ -278,6 +278,7 @@ export interface IntermatchState {
   meaf: MEAFQualState;
   iq: { matches: IQMatch[]; weQualified: string[]; completed: boolean } | null;
   rankings: Array<{ nationId: string; elo: number }>;
+  nationElos: Record<string, number>;
 }
 
 // ─── Midseason Mayhem types ───────────────────────────────────────────────────
