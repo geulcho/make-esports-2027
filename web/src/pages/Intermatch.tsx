@@ -154,12 +154,75 @@ function GroupTable({ group }: { group: NatGroup }) {
   );
 }
 
+// ─── PO match card ────────────────────────────────────────────────────────────
+
+function POMatchCard({ m }: { m: NatBracketMatch }) {
+  const winA = m.winner === m.teamA;
+  const winB = m.winner === m.teamB;
+  const isUpset = m.winner !== null && (
+    (winA && m.oddsA > m.oddsB) || (winB && m.oddsB > m.oddsA)
+  );
+  const winnerOdds = winA ? m.oddsA : winB ? m.oddsB : 0;
+
+  function oddsColor(odds: number, isW: boolean) {
+    if (!isW || !isUpset) return 'text-slate-600';
+    if (odds >= 5.0) return 'text-red-500 font-bold';
+    if (odds >= 3.0) return 'text-red-400';
+    if (odds >= 2.0) return 'text-orange-400';
+    return 'text-slate-500';
+  }
+
+  return (
+    <div className="rounded border border-bg-border bg-bg-panel p-2.5 w-52">
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-[9px] text-slate-600 font-bold">{m.format}</span>
+        {!m.winner && m.teamA && m.teamB && (
+          <span className="text-[9px] text-slate-600">{m.oddsA.toFixed(2)} / {m.oddsB.toFixed(2)}</span>
+        )}
+      </div>
+      <div className="flex items-center gap-1.5 mb-0.5">
+        {m.winner && <span className={`text-[9px] w-7 ${oddsColor(m.oddsA, winA)}`}>{m.oddsA.toFixed(2)}</span>}
+        <NatChip nationId={m.teamA} small />
+        <span className="text-slate-400 text-[11px]">{nationById(m.teamA ?? '')?.name ?? ''}</span>
+        <span className={`ml-auto w-4 text-center text-xs font-bold ${winA ? 'text-emerald-400' : 'text-slate-600'}`}>
+          {m.winner ? m.scoreA : ''}
+        </span>
+      </div>
+      <div className="flex items-center gap-1.5">
+        {m.winner && <span className={`text-[9px] w-7 ${oddsColor(m.oddsB, winB)}`}>{m.oddsB.toFixed(2)}</span>}
+        <NatChip nationId={m.teamB} small />
+        <span className="text-slate-400 text-[11px]">{nationById(m.teamB ?? '')?.name ?? ''}</span>
+        <span className={`ml-auto w-4 text-center text-xs font-bold ${winB ? 'text-emerald-400' : 'text-slate-600'}`}>
+          {m.winner ? m.scoreB : ''}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 // ─── Regional qualifier tab ───────────────────────────────────────────────────
 
 function RegionQualTab({ region, label }: { region: WEQualRegion; label: string }) {
+  const poLabel = region.regionId === 'EU' ? 'European' : region.regionId === 'APAC' ? 'Asia-Pacific' : 'American';
+  const hasPO = region.playoffMatches.length > 0;
+  const groupsDone = region.groups.every(g => g.completed);
+
+  // Collect PO participating teams for display
+  const thirds: string[] = [];
+  const fourths: string[] = [];
+  if (groupsDone) {
+    for (const g of region.groups) {
+      const sorted = sortGroupRecords(g.records);
+      if (sorted.length >= 3) thirds.push(sorted[2].nationId);
+      if (sorted.length >= 4) fourths.push(sorted[3].nationId);
+    }
+  }
+
   return (
     <div>
       <h2 className="text-sm font-semibold uppercase tracking-wider mb-3" style={{ color: ACCENT }}>{label} Qualifier</h2>
+
+      {/* WE direct qualified */}
       {region.weQualified.length > 0 && (
         <div className="rounded border border-blue-500/30 bg-blue-500/5 p-3 mb-4">
           <div className="text-[10px] font-bold text-blue-400 uppercase mb-2">WE 직행 ({region.weQualified.length}팀)</div>
@@ -168,9 +231,49 @@ function RegionQualTab({ region, label }: { region: WEQualRegion; label: string 
           </div>
         </div>
       )}
-      <div className={`grid gap-4 ${region.groups.length <= 2 ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1 lg:grid-cols-2 xl:grid-cols-4'}`}>
+
+      {/* Group tables */}
+      <div className={`grid gap-4 mb-6 ${region.groups.length <= 2 ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1 lg:grid-cols-2 xl:grid-cols-4'}`}>
         {region.groups.map(g => <GroupTable key={g.id} group={g} />)}
       </div>
+
+      {/* PO section */}
+      {groupsDone && (
+        <div className="border-t border-bg-border pt-4">
+          <h3 className="text-xs font-bold uppercase text-slate-300 mb-3">{poLabel} PO</h3>
+
+          {/* PO participants */}
+          {!hasPO && (
+            <div className="mb-3">
+              <div className="text-[10px] text-slate-500 mb-1">진출팀</div>
+              <div className="flex items-center gap-2 text-[10px] text-slate-400 mb-1">
+                <span>조 3위</span>
+                <div className="flex gap-1">{thirds.map(id => <NatChip key={id} nationId={id} small />)}</div>
+                <span className="ml-3">조 4위</span>
+                <div className="flex gap-1">{fourths.map(id => <NatChip key={id} nationId={id} small />)}</div>
+              </div>
+              <div className="text-slate-600 text-[10px] mt-2">대진 추첨 대기 중...</div>
+            </div>
+          )}
+
+          {/* PO matches */}
+          {hasPO && (
+            <div className="flex flex-wrap gap-3 mb-4">
+              {region.playoffMatches.map(m => <POMatchCard key={m.id} m={m} />)}
+            </div>
+          )}
+
+          {/* IQ qualified */}
+          {region.iqQualified.length > 0 && (
+            <div className="rounded border border-emerald-500/30 bg-emerald-500/5 p-3">
+              <div className="text-[10px] font-bold text-emerald-400 uppercase mb-2">IQ 진출 ({region.iqQualified.length}팀)</div>
+              <div className="flex flex-wrap gap-1">
+                {region.iqQualified.map(id => <NatChip key={id} nationId={id} />)}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
