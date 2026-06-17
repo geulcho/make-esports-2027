@@ -1,6 +1,6 @@
 import type {
   NationalTeam, Club,
-  IntermatchState, WEQualRegion, MEAFQualState,
+  IntermatchState, WEQualRegion, MEAFQualState, SideEventState,
   NatGroup, NatGroupRecord, NatGroupMatch, NatBracketMatch,
 } from '../types';
 import { allNations, nationsByRegion, nationsByAmericasSub } from '../data/nations';
@@ -228,6 +228,8 @@ export function initIntermatch(season: number): IntermatchState {
     americas: initAmericas(),
     meaf: initMEAF(),
     iq: null,
+    eec: null,
+    tpc: null,
     rankings,
     nationElos,
   };
@@ -519,6 +521,26 @@ export function autoAdvanceIntermatch(
     s = { ...s, iq: advanceIQ(s.iq, targetDate, meta, elos) };
   }
 
+  // ── EEC: W31-32 (after EU completed) ──
+  if (week >= 31 && !s.eec && s.europe.phase === 'completed' && s.europe.weQualified.length >= 8) {
+    s = { ...s, eec: generateEEC(s, elos) };
+  }
+  if (s.eec && !s.eec.completed) {
+    s = { ...s, eec: advanceEEC(s.eec, targetDate, meta, elos) };
+  }
+
+  // ── TPC: W31-32 (after APAC + AMER + MEAF completed) ──
+  if (week >= 31 && !s.tpc
+    && s.asiaPacific.phase === 'completed'
+    && s.americas.phase === 'completed'
+    && s.meaf.phase === 'completed'
+  ) {
+    s = { ...s, tpc: generateTPC(s, elos) };
+  }
+  if (s.tpc && !s.tpc.completed) {
+    s = { ...s, tpc: advanceTPC(s.tpc, targetDate, meta, elos) };
+  }
+
   // Persist updated Elos + refresh rankings
   const newRankings = Object.entries(elos)
     .map(([nationId, elo]) => ({ nationId, elo: Math.round(elo) }))
@@ -611,6 +633,214 @@ function advanceIQ(
   const weQ = matches.filter(m => m.winner).map(m => m.winner!);
   const completed = matches.every(m => m.winner !== null);
   return { matches, weQualified: weQ, completed };
+}
+
+// ─── EEC generation & advancement ─────────────────────────────────────────────
+
+// Schedule: W31 Mon QF1-2, W31 Wed QF3-4, W32 Fri SF1-2, W32 Sun Final
+const EEC_SCHEDULE: Array<{ stage: string; week: number; dow: number; count: number }> = [
+  { stage: 'QF', week: 31, dow: 0, count: 2 }, // W31 Mon QF1-2
+  { stage: 'QF', week: 31, dow: 2, count: 2 }, // W31 Wed QF3-4
+  { stage: 'SF', week: 32, dow: 4, count: 2 }, // W32 Fri SF1-2
+  { stage: 'Final', week: 32, dow: 6, count: 1 }, // W32 Sun Final
+];
+
+function generateEEC(state: IntermatchState, elos: Record<string, number>): SideEventState {
+  const teams = [...state.europe.weQualified]
+    .sort((a, b) => getNatElo(b, elos) - getNatElo(a, elos));
+
+  // Bracket: 1v8, 4v5, 3v6, 2v7
+  const mainMatches: NatBracketMatch[] = [
+    makeBracketMatch('EEC_QF1', 'QF', teams[0], teams[7], 'Bo5', elos),
+    makeBracketMatch('EEC_QF2', 'QF', teams[3], teams[4], 'Bo5', elos),
+    makeBracketMatch('EEC_QF3', 'QF', teams[2], teams[5], 'Bo5', elos),
+    makeBracketMatch('EEC_QF4', 'QF', teams[1], teams[6], 'Bo5', elos),
+    makeBracketMatch('EEC_SF1', 'SF', null, null, 'Bo5', elos),
+    makeBracketMatch('EEC_SF2', 'SF', null, null, 'Bo5', elos),
+    makeBracketMatch('EEC_F',   'Final', null, null, 'Bo5', elos),
+  ];
+
+  return { participants: teams, playInMatches: [], mainMatches, champion: null, completed: false };
+}
+
+function advanceEEC(eec: SideEventState, targetDate: string, meta: string[], elos: Record<string, number>): SideEventState {
+  const week = getWeekNum(targetDate);
+  const dow  = getDayOfWeek(targetDate);
+  let matches = [...eec.mainMatches];
+  let changed = false;
+
+  // Determine how many QF slots to simulate
+  let qfDone = 0;
+  for (const slot of EEC_SCHEDULE) {
+    if (slot.stage !== 'QF') continue;
+    if (week > slot.week || (week === slot.week && dow >= slot.dow)) qfDone += slot.count;
+  }
+
+  // Sim QFs
+  for (let i = 0; i < Math.min(qfDone, 4); i++) {
+    if (matches[i].winner) continue;
+    matches = [...matches];
+    matches[i] = simBracketMatch(matches[i], meta, elos);
+    changed = true;
+  }
+
+  // Feed QF → SF
+  const qf1w = matches[0]?.winner, qf2w = matches[1]?.winner;
+  const qf3w = matches[2]?.winner, qf4w = matches[3]?.winner;
+  if (qf1w && !matches[4].teamA) { matches = [...matches]; matches[4] = { ...matches[4], teamA: qf1w }; }
+  if (qf2w && !matches[4].teamB) { matches = [...matches]; matches[4] = { ...matches[4], teamB: qf2w }; recalcBracketOdds(matches, 4, elos); }
+  if (qf3w && !matches[5].teamA) { matches = [...matches]; matches[5] = { ...matches[5], teamA: qf3w }; }
+  if (qf4w && !matches[5].teamB) { matches = [...matches]; matches[5] = { ...matches[5], teamB: qf4w }; recalcBracketOdds(matches, 5, elos); }
+
+  // Sim SFs
+  const sfReady = week > 32 || (week === 32 && dow >= 4);
+  if (sfReady) {
+    for (let i = 4; i < 6; i++) {
+      if (matches[i].winner || !matches[i].teamA || !matches[i].teamB) continue;
+      matches = [...matches];
+      matches[i] = simBracketMatch(matches[i], meta, elos);
+      changed = true;
+    }
+  }
+
+  // Feed SF → Final
+  const sf1w = matches[4]?.winner, sf2w = matches[5]?.winner;
+  if (sf1w && !matches[6].teamA) { matches = [...matches]; matches[6] = { ...matches[6], teamA: sf1w }; }
+  if (sf2w && !matches[6].teamB) { matches = [...matches]; matches[6] = { ...matches[6], teamB: sf2w }; recalcBracketOdds(matches, 6, elos); }
+
+  // Sim Final
+  const finalReady = week > 32 || (week === 32 && dow >= 6);
+  if (finalReady && !matches[6].winner && matches[6].teamA && matches[6].teamB) {
+    matches = [...matches];
+    matches[6] = simBracketMatch(matches[6], meta, elos);
+    changed = true;
+  }
+
+  const champion = matches[6]?.winner ?? null;
+  return { ...eec, mainMatches: matches, champion, completed: champion !== null };
+}
+
+// ─── TPC generation & advancement ─────────────────────────────────────────────
+
+// Schedule: W31 Mon Play-In 3Bo3, W31 Fri QF1-2, W31 Sun QF3-4, W32 Wed SF1-2, W32 Sat Final
+const TPC_PLAYIN  = { week: 31, dow: 0 }; // W31 Mon
+const TPC_QF_1    = { week: 31, dow: 4 }; // W31 Fri
+const TPC_QF_2    = { week: 31, dow: 6 }; // W31 Sun
+const TPC_SF      = { week: 32, dow: 2 }; // W32 Wed
+const TPC_FINAL   = { week: 32, dow: 5 }; // W32 Sat
+
+function generateTPC(state: IntermatchState, elos: Record<string, number>): SideEventState {
+  const apac = state.asiaPacific.weQualified;
+  const amer = state.americas.weQualified;
+  const meaf = state.meaf.weQualified ? [state.meaf.weQualified] : [];
+  const all = [...apac, ...amer, ...meaf].sort((a, b) => getNatElo(b, elos) - getNatElo(a, elos));
+
+  const top7 = all.slice(0, 7);
+  const bot4 = all.slice(7, 11);
+
+  // Play-in: 4 teams → 2 SF + 1 Final (Bo3)
+  const playInMatches: NatBracketMatch[] = [
+    makeBracketMatch('TPC_PI_SF1', 'Play-In SF', bot4[0] ?? null, bot4[3] ?? null, 'Bo3', elos),
+    makeBracketMatch('TPC_PI_SF2', 'Play-In SF', bot4[1] ?? null, bot4[2] ?? null, 'Bo3', elos),
+    makeBracketMatch('TPC_PI_F',   'Play-In Final', null, null, 'Bo3', elos),
+  ];
+
+  // Main bracket: 8 teams (top7 + play-in winner), seeded 1v8, 4v5, 3v6, 2v7
+  const mainMatches: NatBracketMatch[] = [
+    makeBracketMatch('TPC_QF1', 'QF', top7[0] ?? null, null, 'Bo5', elos), // 1 vs 8(PI winner)
+    makeBracketMatch('TPC_QF2', 'QF', top7[3] ?? null, top7[4] ?? null, 'Bo5', elos),
+    makeBracketMatch('TPC_QF3', 'QF', top7[2] ?? null, top7[5] ?? null, 'Bo5', elos),
+    makeBracketMatch('TPC_QF4', 'QF', top7[1] ?? null, top7[6] ?? null, 'Bo5', elos),
+    makeBracketMatch('TPC_SF1', 'SF', null, null, 'Bo5', elos),
+    makeBracketMatch('TPC_SF2', 'SF', null, null, 'Bo5', elos),
+    makeBracketMatch('TPC_F',   'Final', null, null, 'Bo5', elos),
+  ];
+
+  return { participants: all, playInMatches, mainMatches, champion: null, completed: false };
+}
+
+function advanceTPC(tpc: SideEventState, targetDate: string, meta: string[], elos: Record<string, number>): SideEventState {
+  const week = getWeekNum(targetDate);
+  const dow  = getDayOfWeek(targetDate);
+  let pi = [...tpc.playInMatches];
+  let main = [...tpc.mainMatches];
+
+  // Play-In (W31 Mon)
+  const piReady = week > TPC_PLAYIN.week || (week === TPC_PLAYIN.week && dow >= TPC_PLAYIN.dow);
+  if (piReady) {
+    // SF1, SF2
+    for (let i = 0; i < 2; i++) {
+      if (!pi[i].winner && pi[i].teamA && pi[i].teamB) {
+        pi = [...pi]; pi[i] = simBracketMatch(pi[i], meta, elos);
+      }
+    }
+    // Feed → Play-In Final
+    if (pi[0].winner && !pi[2].teamA) { pi = [...pi]; pi[2] = { ...pi[2], teamA: pi[0].winner }; }
+    if (pi[1].winner && !pi[2].teamB) { pi = [...pi]; pi[2] = { ...pi[2], teamB: pi[1].winner }; recalcBracketOdds(pi, 2, elos); }
+    if (!pi[2].winner && pi[2].teamA && pi[2].teamB) {
+      pi = [...pi]; pi[2] = simBracketMatch(pi[2], meta, elos);
+    }
+    // Feed play-in winner → QF1 slot 8 (teamB)
+    if (pi[2].winner && !main[0].teamB) {
+      main = [...main]; main[0] = { ...main[0], teamB: pi[2].winner };
+      recalcBracketOdds(main, 0, elos);
+    }
+  }
+
+  // QF (W31 Fri QF1-2, W31 Sun QF3-4)
+  const qf12Ready = week > TPC_QF_1.week || (week === TPC_QF_1.week && dow >= TPC_QF_1.dow);
+  const qf34Ready = week > TPC_QF_2.week || (week === TPC_QF_2.week && dow >= TPC_QF_2.dow);
+  if (qf12Ready) {
+    for (let i = 0; i < 2; i++) {
+      if (!main[i].winner && main[i].teamA && main[i].teamB) {
+        main = [...main]; main[i] = simBracketMatch(main[i], meta, elos);
+      }
+    }
+  }
+  if (qf34Ready) {
+    for (let i = 2; i < 4; i++) {
+      if (!main[i].winner && main[i].teamA && main[i].teamB) {
+        main = [...main]; main[i] = simBracketMatch(main[i], meta, elos);
+      }
+    }
+  }
+
+  // Feed QF → SF
+  if (main[0].winner && !main[4].teamA) { main = [...main]; main[4] = { ...main[4], teamA: main[0].winner }; }
+  if (main[1].winner && !main[4].teamB) { main = [...main]; main[4] = { ...main[4], teamB: main[1].winner }; recalcBracketOdds(main, 4, elos); }
+  if (main[2].winner && !main[5].teamA) { main = [...main]; main[5] = { ...main[5], teamA: main[2].winner }; }
+  if (main[3].winner && !main[5].teamB) { main = [...main]; main[5] = { ...main[5], teamB: main[3].winner }; recalcBracketOdds(main, 5, elos); }
+
+  // SF (W32 Wed)
+  const sfReady = week > TPC_SF.week || (week === TPC_SF.week && dow >= TPC_SF.dow);
+  if (sfReady) {
+    for (let i = 4; i < 6; i++) {
+      if (!main[i].winner && main[i].teamA && main[i].teamB) {
+        main = [...main]; main[i] = simBracketMatch(main[i], meta, elos);
+      }
+    }
+  }
+
+  // Feed SF → Final
+  if (main[4].winner && !main[6].teamA) { main = [...main]; main[6] = { ...main[6], teamA: main[4].winner }; }
+  if (main[5].winner && !main[6].teamB) { main = [...main]; main[6] = { ...main[6], teamB: main[5].winner }; recalcBracketOdds(main, 6, elos); }
+
+  // Final (W32 Sat)
+  const fReady = week > TPC_FINAL.week || (week === TPC_FINAL.week && dow >= TPC_FINAL.dow);
+  if (fReady && !main[6].winner && main[6].teamA && main[6].teamB) {
+    main = [...main]; main[6] = simBracketMatch(main[6], meta, elos);
+  }
+
+  const champion = main[6]?.winner ?? null;
+  return { ...tpc, playInMatches: pi, mainMatches: main, champion, completed: champion !== null };
+}
+
+function recalcBracketOdds(matches: NatBracketMatch[], idx: number, elos: Record<string, number>) {
+  const m = matches[idx];
+  if (m.teamA && m.teamB && !m.winner) {
+    const o = calcOdds(getNatElo(m.teamA, elos), getNatElo(m.teamB, elos));
+    matches[idx] = { ...m, oddsA: o.oddsA, oddsB: o.oddsB };
+  }
 }
 
 // ─── Group standings sorter ───────────────────────────────────────────────────

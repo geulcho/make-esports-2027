@@ -270,6 +270,14 @@ export interface IQMatch {
   oddsB: number;
 }
 
+export interface SideEventState {
+  participants: string[];
+  playInMatches: NatBracketMatch[];     // TPC only
+  mainMatches: NatBracketMatch[];       // QF/SF/Final
+  champion: string | null;
+  completed: boolean;
+}
+
 export interface IntermatchState {
   season: number;
   europe: WEQualRegion;
@@ -277,6 +285,8 @@ export interface IntermatchState {
   americas: WEQualRegion;
   meaf: MEAFQualState;
   iq: { matches: IQMatch[]; weQualified: string[]; completed: boolean } | null;
+  eec: SideEventState | null;
+  tpc: SideEventState | null;
   rankings: Array<{ nationId: string; elo: number }>;
   nationElos: Record<string, number>;
 }

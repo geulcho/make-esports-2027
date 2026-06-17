@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useStore, getWeekInfo } from '../store/store';
 import { nationById, allNations, regionLabel } from '../data/nations';
 import { sortGroupRecords } from '../engine/intermatch';
-import type { NatGroup, NatGroupRecord, NatBracketMatch, WEQualRegion, MEAFQualState, IntermatchState } from '../types';
+import type { NatGroup, NatGroupRecord, NatBracketMatch, WEQualRegion, MEAFQualState, SideEventState, IntermatchState } from '../types';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -450,7 +450,90 @@ function IQTab({ state }: { state: IntermatchState }) {
   );
 }
 
-// ─── Placeholder tabs ─────────────────────────────────────────────────────────
+// ─── EEC / TPC bracket tab ────────────────────────────────────────────────────
+
+function BracketTab({ event, title, subtitle }: { event: SideEventState | null; title: string; subtitle: string }) {
+  if (!event) {
+    return (
+      <div>
+        <h2 className="text-sm font-semibold uppercase tracking-wider mb-1" style={{ color: ACCENT }}>{title}</h2>
+        <p className="text-[10px] text-slate-500 mb-4">{subtitle}</p>
+        <div className="text-slate-600 text-sm text-center py-8 border border-bg-border rounded-lg">
+          권역별 예선 완료 후 대진 생성 (W31~)
+        </div>
+      </div>
+    );
+  }
+
+  const hasPlayIn = event.playInMatches.length > 0;
+  const qfMatches = event.mainMatches.filter(m => m.stage === 'QF');
+  const sfMatches = event.mainMatches.filter(m => m.stage === 'SF');
+  const finalMatch = event.mainMatches.find(m => m.stage === 'Final');
+
+  return (
+    <div>
+      <h2 className="text-sm font-semibold uppercase tracking-wider mb-1" style={{ color: ACCENT }}>{title}</h2>
+      <p className="text-[10px] text-slate-500 mb-4">{subtitle}</p>
+
+      {event.champion && (
+        <div className="rounded-lg border p-3 mb-4 flex items-center gap-3" style={{ borderColor: ACCENT + '50', backgroundColor: ACCENT + '08' }}>
+          <span className="text-xl">🏆</span>
+          <div>
+            <div className="text-[10px] uppercase font-bold" style={{ color: ACCENT }}>Champion</div>
+            <div className="flex items-center gap-2">
+              <NatChip nationId={event.champion} />
+              <span className="text-slate-300 text-sm">{nationById(event.champion)?.name}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="overflow-x-auto">
+        <div className="flex items-start gap-6 min-w-max py-2">
+          {/* Play-In (TPC only) */}
+          {hasPlayIn && (
+            <div className="flex flex-col gap-2">
+              <div className="text-[10px] font-bold text-slate-500 uppercase">Play-In</div>
+              {event.playInMatches.map(m => <POMatchCard key={m.id} m={m} />)}
+            </div>
+          )}
+
+          {/* QF */}
+          <div className="flex flex-col gap-2">
+            <div className="text-[10px] font-bold text-slate-500 uppercase">Quarterfinals</div>
+            {qfMatches.map(m => <POMatchCard key={m.id} m={m} />)}
+          </div>
+
+          {/* SF */}
+          <div className="flex flex-col gap-2 mt-10">
+            <div className="text-[10px] font-bold text-slate-500 uppercase">Semifinals</div>
+            {sfMatches.map(m => <POMatchCard key={m.id} m={m} />)}
+          </div>
+
+          {/* Final */}
+          {finalMatch && (
+            <div className="flex flex-col gap-2 mt-16">
+              <div className="text-[10px] font-bold uppercase" style={{ color: ACCENT }}>Final</div>
+              <POMatchCard m={finalMatch} />
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Participants */}
+      {event.participants.length > 0 && (
+        <div className="mt-4 rounded border border-bg-border p-3">
+          <div className="text-[10px] font-bold text-slate-400 uppercase mb-2">참가국 ({event.participants.length})</div>
+          <div className="flex flex-wrap gap-1">
+            {event.participants.map(id => <NatChip key={id} nationId={id} />)}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Placeholder tab ──────────────────────────────────────────────────────────
 
 function PlaceholderTab({ title }: { title: string }) {
   return (
@@ -541,8 +624,8 @@ export function Intermatch() {
         {active === 'AMERICA' && <RegionQualTab region={intermatchState.americas} label="Americas" />}
         {active === 'MEAF'    && <MEAFQualTab meaf={intermatchState.meaf} />}
         {active === 'IQ'      && <IQTab state={intermatchState} />}
-        {active === 'EEC'     && <PlaceholderTab title="European Esports Championship (W31~32)" />}
-        {active === 'TPC'     && <PlaceholderTab title="Trans-Pacific Championship (W31~32)" />}
+        {active === 'EEC'     && <BracketTab event={intermatchState.eec} title="European Esports Championship" subtitle="유럽 WE 직행 8개국 · Bo5 싱글 엘리미네이션 · W31~32" />}
+        {active === 'TPC'     && <BracketTab event={intermatchState.tpc} title="Trans-Pacific Championship" subtitle="APAC 6 + Americas 4 + MEAF 1 = 11개국 · 플레이인 + Bo5 SE · W31~32" />}
         {active === 'WE'      && <PlaceholderTab title="World Event (W45~48)" />}
       </div>
     </div>
