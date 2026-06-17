@@ -8,6 +8,7 @@ import { Schedule } from './pages/Schedule';
 import { Placeholder } from './pages/Placeholder';
 import { CupDetail } from './pages/CupDetail';
 import { Tournaments } from './pages/Tournaments';
+import { Intermatch } from './pages/Intermatch';
 
 export default function App() {
   return (
@@ -19,7 +20,7 @@ export default function App() {
           <Route path="/teams" element={<TeamsLeagues />} />
           <Route path="/teams/:id" element={<TeamProfile />} />
           <Route path="/cups/:cupId" element={<CupDetail />} />
-          <Route path="/intermatch" element={<Placeholder title="Intermatch" description="International qualifiers — coming soon" />} />
+          <Route path="/intermatch" element={<Intermatch />} />
           <Route path="/ratings" element={<Ratings />} />
           <Route path="/meta" element={<Placeholder title="Meta Analysis" description="Meta trends and champion stats — coming soon" />} />
           <Route path="/tournaments" element={<Tournaments />} />

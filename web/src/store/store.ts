@@ -1,13 +1,13 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { LeagueSimState, SeasonHistoryEntry, CupState, MMState } from '../types';
+import type { LeagueSimState, SeasonHistoryEntry, CupState, MMState, IntermatchState } from '../types';
 import { allClubs } from '../data/clubs';
 import { initAllLeagues, advanceLeagueToRound, pickMeta } from '../engine/simulator';
-import { addDays, getNextMonday, getWeekInfo, getWeekNum, getSeasonIndex } from '../engine/calendar';
+import { addDays, getNextMonday, getWeekInfo, getWeekNum, getSeasonIndex, getCurrentSeasonStart } from '../engine/calendar';
 import { allSimKeys, targetRoundsForKey } from '../engine/matchSchedule';
 import { initAllCups, advanceCup, allCupSimKeys, targetSlotsForCupKey } from '../engine/cup';
 import { initMM, refreshMMState, advanceMMSingleMatch as simMMMatch, autoAdvanceMM } from '../engine/mm';
-import { getCurrentSeasonStart } from '../engine/calendar';
+import { initIntermatch, autoAdvanceIntermatch } from '../engine/intermatch';
 
 const clubMap = new Map(allClubs.map(c => [c.id, c]));
 
@@ -25,6 +25,7 @@ interface Store {
   seasonHistory: SeasonHistoryEntry[];
   cupStates: Record<string, CupState>;
   mmState: MMState;
+  intermatchState: IntermatchState;
   followedTeams: string[];
   followedLeagues: string[];
   advanceOneDay: () => void;
@@ -46,6 +47,7 @@ const defaultState = () => ({
   seasonHistory: [] as SeasonHistoryEntry[],
   cupStates: initAllCups([], 0, clubMap),
   mmState: initMM(0),
+  intermatchState: initIntermatch(0),
   followedTeams: [] as string[],
   followedLeagues: [] as string[],
 });
@@ -59,9 +61,10 @@ function advanceTo(
   seasonHistory: SeasonHistoryEntry[],
   cupStates: Record<string, CupState>,
   mmState: MMState,
+  intermatchState: IntermatchState,
 ) {
   if (targetDate <= currentDate) {
-    return { leagueStates, completedRounds, activeMeta: currentMeta, seasonHistory, cupStates, mmState };
+    return { leagueStates, completedRounds, activeMeta: currentMeta, seasonHistory, cupStates, mmState, intermatchState };
   }
 
   let ls = leagueStates;
@@ -69,6 +72,7 @@ function advanceTo(
   let sh = seasonHistory;
   let cups = cupStates;
   let mm = mmState;
+  let im = intermatchState;
 
   // Season rollover
   const currentSeason = getSeasonIndex(currentDate);
@@ -89,6 +93,7 @@ function advanceTo(
     cr = {};
     cups = initAllCups(sh, targetSeason, clubMap);
     mm = initMM(targetSeason);
+    im = initIntermatch(targetSeason);
   }
 
   const meta = metaPeriod(targetDate) !== metaPeriod(currentDate) ? pickMeta() : currentMeta;
@@ -132,6 +137,9 @@ function advanceTo(
   const seasonStart = getCurrentSeasonStart(targetDate);
   newMM = autoAdvanceMM(newMM, targetDate, seasonStart, meta, clubMap);
 
+  // Intermatch: auto-advance group stages & MEAF qualifiers
+  const newIM = autoAdvanceIntermatch(im, targetDate, meta);
+
   return {
     leagueStates: newLeagueStates,
     completedRounds: newCompleted,
@@ -139,6 +147,7 @@ function advanceTo(
     seasonHistory: sh,
     cupStates: newCupStates,
     mmState: newMM,
+    intermatchState: newIM,
   };
 }
 
@@ -148,21 +157,21 @@ export const useStore = create<Store>()(
       ...defaultState(),
 
       advanceOneDay() {
-        const { gameDate, leagueStates, completedRounds, activeMeta, seasonHistory, cupStates, mmState } = get();
+        const { gameDate, leagueStates, completedRounds, activeMeta, seasonHistory, cupStates, mmState, intermatchState } = get();
         const target = addDays(gameDate, 1);
-        set({ gameDate: target, ...advanceTo(gameDate, target, leagueStates, completedRounds, activeMeta, seasonHistory, cupStates, mmState) });
+        set({ gameDate: target, ...advanceTo(gameDate, target, leagueStates, completedRounds, activeMeta, seasonHistory, cupStates, mmState, intermatchState) });
       },
 
       advanceThreeDays() {
-        const { gameDate, leagueStates, completedRounds, activeMeta, seasonHistory, cupStates, mmState } = get();
+        const { gameDate, leagueStates, completedRounds, activeMeta, seasonHistory, cupStates, mmState, intermatchState } = get();
         const target = addDays(gameDate, 3);
-        set({ gameDate: target, ...advanceTo(gameDate, target, leagueStates, completedRounds, activeMeta, seasonHistory, cupStates, mmState) });
+        set({ gameDate: target, ...advanceTo(gameDate, target, leagueStates, completedRounds, activeMeta, seasonHistory, cupStates, mmState, intermatchState) });
       },
 
       advanceToNextMonday() {
-        const { gameDate, leagueStates, completedRounds, activeMeta, seasonHistory, cupStates, mmState } = get();
+        const { gameDate, leagueStates, completedRounds, activeMeta, seasonHistory, cupStates, mmState, intermatchState } = get();
         const target = getNextMonday(gameDate);
-        set({ gameDate: target, ...advanceTo(gameDate, target, leagueStates, completedRounds, activeMeta, seasonHistory, cupStates, mmState) });
+        set({ gameDate: target, ...advanceTo(gameDate, target, leagueStates, completedRounds, activeMeta, seasonHistory, cupStates, mmState, intermatchState) });
       },
 
       resetSeason() {
@@ -194,7 +203,7 @@ export const useStore = create<Store>()(
       },
     }),
     {
-      name: 'make-esports-store-v18',
+      name: 'make-esports-store-v19',
       partialize: state => ({
         gameDate: state.gameDate,
         activeMeta: state.activeMeta,
@@ -203,6 +212,7 @@ export const useStore = create<Store>()(
         seasonHistory: state.seasonHistory,
         cupStates: state.cupStates,
         mmState: state.mmState,
+        intermatchState: state.intermatchState,
         followedTeams: state.followedTeams,
         followedLeagues: state.followedLeagues,
       }),

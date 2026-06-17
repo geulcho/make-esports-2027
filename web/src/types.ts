@@ -181,6 +181,105 @@ export interface CupState {
   completed: boolean;
 }
 
+// ─── National Team types ──────────────────────────────────────────────────────
+
+export interface NationalTeam {
+  id: string;
+  name: string;
+  abbr: string;
+  colors: { bg: string; text: string };
+  elo_rating: number;
+  tier: string;
+  stats: ClubStats;
+  preferred_combos: string[];
+  region: string;   // 'EU' | 'APAC' | 'AMERICA' | 'MEAF'
+}
+
+// ─── Intermatch / WE Qualifier types ──────────────────────────────────────────
+
+export interface NatGroupMatch {
+  id: string;
+  teamA: string;
+  teamB: string;
+  scoreA: number;
+  scoreB: number;
+  winner: string | null;
+  oddsA: number;
+  oddsB: number;
+  matchday: number;
+}
+
+export interface NatGroupRecord {
+  nationId: string;
+  wins: number;
+  losses: number;
+  setsFor: number;
+  setsAgainst: number;
+}
+
+export interface NatGroup {
+  id: string;            // 'EU_A' | 'EU_B' | ... | 'APAC_A' | 'NA' | 'SA'
+  label: string;
+  teams: string[];       // nation IDs
+  records: NatGroupRecord[];
+  matches: NatGroupMatch[];
+  matchdaysCompleted: number;
+  matchdaysTotal: number;
+  completed: boolean;
+}
+
+export interface NatBracketMatch {
+  id: string;
+  stage: string;
+  teamA: string | null;
+  teamB: string | null;
+  scoreA: number;
+  scoreB: number;
+  winner: string | null;
+  oddsA: number;
+  oddsB: number;
+  format: 'Bo3' | 'Bo5';
+}
+
+export interface WEQualRegion {
+  regionId: string;      // 'EU' | 'APAC' | 'AMERICA'
+  groups: NatGroup[];
+  playoffMatches: NatBracketMatch[];
+  weQualified: string[];
+  iqQualified: string[];
+  phase: 'pre' | 'group_p1' | 'group_p2' | 'playoff' | 'completed';
+}
+
+export interface MEAFQualState {
+  firstQual: NatBracketMatch[];
+  secondQual: NatBracketMatch[];
+  finalQual: NatBracketMatch[];   // double elimination
+  weQualified: string | null;
+  iqQualified: string | null;
+  phase: 'pre' | 'first' | 'second' | 'final' | 'completed';
+}
+
+export interface IQMatch {
+  id: string;
+  teamA: string | null;
+  teamB: string | null;
+  scoreA: number;
+  scoreB: number;
+  winner: string | null;
+  oddsA: number;
+  oddsB: number;
+}
+
+export interface IntermatchState {
+  season: number;
+  europe: WEQualRegion;
+  asiaPacific: WEQualRegion;
+  americas: WEQualRegion;
+  meaf: MEAFQualState;
+  iq: { matches: IQMatch[]; weQualified: string[]; completed: boolean } | null;
+  rankings: Array<{ nationId: string; elo: number }>;
+}
+
 // ─── Midseason Mayhem types ───────────────────────────────────────────────────
 
 export type MMFormat = 'Bo1' | 'Bo3' | 'Bo5';

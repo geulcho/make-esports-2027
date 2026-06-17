@@ -7,13 +7,25 @@ function clamp(v: number, min: number, max: number) {
   return Math.max(min, Math.min(max, v));
 }
 
-function power2Win(pA: number, pB: number): boolean {
-  const pA2 = pA * pA;
-  const pB2 = pB * pB;
-  return Math.random() < pA2 / (pA2 + pB2);
+const META_EXPONENT: Record<string, number> = {
+  A: 2.5, B: 2.75, C: 3, D: 3.25, E: 3.5, F: 3.75, G: 4,
+};
+
+function metaExponent(meta: string[]): number {
+  if (meta.length === 0) return 2;
+  const sum = meta.reduce((s, m) => s + (META_EXPONENT[m] ?? 2), 0);
+  return sum / meta.length;
+}
+
+function powerWin(pA: number, pB: number, exp: number): boolean {
+  const pAn = Math.pow(pA, exp);
+  const pBn = Math.pow(pB, exp);
+  return Math.random() < pAn / (pAn + pBn);
 }
 
 function simulateSet(clubA: Club, clubB: Club, meta: string[]): SetResult {
+  const exp = metaExponent(meta);
+
   const metaHit = (c: Club) =>
     c.preferred_combos.some(co => meta.includes(co));
 
@@ -33,7 +45,7 @@ function simulateSet(clubA: Club, clubB: Club, meta: string[]): SetResult {
     const pwA = baseA + clubA.stats.LAN + clubA.stats.MEC + rand(1, 50);
     const pwB = baseB + clubB.stats.LAN + clubB.stats.MEC + rand(1, 50);
     const reward = rand(2, 3);
-    if (power2Win(pwA, pwB)) { momA += reward; baseA += reward; }
+    if (powerWin(pwA, pwB, exp)) { momA += reward; baseA += reward; }
     else { momB += reward; baseB += reward; }
   }
 
@@ -44,7 +56,7 @@ function simulateSet(clubA: Club, clubB: Club, meta: string[]): SetResult {
     const pwA = baseA + clubA.stats.TMF + clubA.stats.MEC + rand(1, 50);
     const pwB = baseB + clubB.stats.TMF + clubB.stats.MEC + rand(1, 50);
     const reward = rand(1, 2);
-    if (power2Win(pwA, pwB)) { momA += reward; baseA += reward; }
+    if (powerWin(pwA, pwB, exp)) { momA += reward; baseA += reward; }
     else { momB += reward; baseB += reward; }
   }
 
@@ -56,7 +68,7 @@ function simulateSet(clubA: Club, clubB: Club, meta: string[]): SetResult {
     const pwA = baseA + clubA.stats.MAC + clubA.stats.MEC + rand(1, 50);
     const pwB = baseB + clubB.stats.MAC + clubB.stats.MEC + rand(1, 50);
     const reward = rand(1, 2);
-    if (power2Win(pwA, pwB)) { momA += reward; baseA += reward; }
+    if (powerWin(pwA, pwB, exp)) { momA += reward; baseA += reward; }
     else { momB += reward; baseB += reward; }
   }
 
