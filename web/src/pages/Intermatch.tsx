@@ -280,70 +280,169 @@ function RegionQualTab({ region, label }: { region: WEQualRegion; label: string 
 
 // ─── MEAF qualifier tab ───────────────────────────────────────────────────────
 
-function BracketMatchRow({ m }: { m: NatBracketMatch }) {
-  const winA = m.winner === m.teamA;
-  const winB = m.winner === m.teamB;
-  return (
-    <div className="flex items-center gap-1 py-0.5 text-xs">
-      <NatChip nationId={m.teamA} small />
-      <span className={`w-3 text-center font-bold ${winA ? 'text-emerald-400' : 'text-slate-600'}`}>
-        {m.winner ? m.scoreA : ''}
-      </span>
-      <span className="text-slate-700">:</span>
-      <span className={`w-3 text-center font-bold ${winB ? 'text-emerald-400' : 'text-slate-600'}`}>
-        {m.winner ? m.scoreB : ''}
-      </span>
-      <NatChip nationId={m.teamB} small />
-      <span className="text-[9px] text-slate-600 ml-1">{m.format}</span>
-    </div>
-  );
-}
-
 function MEAFQualTab({ meaf }: { meaf: MEAFQualState }) {
+  const DE_STAGES = ['UB R1', 'LB R1', 'UB SF', 'LB R2', 'LB R3', 'UB Final', 'LB Final', 'Grand Final'];
+
   return (
     <div>
       <h2 className="text-sm font-semibold uppercase tracking-wider mb-3" style={{ color: ACCENT }}>MEAF Qualifier</h2>
 
       {meaf.weQualified && (
-        <div className="rounded border border-blue-500/30 bg-blue-500/5 p-3 mb-4">
-          <div className="text-[10px] font-bold text-blue-400 uppercase mb-1">WE 직행</div>
-          <NatChip nationId={meaf.weQualified} />
+        <div className="rounded border border-blue-500/30 bg-blue-500/5 p-3 mb-4 flex items-center gap-4">
+          <div>
+            <div className="text-[10px] font-bold text-blue-400 uppercase mb-1">WE 직행</div>
+            <NatChip nationId={meaf.weQualified} />
+          </div>
           {meaf.iqQualified && (
-            <span className="ml-3">
-              <span className="text-[10px] text-emerald-400 mr-1">IQ →</span>
+            <div>
+              <div className="text-[10px] font-bold text-emerald-400 uppercase mb-1">IQ 진출</div>
               <NatChip nationId={meaf.iqQualified} />
-            </span>
+            </div>
           )}
         </div>
       )}
 
+      {/* 1st Qualifier */}
       {meaf.firstQual.length > 0 && (
-        <div className="mb-4">
-          <div className="text-xs font-bold text-slate-400 mb-2">1st Qualifier (하위 8국 → 4 Bo5)</div>
-          {meaf.firstQual.map(m => <BracketMatchRow key={m.id} m={m} />)}
+        <div className="mb-5">
+          <div className="text-xs font-bold text-slate-400 mb-2">1st Qualifier · 하위 8국, Bo5</div>
+          <div className="flex flex-wrap gap-2">
+            {meaf.firstQual.map(m => <POMatchCard key={m.id} m={m} />)}
+          </div>
         </div>
       )}
 
+      {/* 2nd Qualifier */}
       {meaf.secondQual.length > 0 && (
-        <div className="mb-4">
-          <div className="text-xs font-bold text-slate-400 mb-2">2nd Qualifier (16국 → 8 Bo5)</div>
-          {meaf.secondQual.map(m => <BracketMatchRow key={m.id} m={m} />)}
+        <div className="mb-5">
+          <div className="text-xs font-bold text-slate-400 mb-2">2nd Qualifier · 상위 12 + 1차 4 = 16국, Bo5</div>
+          <div className="flex flex-wrap gap-2">
+            {meaf.secondQual.map(m => <POMatchCard key={m.id} m={m} />)}
+          </div>
         </div>
       )}
 
+      {/* Final Qualifier DE bracket */}
       {meaf.finalQual.length > 0 && (
         <div className="mb-4">
-          <div className="text-xs font-bold text-slate-400 mb-2">Final Qualifier (8국 DE)</div>
-          {['UB R1', 'UB SF', 'UB Final', 'LB R1', 'LB R2', 'LB R3', 'LB Final', 'Grand Final'].map(stage => {
-            const matches = meaf.finalQual.filter(m => m.stage === stage);
-            if (matches.length === 0) return null;
-            return (
-              <div key={stage} className="mb-2">
-                <div className="text-[10px] text-slate-500 font-bold mb-0.5">{stage}</div>
-                {matches.map(m => <BracketMatchRow key={m.id} m={m} />)}
+          <div className="text-xs font-bold text-slate-400 mb-3">Final Qualifier · 8국 Double Elimination</div>
+          <div className="overflow-x-auto">
+            {/* Upper bracket */}
+            <div className="mb-4">
+              <div className="text-[10px] font-bold text-amber-400 uppercase mb-2">Upper Bracket</div>
+              <div className="flex gap-6 items-start">
+                {['UB R1', 'UB SF', 'UB Final'].map(stage => {
+                  const matches = meaf.finalQual.filter(m => m.stage === stage);
+                  if (matches.length === 0) return null;
+                  return (
+                    <div key={stage} className="flex flex-col gap-2">
+                      <div className="text-[9px] text-slate-500 font-bold uppercase">{stage}</div>
+                      {matches.map(m => <POMatchCard key={m.id} m={m} />)}
+                    </div>
+                  );
+                })}
               </div>
-            );
-          })}
+            </div>
+            {/* Lower bracket */}
+            <div className="mb-4">
+              <div className="text-[10px] font-bold text-slate-500 uppercase mb-2">Lower Bracket</div>
+              <div className="flex gap-6 items-start">
+                {['LB R1', 'LB R2', 'LB R3', 'LB Final'].map(stage => {
+                  const matches = meaf.finalQual.filter(m => m.stage === stage);
+                  if (matches.length === 0) return null;
+                  return (
+                    <div key={stage} className="flex flex-col gap-2">
+                      <div className="text-[9px] text-slate-500 font-bold uppercase">{stage}</div>
+                      {matches.map(m => <POMatchCard key={m.id} m={m} />)}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            {/* Grand Final */}
+            {meaf.finalQual.filter(m => m.stage === 'Grand Final').length > 0 && (
+              <div>
+                <div className="text-[10px] font-bold text-amber-400 uppercase mb-2">Grand Final</div>
+                <div className="flex gap-2">
+                  {meaf.finalQual.filter(m => m.stage === 'Grand Final').map(m => <POMatchCard key={m.id} m={m} />)}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── IQ tab ───────────────────────────────────────────────────────────────────
+
+function IQTab({ state }: { state: IntermatchState }) {
+  const iq = state.iq;
+
+  // Collect all IQ-bound teams from regions
+  const allIQTeams = [
+    ...state.europe.iqQualified,
+    ...state.asiaPacific.iqQualified,
+    ...state.americas.iqQualified,
+    ...(state.meaf.iqQualified ? [state.meaf.iqQualified] : []),
+  ];
+
+  return (
+    <div>
+      <h2 className="text-sm font-semibold uppercase tracking-wider mb-3" style={{ color: ACCENT }}>Interregional Qualifier</h2>
+      <p className="text-xs text-slate-500 mb-4">10개국 · 같은 권역 대결 금지 · Bo5 단판 5경기 · W31~32</p>
+
+      {/* IQ participants */}
+      {allIQTeams.length > 0 && (
+        <div className="rounded border border-bg-border p-3 mb-4">
+          <div className="text-[10px] font-bold text-slate-400 uppercase mb-2">IQ 참가국 ({allIQTeams.length}/10)</div>
+          <div className="grid grid-cols-2 gap-1">
+            {['EU', 'APAC', 'AMERICA', 'MEAF'].map(region => {
+              const teams = region === 'EU' ? state.europe.iqQualified :
+                region === 'APAC' ? state.asiaPacific.iqQualified :
+                region === 'AMERICA' ? state.americas.iqQualified :
+                state.meaf.iqQualified ? [state.meaf.iqQualified] : [];
+              if (teams.length === 0) return null;
+              return (
+                <div key={region} className="flex items-center gap-1.5 text-[10px] text-slate-500">
+                  <span className="w-14">{region}</span>
+                  <div className="flex gap-1">{teams.map(id => <NatChip key={id} nationId={id} small />)}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* IQ matches */}
+      {iq ? (
+        <div>
+          <div className="flex flex-wrap gap-3 mb-4">
+            {iq.matches.map((m, i) => {
+              const bm: NatBracketMatch = {
+                id: m.id, stage: `Match ${i + 1}`, format: 'Bo5',
+                teamA: m.teamA, teamB: m.teamB,
+                scoreA: m.scoreA, scoreB: m.scoreB,
+                winner: m.winner, oddsA: m.oddsA, oddsB: m.oddsB,
+              };
+              return <POMatchCard key={m.id} m={bm} />;
+            })}
+          </div>
+
+          {/* WE wildcard qualified */}
+          {iq.weQualified.length > 0 && (
+            <div className="rounded border border-blue-500/30 bg-blue-500/5 p-3">
+              <div className="text-[10px] font-bold text-blue-400 uppercase mb-2">WE 와일드카드 ({iq.weQualified.length}/5)</div>
+              <div className="flex flex-wrap gap-1">
+                {iq.weQualified.map(id => <NatChip key={id} nationId={id} />)}
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="text-slate-600 text-sm text-center py-8 border border-bg-border rounded-lg">
+          권역별 예선 완료 후 IQ 대진 생성
         </div>
       )}
     </div>
@@ -440,7 +539,7 @@ export function Intermatch() {
         {active === 'APAC'    && <RegionQualTab region={intermatchState.asiaPacific} label="Asia-Pacific" />}
         {active === 'AMERICA' && <RegionQualTab region={intermatchState.americas} label="Americas" />}
         {active === 'MEAF'    && <MEAFQualTab meaf={intermatchState.meaf} />}
-        {active === 'IQ'      && <PlaceholderTab title="Interregional Qualifier (W31~32)" />}
+        {active === 'IQ'      && <IQTab state={intermatchState} />}
         {active === 'EEC'     && <PlaceholderTab title="European Esports Championship (W31~32)" />}
         {active === 'TPC'     && <PlaceholderTab title="Trans-Pacific Championship (W31~32)" />}
         {active === 'WE'      && <PlaceholderTab title="World Event (W45~48)" />}

@@ -49,7 +49,10 @@ const MD_SCHEDULE: Array<{ md: number; week: number; dow: number }> = [
   { md: 6, week: 25, dow: 1 },  // MD6-B = W25 Tue
   { md: 7, week: 25, dow: 3 },  // MD7-B = W25 Thu
 ];
-const SA_MD8 = { md: 8, week: 25, dow: 4 }; // SA only, W25 Fri
+const SA_EXTRA: Array<{ md: number; week: number; dow: number }> = [
+  { md: 8, week: 25, dow: 4 }, // SA MD8 = W25 Fri
+  { md: 9, week: 25, dow: 5 }, // SA MD9 = W25 Sat (tiebreaker day)
+];
 
 function targetMDForDate(gameDate: string, isSA: boolean): number {
   const week = getWeekNum(gameDate);
@@ -58,11 +61,22 @@ function targetMDForDate(gameDate: string, isSA: boolean): number {
   for (const slot of MD_SCHEDULE) {
     if (week > slot.week || (week === slot.week && dow >= slot.dow)) target = slot.md;
   }
-  if (isSA && (week > SA_MD8.week || (week === SA_MD8.week && dow >= SA_MD8.dow))) {
-    target = Math.max(target, SA_MD8.md);
+  if (isSA) {
+    for (const slot of SA_EXTRA) {
+      if (week > slot.week || (week === slot.week && dow >= slot.dow)) target = Math.max(target, slot.md);
+    }
   }
   return target;
 }
+
+// IQ schedule: W31-32
+const IQ_SCHEDULE: Array<{ week: number; dow: number }> = [
+  { week: 31, dow: 1 }, // Match 1 = W31 Tue
+  { week: 31, dow: 3 }, // Match 2 = W31 Thu
+  { week: 31, dow: 5 }, // Match 3 = W31 Sat
+  { week: 32, dow: 1 }, // Match 4 = W32 Tue
+  { week: 32, dow: 3 }, // Match 5 = W32 Thu
+];
 
 // PO schedule
 const PO_SCHEDULE: Record<string, { week: number; dow: number }> = {
@@ -181,7 +195,7 @@ function initAmericas(): WEQualRegion {
     regionId: 'AMERICA',
     groups: [
       createGroup('AMER_NA', 'North America', na.map(n => n.id), 7),
-      createGroup('AMER_SA', 'South America', sa.map(n => n.id), 8),
+      createGroup('AMER_SA', 'South America', sa.map(n => n.id), 9),
     ],
     playoffMatches: [], weQualified: [], iqQualified: [], phase: 'pre',
   };
@@ -475,7 +489,103 @@ export function autoAdvanceIntermatch(
   // ── MEAF ──
   s = { ...s, meaf: advanceMEAF(s.meaf, meta, week) };
 
+  // ── IQ: W31-32 (after all regions completed) ──
+  if (week >= 31 && !s.iq) {
+    const euDone = s.europe.phase === 'completed';
+    const apacDone = s.asiaPacific.phase === 'completed';
+    const amerDone = s.americas.phase === 'completed';
+    const meafDone = s.meaf.phase === 'completed';
+    if (euDone && apacDone && amerDone && meafDone) {
+      s = { ...s, iq: generateIQ(s, meta) };
+    }
+  }
+
+  // Auto-advance IQ matches by date
+  if (s.iq && !s.iq.completed) {
+    s = { ...s, iq: advanceIQ(s.iq, targetDate, meta) };
+  }
+
   return s;
+}
+
+// ─── IQ generation ────────────────────────────────────────────────────────────
+
+function generateIQ(state: IntermatchState, _meta: string[]): IntermatchState['iq'] {
+  const euIQ   = state.europe.iqQualified;
+  const apacIQ = state.asiaPacific.iqQualified;
+  const amerIQ = state.americas.iqQualified;
+  const meafIQ = state.meaf.iqQualified ? [state.meaf.iqQualified] : [];
+
+  const regionOf = new Map<string, string>();
+  for (const id of euIQ) regionOf.set(id, 'EU');
+  for (const id of apacIQ) regionOf.set(id, 'APAC');
+  for (const id of amerIQ) regionOf.set(id, 'AMERICA');
+  for (const id of meafIQ) regionOf.set(id, 'MEAF');
+
+  const allTeams = [...euIQ, ...apacIQ, ...amerIQ, ...meafIQ]
+    .sort((a, b) => (natMap.get(b)?.elo_rating ?? 0) - (natMap.get(a)?.elo_rating ?? 0));
+
+  if (allTeams.length < 10) {
+    return { matches: [], weQualified: [], completed: true };
+  }
+
+  // Pair: top seed vs bottom seed, avoiding same-region matchups
+  const top5 = allTeams.slice(0, 5);
+  const bot5 = [...allTeams.slice(5)];
+  const pairs: [string, string][] = [];
+
+  for (const hi of top5) {
+    const hiRegion = regionOf.get(hi);
+    let idx = bot5.findIndex(lo => regionOf.get(lo) !== hiRegion);
+    if (idx === -1) idx = 0;
+    const lo = bot5.splice(idx, 1)[0];
+    pairs.push([hi, lo]);
+  }
+
+  const matches: import('../types').IQMatch[] = pairs.map(([a, b], i) => {
+    const o = calcOdds(natMap.get(a)?.elo_rating ?? 1000, natMap.get(b)?.elo_rating ?? 1000);
+    return { id: `IQ_${i}`, teamA: a, teamB: b, scoreA: 0, scoreB: 0, winner: null, oddsA: o.oddsA, oddsB: o.oddsB };
+  });
+
+  return { matches, weQualified: [], completed: false };
+}
+
+function advanceIQ(
+  iq: NonNullable<IntermatchState['iq']>,
+  gameDate: string,
+  meta: string[],
+): NonNullable<IntermatchState['iq']> {
+  const week = getWeekNum(gameDate);
+  const dow  = getDayOfWeek(gameDate);
+
+  let targetCount = 0;
+  for (const slot of IQ_SCHEDULE) {
+    if (week > slot.week || (week === slot.week && dow >= slot.dow)) targetCount++;
+  }
+
+  let matches = [...iq.matches];
+  let changed = false;
+  for (let i = 0; i < targetCount && i < matches.length; i++) {
+    if (matches[i].winner) continue;
+    const m = matches[i];
+    if (!m.teamA || !m.teamB) continue;
+    const nA = natMap.get(m.teamA), nB = natMap.get(m.teamB);
+    if (!nA || !nB) continue;
+    const r = simulateMatch(natToClub(nA), natToClub(nB), meta, 3); // Bo5
+    matches = [...matches];
+    matches[i] = {
+      ...m,
+      scoreA: r.scoreA, scoreB: r.scoreB,
+      oddsA: r.oddsA, oddsB: r.oddsB,
+      winner: r.scoreA > r.scoreB ? m.teamA : m.teamB,
+    };
+    changed = true;
+  }
+
+  if (!changed) return iq;
+  const weQ = matches.filter(m => m.winner).map(m => m.winner!);
+  const completed = matches.every(m => m.winner !== null);
+  return { matches, weQualified: weQ, completed };
 }
 
 // ─── Group standings sorter ───────────────────────────────────────────────────
