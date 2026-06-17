@@ -8,7 +8,6 @@ import { Schedule } from './pages/Schedule';
 import { Placeholder } from './pages/Placeholder';
 import { CupDetail } from './pages/CupDetail';
 import { Tournaments } from './pages/Tournaments';
-import { MMDetail } from './pages/MMDetail';
 
 export default function App() {
   return (
@@ -24,9 +23,6 @@ export default function App() {
           <Route path="/ratings" element={<Ratings />} />
           <Route path="/meta" element={<Placeholder title="Meta Analysis" description="Meta trends and champion stats — coming soon" />} />
           <Route path="/tournaments" element={<Tournaments />} />
-          <Route path="/tournaments/mm" element={<MMDetail />} />
-          <Route path="/tournaments/wt" element={<Placeholder title="World Tournament" description="WT bracket — coming soon" />} />
-          <Route path="/tournaments/vsc" element={<Placeholder title="Viktor Sandberg Cup" description="VSC bracket — coming soon" />} />
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/history" element={<Placeholder title="History" description="World championship records — coming soon" />} />
         </Route>

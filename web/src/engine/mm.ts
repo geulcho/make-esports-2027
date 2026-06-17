@@ -187,10 +187,35 @@ function generateR1Pairs(participants: MMParticipant[]): [string, string][] {
   return pairs;
 }
 
+// ─── Odds helpers ─────────────────────────────────────────────────────────────
+
+export function calcMMOdds(eloA: number, eloB: number) {
+  const pA = 1 / (1 + Math.pow(10, (eloB - eloA) / 400));
+  return {
+    oddsA: Math.round(Math.max(1.01, 0.95 / pA) * 100) / 100,
+    oddsB: Math.round(Math.max(1.01, 0.95 / (1 - pA)) * 100) / 100,
+  };
+}
+
+export function calcChampionshipOdds(participants: MMParticipant[]): Record<string, number> {
+  if (participants.length === 0) return {};
+  const shares = participants.map(p => ({ id: p.clubId, share: Math.pow(10, p.w16Elo / 400) }));
+  const total = shares.reduce((s, x) => s + x.share, 0);
+  const result: Record<string, number> = {};
+  for (const s of shares) {
+    const prob = s.share / total;
+    result[s.id] = Math.round(Math.max(1.01, 0.90 / prob) * 100) / 100;
+  }
+  return result;
+}
+
 // ─── Sub-round creation ───────────────────────────────────────────────────────
 
-function makeMMMatch(id: string, teamA: string, teamB: string, format: 'Bo1' | 'Bo3' | 'Bo5'): MMMatch {
-  return { id, teamA, teamB, format, scoreA: 0, scoreB: 0, winner: null, oddsA: 0, oddsB: 0 };
+function makeMMMatch(id: string, teamA: string, teamB: string, format: 'Bo1' | 'Bo3' | 'Bo5', participants: MMParticipant[]): MMMatch {
+  const pA = participants.find(p => p.clubId === teamA);
+  const pB = participants.find(p => p.clubId === teamB);
+  const odds = calcMMOdds(pA?.w16Elo ?? 1000, pB?.w16Elo ?? 1000);
+  return { id, teamA, teamB, format, scoreA: 0, scoreB: 0, winner: null, oddsA: odds.oddsA, oddsB: odds.oddsB };
 }
 
 function createSubRound(key: string, participants: MMParticipant[]): MMSubRound | null {
@@ -213,7 +238,7 @@ function createSubRound(key: string, participants: MMParticipant[]): MMSubRound 
   }
 
   const matches = pairs.map(([a, b], i) =>
-    makeMMMatch(`${key}_m${i}`, a, b, def.format),
+    makeMMMatch(`${key}_m${i}`, a, b, def.format, participants),
   );
 
   return {
@@ -368,13 +393,19 @@ function generateKnockout(state: MMState): MMState {
   // QF4 (Side B): 3-0 B vs 3-2 B   (seed 2 vs seed 7)
   const [s1, s2, s3, s4, s5, s6, s7, s8] = seeded;
 
+  const pMap = new Map(seeded.map(p => [p.clubId, p]));
   const makeKO = (slot: string, teamA: string | null, teamB: string | null): MMKnockoutMatch => {
     const sch = KO_SCHEDULE[slot];
+    let oddsA = 0, oddsB = 0;
+    if (teamA && teamB) {
+      const o = calcMMOdds(pMap.get(teamA)?.w16Elo ?? 1000, pMap.get(teamB)?.w16Elo ?? 1000);
+      oddsA = o.oddsA; oddsB = o.oddsB;
+    }
     return {
       slot: slot as MMKnockoutMatch['slot'],
       side: sch?.side ?? null,
       teamA, teamB,
-      scoreA: 0, scoreB: 0, winner: null, oddsA: 0, oddsB: 0,
+      scoreA: 0, scoreB: 0, winner: null, oddsA, oddsB,
     };
   };
 
@@ -393,56 +424,39 @@ function generateKnockout(state: MMState): MMState {
 
 // ─── Apply knockout match result ──────────────────────────────────────────────
 
+function recalcOddsIfReady(m: MMKnockoutMatch, participants: MMParticipant[]): MMKnockoutMatch {
+  if (!m.teamA || !m.teamB || m.winner) return m;
+  const pA = participants.find(p => p.clubId === m.teamA);
+  const pB = participants.find(p => p.clubId === m.teamB);
+  const o = calcMMOdds(pA?.w16Elo ?? 1000, pB?.w16Elo ?? 1000);
+  return { ...m, oddsA: o.oddsA, oddsB: o.oddsB };
+}
+
 function applyKnockoutResult(state: MMState, slot: string, played: MMKnockoutMatch): MMState {
   const newKO = state.knockoutMatches.map(m => m.slot === slot ? played : m);
   let s = { ...state, knockoutMatches: newKO };
+  const pList = state.participants;
 
-  // Feed winner to next round
   const w = played.winner;
   if (!w) return s;
 
-  if (slot === 'QF1' || slot === 'QF2') {
-    // Winners go to SF1
+  const feedWinner = (targetSlot: string, isTeamA: boolean) => {
     s = {
       ...s, knockoutMatches: s.knockoutMatches.map(m => {
-        if (m.slot !== 'SF1') return m;
-        return {
-          ...m,
-          teamA: slot === 'QF1' ? w : m.teamA,
-          teamB: slot === 'QF2' ? w : m.teamB,
-        };
+        if (m.slot !== targetSlot) return m;
+        const updated = { ...m, ...(isTeamA ? { teamA: w } : { teamB: w }) };
+        return recalcOddsIfReady(updated, pList);
       }),
     };
-  }
-  if (slot === 'QF3' || slot === 'QF4') {
-    // Winners go to SF2
-    s = {
-      ...s, knockoutMatches: s.knockoutMatches.map(m => {
-        if (m.slot !== 'SF2') return m;
-        return {
-          ...m,
-          teamA: slot === 'QF3' ? w : m.teamA,
-          teamB: slot === 'QF4' ? w : m.teamB,
-        };
-      }),
-    };
-  }
-  if (slot === 'SF1' || slot === 'SF2') {
-    // Winners go to GF
-    s = {
-      ...s, knockoutMatches: s.knockoutMatches.map(m => {
-        if (m.slot !== 'GF') return m;
-        return {
-          ...m,
-          teamA: slot === 'SF1' ? w : m.teamA,
-          teamB: slot === 'SF2' ? w : m.teamB,
-        };
-      }),
-    };
-  }
-  if (slot === 'GF') {
-    s = { ...s, champion: w, phase: 'completed' };
-  }
+  };
+
+  if (slot === 'QF1') feedWinner('SF1', true);
+  if (slot === 'QF2') feedWinner('SF1', false);
+  if (slot === 'QF3') feedWinner('SF2', true);
+  if (slot === 'QF4') feedWinner('SF2', false);
+  if (slot === 'SF1') feedWinner('GF',  true);
+  if (slot === 'SF2') feedWinner('GF',  false);
+  if (slot === 'GF')  s = { ...s, champion: w, phase: 'completed' };
 
   return s;
 }
@@ -568,10 +582,56 @@ export function refreshMMState(
   };
 }
 
+// ─── Auto-advance (for advanceTo) ─────────────────────────────────────────────
+
+export function autoAdvanceMM(
+  state: MMState,
+  targetDate: string,
+  seasonStart: string,
+  meta: string[],
+  clubMap: Map<string, Club>,
+): MMState {
+  if (state.phase === 'pre' || state.phase === 'completed') return state;
+
+  let s = state;
+  let changed = true;
+  while (changed) {
+    changed = false;
+    // Swiss
+    if (s.phase === 'swiss') {
+      for (const sr of s.swissRounds) {
+        if (sr.completed) continue;
+        const srDate = subRoundDate(sr.key, seasonStart);
+        if (targetDate < srDate) continue;
+        for (const match of sr.matches) {
+          if (match.winner) continue;
+          s = advanceMMSingleMatch(s, match.id, meta, clubMap);
+          changed = true;
+        }
+      }
+    }
+    // Knockout
+    if (s.phase === 'knockout') {
+      for (const km of s.knockoutMatches) {
+        if (km.winner || !km.teamA || !km.teamB) continue;
+        const koDate = knockoutMatchDate(km.slot, seasonStart);
+        if (targetDate < koDate) continue;
+        s = advanceMMSingleMatch(s, `ko_${km.slot}`, meta, clubMap);
+        changed = true;
+      }
+    }
+  }
+  return s;
+}
+
 // ─── Exported helpers for UI ──────────────────────────────────────────────────
 
 export function getSubRoundDef(key: string): SubRoundDef | undefined {
   return SUBROUNDS.find(d => d.key === key);
+}
+
+export function getKOSchedule(): Record<string, { week: number; day: string; side: 'A' | 'B' | null }> {
+  return KO_SCHEDULE;
 }
 
 export { matchupKey };

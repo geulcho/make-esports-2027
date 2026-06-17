@@ -6,7 +6,8 @@ import { initAllLeagues, advanceLeagueToRound, pickMeta } from '../engine/simula
 import { addDays, getNextMonday, getWeekInfo, getWeekNum, getSeasonIndex } from '../engine/calendar';
 import { allSimKeys, targetRoundsForKey } from '../engine/matchSchedule';
 import { initAllCups, advanceCup, allCupSimKeys, targetSlotsForCupKey } from '../engine/cup';
-import { initMM, refreshMMState, advanceMMSingleMatch as simMMMatch } from '../engine/mm';
+import { initMM, refreshMMState, advanceMMSingleMatch as simMMMatch, autoAdvanceMM } from '../engine/mm';
+import { getCurrentSeasonStart } from '../engine/calendar';
 
 const clubMap = new Map(allClubs.map(c => [c.id, c]));
 
@@ -126,8 +127,10 @@ function advanceTo(
     if (t !== undefined) newCompleted[key.storeKey] = t;
   }
 
-  // MM participant collection (no auto-simulation)
-  const newMM = refreshMMState(mm, newLeagueStates, targetDate, clubMap);
+  // MM: collect participants, then auto-sim past-due matches
+  let newMM = refreshMMState(mm, newLeagueStates, targetDate, clubMap);
+  const seasonStart = getCurrentSeasonStart(targetDate);
+  newMM = autoAdvanceMM(newMM, targetDate, seasonStart, meta, clubMap);
 
   return {
     leagueStates: newLeagueStates,

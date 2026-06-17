@@ -1,91 +1,662 @@
-import { Link } from 'react-router-dom';
-import { Trophy, Globe } from 'lucide-react';
+import { useState } from 'react';
 import { useStore, getWeekInfo } from '../store/store';
+import { clubById, leagueConfigs } from '../data/clubs';
+import { getCurrentSeasonStart } from '../engine/calendar';
+import {
+  subRoundDate, knockoutMatchDate, getSubRoundDef,
+  calcChampionshipOdds, calcMMOdds,
+} from '../engine/mm';
+import type { MMMatch, MMSubRound, MMKnockoutMatch, MMParticipant, MMState } from '../types';
 
-function TournamentCard({
-  to,
-  title,
-  subtitle,
-  status,
-  weeks,
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const LIME = '#00FF00';
+const LEAGUE_NAMES: Record<string, string> = Object.fromEntries(
+  leagueConfigs.map(l => [l.id, l.name]),
+);
+
+type TournamentId = 'mm' | 'wt' | 'vsc';
+type MMTab = 'teams' | 'swiss' | 'knockout' | 'results';
+
+// ─── Odds helpers ─────────────────────────────────────────────────────────────
+
+function upsetClass(winnerOdds: number): string {
+  if (winnerOdds >= 5.0) return 'text-red-500 font-bold';
+  if (winnerOdds >= 3.0) return 'text-red-400 font-semibold';
+  if (winnerOdds >= 2.0) return 'text-orange-400';
+  return 'text-slate-500';
+}
+
+function oddsTag(odds: number, isWinner: boolean, isUpset: boolean) {
+  const cls = isWinner && isUpset ? upsetClass(odds) : 'text-slate-600';
+  return <span className={`text-[10px] ${cls}`}>{odds.toFixed(2)}</span>;
+}
+
+// ─── Team chip ────────────────────────────────────────────────────────────────
+
+function TeamChip({
+  clubId,
+  isWinner,
+  isEliminated,
+  small,
 }: {
-  to: string;
-  title: string;
-  subtitle: string;
-  status: string;
-  weeks: string;
+  clubId: string | null;
+  isWinner?: boolean;
+  isEliminated?: boolean;
+  small?: boolean;
 }) {
+  if (!clubId) return <span className={`${small ? 'w-12 h-5' : 'w-16 h-6'} rounded bg-bg-border/30 inline-block`} />;
+  const club = clubById(clubId);
+  const bg   = club?.colors.bg ?? '#334155';
+  const text = club?.colors.text ?? '#e2e8f0';
+  const borderCls = isWinner
+    ? 'ring-1 ring-emerald-400'
+    : '';
+  const elimCls = isEliminated ? 'opacity-50 line-through' : 'font-bold';
   return (
-    <Link
-      to={to}
-      className="block rounded-lg border border-bg-border bg-bg-panel hover:bg-bg-hover transition-colors p-5 group"
+    <span
+      className={`inline-flex items-center justify-center rounded px-1.5 ${small ? 'text-[10px] h-5' : 'text-xs h-6'} ${borderCls} ${elimCls}`}
+      style={{ backgroundColor: bg, color: text }}
+      title={club?.name ?? clubId}
     >
-      <div className="flex items-start justify-between mb-3">
-        <div>
-          <div className="text-lg font-bold text-slate-100 group-hover:text-tier-s transition-colors">
-            {title}
-          </div>
-          <div className="text-sm text-slate-400">{subtitle}</div>
-        </div>
-        <span className="text-xs px-2 py-1 rounded bg-bg-base border border-bg-border text-slate-400">
-          {status}
-        </span>
-      </div>
-      <div className="text-xs text-slate-500">{weeks}</div>
-    </Link>
+      {club?.abbr ?? clubId.slice(0, 4)}
+    </span>
   );
 }
 
-export function Tournaments() {
-  const gameDate = useStore(s => s.gameDate);
-  const week = getWeekInfo(gameDate);
+// ─── Swiss match row ──────────────────────────────────────────────────────────
+
+function SwissMatchRow({
+  match,
+  participants,
+  seasonStart,
+  gameDate,
+  onPlay,
+}: {
+  match: MMMatch;
+  participants: MMParticipant[];
+  seasonStart: string;
+  gameDate: string;
+  onPlay: (id: string) => void;
+}) {
+  const srKey = match.id.split('_m')[0];
+  const srDef = getSubRoundDef(srKey);
+  const matchDate = srDef ? subRoundDate(srDef.key, seasonStart) : '9999-99-99';
+  const available = !match.winner && gameDate >= matchDate;
+  const winA = match.winner === match.teamA;
+  const winB = match.winner === match.teamB;
+  const elimA = participants.find(p => p.clubId === match.teamA)?.eliminated;
+  const elimB = participants.find(p => p.clubId === match.teamB)?.eliminated;
+  const isUpset = match.winner !== null && (
+    (winA && match.oddsA > match.oddsB) || (winB && match.oddsB > match.oddsA)
+  );
+  const winnerOdds = winA ? match.oddsA : match.oddsB;
 
   return (
-    <div className="p-6 max-w-4xl">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-100">Tournaments</h1>
-        <p className="text-sm text-slate-400 mt-1">Season {week.season} · W{week.weekNum}</p>
+    <div className={`flex items-center gap-1 py-0.5 px-1 rounded text-xs ${match.winner ? '' : 'opacity-80'}`}>
+      {match.winner && <span className="w-6">{oddsTag(match.oddsA, winA, isUpset)}</span>}
+      <TeamChip clubId={match.teamA} isWinner={winA} isEliminated={elimA} small />
+      <span className={`w-3 text-center font-bold ${winA ? 'text-emerald-400' : 'text-slate-600'}`}>
+        {match.winner ? match.scoreA : ''}
+      </span>
+      <span className="text-slate-700 text-[10px]">:</span>
+      <span className={`w-3 text-center font-bold ${winB ? 'text-emerald-400' : 'text-slate-600'}`}>
+        {match.winner ? match.scoreB : ''}
+      </span>
+      <TeamChip clubId={match.teamB} isWinner={winB} isEliminated={elimB} small />
+      {match.winner && <span className="w-6">{oddsTag(match.oddsB, winB, isUpset)}</span>}
+      {!match.winner && (
+        <button
+          onClick={() => onPlay(match.id)}
+          disabled={!available}
+          className={`ml-1 text-[9px] px-1.5 py-0.5 rounded ${
+            available
+              ? 'text-black font-bold cursor-pointer hover:brightness-110'
+              : 'bg-bg-base text-slate-600 border border-bg-border cursor-not-allowed'
+          }`}
+          style={available ? { backgroundColor: LIME } : {}}
+        >
+          {available ? '▶' : '⏳'}
+        </button>
+      )}
+    </div>
+  );
+}
+
+// ─── Swiss sub-round block ────────────────────────────────────────────────────
+
+function SwissBlock({
+  sr,
+  participants,
+  seasonStart,
+  gameDate,
+  onPlay,
+}: {
+  sr: MMSubRound;
+  participants: MMParticipant[];
+  seasonStart: string;
+  gameDate: string;
+  onPlay: (id: string) => void;
+}) {
+  const date = subRoundDate(sr.key, seasonStart);
+  const bgMap: Record<string, string> = {
+    advancement:   'border-emerald-600/40 bg-emerald-950/30',
+    elimination:   'border-red-600/40    bg-red-950/30',
+    decisive:      'border-amber-600/40  bg-amber-950/30',
+    'non-decisive': 'border-bg-border     bg-transparent',
+  };
+  const labelMap: Record<string, string> = {
+    advancement: '진출전', elimination: '탈락전', decisive: '최종전', 'non-decisive': '',
+  };
+
+  return (
+    <div className={`rounded border p-1.5 mb-1.5 ${bgMap[sr.stakes]}`}>
+      <div className="flex items-center justify-between mb-1">
+        <div className="flex items-center gap-1.5">
+          <span className="text-[10px] font-bold text-slate-200">{sr.recordGroup}</span>
+          <span className="text-[9px] text-slate-500">({sr.format})</span>
+          {labelMap[sr.stakes] && (
+            <span className={`text-[9px] px-1 rounded ${sr.stakes === 'advancement' ? 'text-emerald-400' : sr.stakes === 'elimination' ? 'text-red-400' : 'text-amber-400'}`}>
+              {labelMap[sr.stakes]}
+            </span>
+          )}
+        </div>
+        <span className="text-[9px] text-slate-600">{date.slice(5)}</span>
+      </div>
+      {sr.matches.map(m => (
+        <SwissMatchRow key={m.id} match={m} participants={participants} seasonStart={seasonStart} gameDate={gameDate} onPlay={onPlay} />
+      ))}
+    </div>
+  );
+}
+
+// ─── Swiss stage (5 columns, mirror layout) ──────────────────────────────────
+
+const COL_LABELS = ['1라운드', '2라운드', '3라운드', '4라운드', '5라운드'];
+
+function SwissTab({ mm, seasonStart, gameDate, onPlay }: { mm: MMState; seasonStart: string; gameDate: string; onPlay: (id: string) => void }) {
+  const byCol = [1, 2, 3, 4, 5].map(col => mm.swissRounds.filter(r => r.roundCol === col));
+  const colDates = byCol.map(col => {
+    if (col.length === 0) return '';
+    const dates = col.map(sr => subRoundDate(sr.key, seasonStart)).sort();
+    if (dates.length === 1 || dates[0] === dates[dates.length - 1]) return dates[0].slice(5);
+    return `${dates[0].slice(5)}~${dates[dates.length - 1].slice(5)}`;
+  });
+
+  // Check if Swiss complete
+  const qualifiedTeams = mm.participants.filter(p => p.qualified);
+  const swissComplete = qualifiedTeams.length >= 8;
+
+  return (
+    <div>
+      <h2 className="text-sm font-semibold uppercase tracking-wider mb-3" style={{ color: LIME }}>스위스 스테이지</h2>
+      <div className="overflow-x-auto mb-6">
+        <div className="flex gap-2 min-w-max pb-2">
+          {[0, 1, 2, 3, 4].map(ci => (
+            <div key={ci} className="w-56 flex-shrink-0">
+              <div className="text-xs font-bold text-slate-300 mb-1 text-center">
+                {COL_LABELS[ci]}
+                {colDates[ci] && <span className="ml-1 text-slate-600 font-normal">({colDates[ci]})</span>}
+              </div>
+              <div className="border-t border-bg-border pt-1.5">
+                {byCol[ci].length === 0 ? (
+                  <div className="h-10 flex items-center justify-center text-slate-700 text-[10px]">대기 중</div>
+                ) : byCol[ci].map(sr => (
+                  <SwissBlock key={sr.key} sr={sr} participants={mm.participants} seasonStart={seasonStart} gameDate={gameDate} onPlay={onPlay} />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
-      <section className="mb-8">
-        <div className="flex items-center gap-2 mb-4">
-          <Trophy size={16} className="text-tier-s" />
-          <h2 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">Clubs</h2>
+      {/* Qualified summary */}
+      {swissComplete && (
+        <div className="border rounded-lg p-4" style={{ borderColor: LIME + '40' }}>
+          <h3 className="text-xs font-bold uppercase mb-3" style={{ color: LIME }}>녹아웃 스테이지 진출팀</h3>
+          <div className="grid grid-cols-3 gap-3">
+            {(['3-0', '3-1', '3-2'] as const).map(rec => {
+              const [w, l] = rec.split('-').map(Number);
+              const teams = mm.participants.filter(p => p.qualified && p.swissWins === w && p.swissLosses === l);
+              return (
+                <div key={rec}>
+                  <div className="text-[11px] font-bold text-blue-400 mb-1">{rec} ({teams.length}팀)</div>
+                  {teams.sort((a, b) => b.swissGameDiff - a.swissGameDiff).map(t => (
+                    <div key={t.clubId} className="flex items-center gap-1 mb-0.5">
+                      <TeamChip clubId={t.clubId} small />
+                      <span className="text-[9px] text-slate-500">GD {t.swissGameDiff >= 0 ? '+' : ''}{t.swissGameDiff}</span>
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <TournamentCard
-            to="/tournaments/mm"
-            title="Midseason Mayhem"
-            subtitle="16 teams · Swiss + SE Knockout"
-            status="W17–19"
-            weeks="Swiss R1–5 → QF/SF/GF"
-          />
-          <TournamentCard
-            to="/tournaments/wt"
-            title="World Tournament"
-            subtitle="32 teams · Group + SE Knockout"
-            status="W39–43"
-            weeks="8 Groups Bo1 DRR → R16/QF/SF/GF"
-          />
-          <TournamentCard
-            to="/tournaments/vsc"
-            title="Viktor Sandberg Cup"
-            subtitle="16 teams · Regional Qualifiers"
-            status="W39–43"
-            weeks="Regional Quals → SE Knockout"
-          />
-        </div>
-      </section>
+      )}
+    </div>
+  );
+}
 
-      <section>
-        <div className="flex items-center gap-2 mb-4">
-          <Globe size={16} className="text-blue-400" />
-          <h2 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">Nations</h2>
+// ─── Knockout bracket ─────────────────────────────────────────────────────────
+
+function KOCard({ km, participants, seasonStart, gameDate, onPlay }: {
+  km: MMKnockoutMatch; participants: MMParticipant[]; seasonStart: string; gameDate: string; onPlay: (id: string) => void;
+}) {
+  const matchDate = knockoutMatchDate(km.slot, seasonStart);
+  const available = !km.winner && km.teamA !== null && km.teamB !== null && gameDate >= matchDate;
+  const winA = km.winner === km.teamA;
+  const winB = km.winner === km.teamB;
+  const isUpset = km.winner !== null && (
+    (winA && km.oddsA > km.oddsB) || (winB && km.oddsB > km.oddsA)
+  );
+
+  return (
+    <div className="rounded border border-bg-border bg-bg-panel p-2 w-48">
+      <div className="flex items-center justify-between mb-1.5">
+        <span className="text-[10px] font-bold text-slate-500">{km.slot}</span>
+        {km.teamA && km.teamB && !km.winner && (
+          <span className="text-[9px] text-slate-600">{km.oddsA.toFixed(2)} / {km.oddsB.toFixed(2)}</span>
+        )}
+      </div>
+      <div className="flex items-center gap-1 mb-0.5">
+        {km.winner && <span className="w-6">{oddsTag(km.oddsA, winA, isUpset)}</span>}
+        <TeamChip clubId={km.teamA} isWinner={winA} />
+        <span className={`w-4 text-center text-xs font-bold ${winA ? 'text-emerald-400' : 'text-slate-600'}`}>
+          {km.winner ? km.scoreA : ''}
+        </span>
+      </div>
+      <div className="flex items-center gap-1">
+        {km.winner && <span className="w-6">{oddsTag(km.oddsB, winB, isUpset)}</span>}
+        <TeamChip clubId={km.teamB} isWinner={winB} />
+        <span className={`w-4 text-center text-xs font-bold ${winB ? 'text-emerald-400' : 'text-slate-600'}`}>
+          {km.winner ? km.scoreB : ''}
+        </span>
+      </div>
+      {!km.winner && (
+        <button
+          onClick={() => onPlay(`ko_${km.slot}`)}
+          disabled={!available}
+          className={`mt-1.5 w-full text-[10px] px-1 py-0.5 rounded transition-colors ${
+            available
+              ? 'text-black font-bold cursor-pointer hover:brightness-110'
+              : 'bg-bg-base text-slate-600 border border-bg-border cursor-not-allowed'
+          }`}
+          style={available ? { backgroundColor: LIME } : {}}
+        >
+          {available ? '▶ Play' : km.teamA && km.teamB ? '⏳ Waiting' : '─'}
+        </button>
+      )}
+    </div>
+  );
+}
+
+function KnockoutTab({ mm, seasonStart, gameDate, onPlay }: { mm: MMState; seasonStart: string; gameDate: string; onPlay: (id: string) => void }) {
+  const get = (slot: string) => mm.knockoutMatches.find(m => m.slot === slot);
+  const qf1 = get('QF1'), qf2 = get('QF2'), qf3 = get('QF3'), qf4 = get('QF4');
+  const sf1 = get('SF1'), sf2 = get('SF2'), gf = get('GF');
+
+  if (!qf1) {
+    return (
+      <div>
+        <h2 className="text-sm font-semibold uppercase tracking-wider mb-3" style={{ color: LIME }}>녹아웃 스테이지</h2>
+        <div className="text-slate-500 text-sm text-center py-8 border border-bg-border rounded-lg">
+          스위스 스테이지 완료 후 대진표 공개
         </div>
-        <div className="rounded-lg border border-bg-border bg-bg-panel p-6 text-center text-slate-500 text-sm">
-          Nations tournaments coming soon
+      </div>
+    );
+  }
+
+  const props = (km: MMKnockoutMatch) => ({ km, participants: mm.participants, seasonStart, gameDate, onPlay });
+
+  return (
+    <div>
+      <h2 className="text-sm font-semibold uppercase tracking-wider mb-3" style={{ color: LIME }}>녹아웃 스테이지</h2>
+      {mm.champion && (
+        <div className="rounded-lg border p-3 mb-4 flex items-center gap-3" style={{ borderColor: LIME + '50', backgroundColor: LIME + '08' }}>
+          <span className="text-xl">🏆</span>
+          <div>
+            <div className="text-[10px] uppercase font-bold" style={{ color: LIME }}>MM Champion</div>
+            <TeamChip clubId={mm.champion} />
+          </div>
         </div>
-      </section>
+      )}
+      <div className="overflow-x-auto">
+        <div className="flex items-start gap-6 min-w-max py-2">
+          <div className="flex flex-col gap-4">
+            <div className="text-[10px] font-bold text-slate-500 uppercase">Quarterfinals</div>
+            {qf1 && <KOCard {...props(qf1)} />}
+            {qf2 && <KOCard {...props(qf2)} />}
+          </div>
+          <div className="flex flex-col justify-center mt-12">
+            <div className="text-[10px] font-bold text-slate-500 uppercase mb-1">Semifinals</div>
+            {sf1 && <KOCard {...props(sf1)} />}
+          </div>
+          <div className="flex flex-col justify-center mt-12">
+            <div className="text-[10px] font-bold uppercase mb-1" style={{ color: LIME }}>Grand Final</div>
+            {gf && <KOCard {...props(gf)} />}
+          </div>
+          <div className="flex flex-col justify-center mt-12">
+            <div className="text-[10px] font-bold text-slate-500 uppercase mb-1">Semifinals</div>
+            {sf2 && <KOCard {...props(sf2)} />}
+          </div>
+          <div className="flex flex-col gap-4">
+            <div className="text-[10px] font-bold text-slate-500 uppercase">Quarterfinals</div>
+            {qf3 && <KOCard {...props(qf3)} />}
+            {qf4 && <KOCard {...props(qf4)} />}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Teams tab ────────────────────────────────────────────────────────────────
+
+function TeamsTab({ mm }: { mm: MMState }) {
+  const champOdds = calcChampionshipOdds(mm.participants);
+  const allSeeded = mm.participants.length === 16;
+
+  if (mm.participants.length === 0) {
+    return <div className="text-slate-500 text-sm py-8">리그 전반기 진행 중 — 아직 확정된 팀이 없습니다.</div>;
+  }
+
+  const byBand = ([1, 2, 3, 4] as const).map(b =>
+    mm.participants.filter(p => p.seedBand === b).sort((a, b) => b.w16Elo - a.w16Elo),
+  );
+
+  return (
+    <div>
+      <h2 className="text-sm font-semibold uppercase tracking-wider mb-3" style={{ color: LIME }}>
+        진출 팀 ({mm.participants.length}/16)
+      </h2>
+      {!allSeeded ? (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {mm.participants.map(p => <TeamRow key={p.clubId} p={p} champOdds={champOdds[p.clubId]} />)}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {([1, 2, 3, 4] as const).map((band, idx) => (
+            <div key={band} className="border rounded-lg p-3" style={{ borderColor: LIME + '20' }}>
+              <div className="text-[11px] font-bold uppercase mb-2" style={{ color: LIME }}>
+                Seed {band}
+              </div>
+              <div className="flex flex-col gap-1.5">
+                {byBand[idx].map(p => <TeamRow key={p.clubId} p={p} champOdds={champOdds[p.clubId]} />)}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function TeamRow({ p, champOdds }: { p: MMParticipant; champOdds?: number }) {
+  const club = clubById(p.clubId);
+  const league = LEAGUE_NAMES[p.leagueId] ?? p.leagueId;
+
+  // Swiss status color
+  let statusCls = 'text-slate-500';
+  let statusText = '';
+  if (p.qualified) {
+    statusCls = 'text-blue-400 font-bold';
+    statusText = `${p.swissWins}-${p.swissLosses}`;
+  } else if (p.eliminated) {
+    statusCls = 'text-red-400';
+    statusText = `${p.swissWins}-${p.swissLosses}`;
+  } else if (p.swissWins > 0 || p.swissLosses > 0) {
+    statusText = `${p.swissWins}-${p.swissLosses}`;
+  }
+
+  let qualScoreText = '';
+  if (p.qualResult) {
+    const opp = p.qualResult.opponent ? clubById(p.qualResult.opponent) : null;
+    qualScoreText = `${p.qualResult.repScore}-${p.qualResult.oppScore} vs ${opp?.abbr ?? '?'}`;
+  }
+
+  return (
+    <div
+      className={`flex items-center gap-2 px-2 py-1.5 rounded text-xs ${p.eliminated ? 'opacity-50' : ''}`}
+      style={{ backgroundColor: (club?.colors.bg ?? '#334155') + '15' }}
+    >
+      <TeamChip clubId={p.clubId} isEliminated={p.eliminated} />
+      <div className="flex-1 min-w-0">
+        <div className="text-slate-400 text-[10px] truncate">{league}</div>
+        {qualScoreText && <div className="text-slate-500 text-[9px] truncate">{qualScoreText}</div>}
+      </div>
+      {statusText && <span className={`text-[10px] ${statusCls}`}>{statusText}</span>}
+      {champOdds !== undefined && (
+        <span className="text-[10px] text-slate-600" title="우승 배당">{champOdds.toFixed(1)}</span>
+      )}
+      <span className="text-[9px] text-slate-700">{Math.round(p.w16Elo)}</span>
+    </div>
+  );
+}
+
+// ─── Results tab ──────────────────────────────────────────────────────────────
+
+function ResultsTab({ mm }: { mm: MMState }) {
+  if (mm.phase !== 'completed') {
+    return (
+      <div>
+        <h2 className="text-sm font-semibold uppercase tracking-wider mb-3" style={{ color: LIME }}>Results</h2>
+        <div className="text-slate-500 text-sm py-8 text-center">대회 진행 중...</div>
+      </div>
+    );
+  }
+
+  // Compute final placements
+  const placements: Array<{ rank: string; clubId: string; leagueId: string; setsPlayed: number; setsWon: number; setsLost: number; scoreDiff: number }> = [];
+
+  // Champion & Runner-up from GF
+  const gf = mm.knockoutMatches.find(m => m.slot === 'GF');
+  if (gf?.winner) {
+    const loser = gf.winner === gf.teamA ? gf.teamB! : gf.teamA!;
+    placements.push({ rank: '🏆 우승', clubId: gf.winner, leagueId: '', setsPlayed: 0, setsWon: 0, setsLost: 0, scoreDiff: 0 });
+    placements.push({ rank: '2위 준우승', clubId: loser, leagueId: '', setsPlayed: 0, setsWon: 0, setsLost: 0, scoreDiff: 0 });
+  }
+
+  // 3-4th from SF losers
+  const sf1 = mm.knockoutMatches.find(m => m.slot === 'SF1');
+  const sf2 = mm.knockoutMatches.find(m => m.slot === 'SF2');
+  const sfLosers: string[] = [];
+  if (sf1?.winner) sfLosers.push(sf1.winner === sf1.teamA ? sf1.teamB! : sf1.teamA!);
+  if (sf2?.winner) sfLosers.push(sf2.winner === sf2.teamA ? sf2.teamB! : sf2.teamA!);
+  sfLosers.forEach(id => placements.push({ rank: '3~4위', clubId: id, leagueId: '', setsPlayed: 0, setsWon: 0, setsLost: 0, scoreDiff: 0 }));
+
+  // 5-8th from QF losers
+  const qfLosers: string[] = [];
+  for (const slot of ['QF1', 'QF2', 'QF3', 'QF4']) {
+    const qf = mm.knockoutMatches.find(m => m.slot === slot);
+    if (qf?.winner) qfLosers.push(qf.winner === qf.teamA ? qf.teamB! : qf.teamA!);
+  }
+  qfLosers.forEach(id => placements.push({ rank: '5~8위', clubId: id, leagueId: '', setsPlayed: 0, setsWon: 0, setsLost: 0, scoreDiff: 0 }));
+
+  // 9-16th: eliminated from Swiss
+  const eliminated = mm.participants.filter(p => p.eliminated).sort((a, b) => {
+    if (b.swissWins !== a.swissWins) return b.swissWins - a.swissWins;
+    return b.swissGameDiff - a.swissGameDiff;
+  });
+  eliminated.forEach(p => placements.push({ rank: '9~16위', clubId: p.clubId, leagueId: '', setsPlayed: 0, setsWon: 0, setsLost: 0, scoreDiff: 0 }));
+
+  // Compute per-team stats from all matches
+  const stats = new Map<string, { played: number; won: number; lost: number; diff: number }>();
+  const initStats = (id: string) => { if (!stats.has(id)) stats.set(id, { played: 0, won: 0, lost: 0, diff: 0 }); };
+
+  // Swiss matches
+  for (const sr of mm.swissRounds) {
+    for (const m of sr.matches) {
+      if (!m.winner) continue;
+      initStats(m.teamA); initStats(m.teamB);
+      const sA = stats.get(m.teamA)!;
+      const sB = stats.get(m.teamB)!;
+      sA.played += m.scoreA + m.scoreB;
+      sA.won += m.scoreA; sA.lost += m.scoreB; sA.diff += m.scoreA - m.scoreB;
+      sB.played += m.scoreA + m.scoreB;
+      sB.won += m.scoreB; sB.lost += m.scoreA; sB.diff += m.scoreB - m.scoreA;
+    }
+  }
+  // Knockout matches
+  for (const km of mm.knockoutMatches) {
+    if (!km.winner || !km.teamA || !km.teamB) continue;
+    initStats(km.teamA); initStats(km.teamB);
+    const sA = stats.get(km.teamA)!;
+    const sB = stats.get(km.teamB)!;
+    sA.played += km.scoreA + km.scoreB;
+    sA.won += km.scoreA; sA.lost += km.scoreB; sA.diff += km.scoreA - km.scoreB;
+    sB.played += km.scoreA + km.scoreB;
+    sB.won += km.scoreB; sB.lost += km.scoreA; sB.diff += km.scoreB - km.scoreA;
+  }
+
+  // Fill in stats
+  const filled = placements.map(p => {
+    const s = stats.get(p.clubId);
+    const part = mm.participants.find(pp => pp.clubId === p.clubId);
+    return { ...p, leagueId: part?.leagueId ?? '', setsPlayed: s?.played ?? 0, setsWon: s?.won ?? 0, setsLost: s?.lost ?? 0, scoreDiff: s?.diff ?? 0 };
+  });
+
+  return (
+    <div>
+      <h2 className="text-sm font-semibold uppercase tracking-wider mb-3" style={{ color: LIME }}>Results</h2>
+      <table className="w-full text-xs">
+        <thead>
+          <tr className="border-b border-bg-border text-slate-500">
+            <th className="text-left py-1.5 px-2 w-20">순위</th>
+            <th className="text-left py-1.5 px-2">팀</th>
+            <th className="text-left py-1.5 px-2">리그</th>
+            <th className="text-center py-1.5 px-2">세트</th>
+            <th className="text-center py-1.5 px-2">승</th>
+            <th className="text-center py-1.5 px-2">패</th>
+            <th className="text-center py-1.5 px-2">득실</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filled.map((row, i) => (
+            <tr key={row.clubId} className="border-b border-bg-border/50 hover:bg-bg-hover/40">
+              <td className="py-1.5 px-2 text-slate-400 font-bold">{row.rank}</td>
+              <td className="py-1.5 px-2"><TeamChip clubId={row.clubId} /></td>
+              <td className="py-1.5 px-2 text-slate-500">{LEAGUE_NAMES[row.leagueId] ?? ''}</td>
+              <td className="py-1.5 px-2 text-center text-slate-400">{row.setsPlayed}</td>
+              <td className="py-1.5 px-2 text-center text-emerald-400">{row.setsWon}</td>
+              <td className="py-1.5 px-2 text-center text-red-400">{row.setsLost}</td>
+              <td className={`py-1.5 px-2 text-center font-bold ${row.scoreDiff > 0 ? 'text-emerald-400' : row.scoreDiff < 0 ? 'text-red-400' : 'text-slate-500'}`}>
+                {row.scoreDiff > 0 ? '+' : ''}{row.scoreDiff}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+// ─── Main Tournaments page ────────────────────────────────────────────────────
+
+const TOURNAMENTS: Array<{ id: TournamentId; label: string; sub: string }> = [
+  { id: 'mm',  label: 'Midseason Mayhem', sub: 'W17–19' },
+  { id: 'wt',  label: 'World Tournament',  sub: 'W39–43' },
+  { id: 'vsc', label: 'Viktor Sandberg Cup', sub: 'W39–43' },
+];
+
+const MM_TABS: Array<{ key: MMTab; label: string }> = [
+  { key: 'teams',    label: 'Teams'    },
+  { key: 'swiss',    label: 'Swiss'    },
+  { key: 'knockout', label: 'Knockout' },
+  { key: 'results',  label: 'Results'  },
+];
+
+export function Tournaments() {
+  const mmState = useStore(s => s.mmState);
+  const gameDate = useStore(s => s.gameDate);
+  const advanceMMMatch = useStore(s => s.advanceMMMatch);
+  const week = getWeekInfo(gameDate);
+  const seasonStart = getCurrentSeasonStart(gameDate);
+
+  const [activeTournament, setActiveTournament] = useState<TournamentId>('mm');
+  const [mmTab, setMmTab] = useState<MMTab>('teams');
+
+  return (
+    <div className="flex h-full">
+      {/* Sidebar */}
+      <aside className="w-52 border-r border-bg-border overflow-y-auto flex-shrink-0 py-2">
+        <div className="px-4 py-1">
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Clubs</span>
+        </div>
+        {TOURNAMENTS.map(t => (
+          <div
+            key={t.id}
+            onClick={() => setActiveTournament(t.id)}
+            className={`flex items-center justify-between px-4 py-2 cursor-pointer text-sm transition-colors ${
+              activeTournament === t.id
+                ? 'border-r-2 bg-bg-hover'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-bg-hover'
+            }`}
+            style={activeTournament === t.id ? { borderRightColor: t.id === 'mm' ? LIME : '#f59e0b', color: t.id === 'mm' ? LIME : '#f59e0b' } : {}}
+          >
+            <span className="font-medium">{t.label}</span>
+            <span className="text-[10px] text-slate-600">{t.sub}</span>
+          </div>
+        ))}
+
+        <div className="px-4 py-1 mt-4">
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Nations</span>
+        </div>
+        <div className="px-4 py-2 text-xs text-slate-600">Coming soon</div>
+      </aside>
+
+      {/* Main content */}
+      <div className="flex-1 overflow-auto">
+        {activeTournament === 'mm' && (
+          <div>
+            {/* MM Header */}
+            <div className="border-b border-bg-border px-6 pt-4 pb-0">
+              <div className="flex items-center gap-3 mb-3">
+                <h1 className="text-xl font-bold" style={{ color: LIME }}>Midseason Mayhem</h1>
+                <span className="text-xs px-2 py-0.5 rounded border text-slate-400" style={{ borderColor: LIME + '30' }}>
+                  Season {week.season} · W{week.weekNum}
+                </span>
+              </div>
+              {/* Sub-tabs */}
+              <div className="flex gap-1">
+                {MM_TABS.map(tab => (
+                  <button
+                    key={tab.key}
+                    onClick={() => setMmTab(tab.key)}
+                    className={`px-4 py-2 text-xs font-medium rounded-t border-b-2 transition-colors ${
+                      mmTab === tab.key
+                        ? 'border-current'
+                        : 'border-transparent text-slate-500 hover:text-slate-300'
+                    }`}
+                    style={mmTab === tab.key ? { color: LIME, borderBottomColor: LIME } : {}}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Tab content */}
+            <div className="p-6">
+              {mmTab === 'teams'    && <TeamsTab mm={mmState} />}
+              {mmTab === 'swiss'    && <SwissTab mm={mmState} seasonStart={seasonStart} gameDate={gameDate} onPlay={advanceMMMatch} />}
+              {mmTab === 'knockout' && <KnockoutTab mm={mmState} seasonStart={seasonStart} gameDate={gameDate} onPlay={advanceMMMatch} />}
+              {mmTab === 'results'  && <ResultsTab mm={mmState} />}
+            </div>
+          </div>
+        )}
+
+        {activeTournament === 'wt' && (
+          <div className="p-6 text-center text-slate-500 text-sm pt-16">
+            World Tournament — W39–43<br />Coming soon
+          </div>
+        )}
+
+        {activeTournament === 'vsc' && (
+          <div className="p-6 text-center text-slate-500 text-sm pt-16">
+            Viktor Sandberg Cup — W39–43<br />Coming soon
+          </div>
+        )}
+      </div>
     </div>
   );
 }
