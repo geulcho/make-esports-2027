@@ -452,7 +452,16 @@ function IQTab({ state }: { state: IntermatchState }) {
 
 // ─── EEC / TPC bracket tab ────────────────────────────────────────────────────
 
-function BracketTab({ event, title, subtitle }: { event: SideEventState | null; title: string; subtitle: string }) {
+function calcNatChampOdds(teamIds: string[], elos: Record<string, number>): Record<string, number> {
+  if (teamIds.length === 0) return {};
+  const shares = teamIds.map(id => ({ id, share: Math.pow(10, (elos[id] ?? 1000) / 400) }));
+  const total = shares.reduce((s, x) => s + x.share, 0);
+  const result: Record<string, number> = {};
+  for (const s of shares) result[s.id] = Math.round(Math.max(1.01, 0.90 / (s.share / total)) * 100) / 100;
+  return result;
+}
+
+function BracketTab({ event, title, subtitle, elos }: { event: SideEventState | null; title: string; subtitle: string; elos: Record<string, number> }) {
   if (!event) {
     return (
       <div>
@@ -520,13 +529,47 @@ function BracketTab({ event, title, subtitle }: { event: SideEventState | null; 
         </div>
       </div>
 
-      {/* Participants */}
+      {/* Participants with championship odds */}
       {event.participants.length > 0 && (
         <div className="mt-4 rounded border border-bg-border p-3">
           <div className="text-[10px] font-bold text-slate-400 uppercase mb-2">참가국 ({event.participants.length})</div>
-          <div className="flex flex-wrap gap-1">
-            {event.participants.map(id => <NatChip key={id} nationId={id} />)}
-          </div>
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="border-b border-bg-border/50 text-slate-600">
+                <th className="text-center py-1 w-8">#</th>
+                <th className="text-left py-1">국가</th>
+                <th className="text-center py-1 w-14">Elo</th>
+                <th className="text-center py-1 w-16">우승 배당</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(() => {
+                const champOdds = calcNatChampOdds(event.participants, elos);
+                const sorted = [...event.participants].sort((a, b) => (elos[b] ?? 0) - (elos[a] ?? 0));
+                return sorted.map((id, i) => {
+                  const nat = nationById(id);
+                  const odds = champOdds[id];
+                  return (
+                    <tr key={id} className="border-b border-bg-border/20 hover:bg-bg-hover/30">
+                      <td className="text-center py-1 text-slate-500">{i + 1}</td>
+                      <td className="py-1">
+                        <div className="flex items-center gap-1.5">
+                          <NatChip nationId={id} small />
+                          <span className="text-slate-300">{nat?.name}</span>
+                        </div>
+                      </td>
+                      <td className="text-center py-1 text-slate-400 font-mono">{Math.round(elos[id] ?? nat?.elo_rating ?? 0)}</td>
+                      <td className="text-center py-1">
+                        <span className={`font-bold ${odds <= 3 ? 'text-amber-400' : odds <= 8 ? 'text-slate-300' : 'text-slate-500'}`}>
+                          {odds?.toFixed(1)}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                });
+              })()}
+            </tbody>
+          </table>
         </div>
       )}
     </div>
@@ -624,8 +667,8 @@ export function Intermatch() {
         {active === 'AMERICA' && <RegionQualTab region={intermatchState.americas} label="Americas" />}
         {active === 'MEAF'    && <MEAFQualTab meaf={intermatchState.meaf} />}
         {active === 'IQ'      && <IQTab state={intermatchState} />}
-        {active === 'EEC'     && <BracketTab event={intermatchState.eec} title="European Esports Championship" subtitle="유럽 WE 직행 8개국 · Bo5 싱글 엘리미네이션 · W31~32" />}
-        {active === 'TPC'     && <BracketTab event={intermatchState.tpc} title="Trans-Pacific Championship" subtitle="APAC 6 + Americas 4 + MEAF 1 = 11개국 · 플레이인 + Bo5 SE · W31~32" />}
+        {active === 'EEC'     && <BracketTab event={intermatchState.eec} title="European Esports Championship" subtitle="유럽 WE 직행 8개국 · Bo5 싱글 엘리미네이션 · W31~32" elos={intermatchState.nationElos} />}
+        {active === 'TPC'     && <BracketTab event={intermatchState.tpc} title="Trans-Pacific Championship" subtitle="APAC 6 + Americas 4 + MEAF 1 = 11개국 · 플레이인 + Bo5 SE · W31~32" elos={intermatchState.nationElos} />}
         {active === 'WE'      && <PlaceholderTab title="World Event (W45~48)" />}
       </div>
     </div>
