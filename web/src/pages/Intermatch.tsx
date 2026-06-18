@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useStore, getWeekInfo } from '../store/store';
 import { nationById, allNations, regionLabel } from '../data/nations';
 import { sortGroupRecords } from '../engine/intermatch';
-import type { NatGroup, NatGroupRecord, NatBracketMatch, WEQualRegion, MEAFQualState, SideEventState, IntermatchState } from '../types';
+import type { NatGroup, NatGroupRecord, NatGroupMatch, NatBracketMatch, WEQualRegion, MEAFQualState, SideEventState, IntermatchState, WEState, WEParticipant } from '../types';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -454,7 +454,7 @@ function IQTab({ state }: { state: IntermatchState }) {
 
 function calcNatChampOdds(teamIds: string[], elos: Record<string, number>): Record<string, number> {
   if (teamIds.length === 0) return {};
-  const shares = teamIds.map(id => ({ id, share: Math.pow(10, (elos[id] ?? 1000) / 400) }));
+  const shares = teamIds.map(id => ({ id, share: Math.pow(10, (elos[id] ?? 1000) / 200) }));
   const total = shares.reduce((s, x) => s + x.share, 0);
   const result: Record<string, number> = {};
   for (const s of shares) result[s.id] = Math.round(Math.max(1.01, 0.90 / (s.share / total)) * 100) / 100;
@@ -586,6 +586,569 @@ function PlaceholderTab({ title }: { title: string }) {
   );
 }
 
+// ─── WE (World Event) Tab ────────────────────────────────────────────────────
+
+type WESubTab = 'participants' | 'predictions' | 'groups' | 'knockouts' | 'results';
+
+const WE_REGION_BG: Record<string, string> = {
+  EU: 'bg-blue-900/30', APAC: 'bg-orange-500/20', AMERICA: 'bg-emerald-500/20',
+  MEAF: 'bg-yellow-500/20',
+};
+
+function WETab({ we, elos, state }: { we: WEState | null; elos: Record<string, number>; state: IntermatchState }) {
+  const [subTab, setSubTab] = useState<WESubTab>('participants');
+
+  if (!we) {
+    return (
+      <div>
+        <h2 className="text-sm font-semibold uppercase tracking-wider mb-1" style={{ color: ACCENT }}>World Event</h2>
+        <p className="text-[10px] text-slate-500 mb-4">W45~48 · 24개 국가대표팀 챔피언십</p>
+        <div className="text-slate-600 text-sm text-center py-8 border border-bg-border rounded-lg">
+          IQ 완료 후 대진 생성 (W45~)
+        </div>
+      </div>
+    );
+  }
+
+  const tabs: Array<{ key: WESubTab; label: string }> = [
+    { key: 'participants', label: 'Participants' },
+    { key: 'predictions',  label: 'Predictions' },
+    { key: 'groups',       label: 'Groups' },
+    { key: 'knockouts',    label: 'Knockouts' },
+    { key: 'results',      label: 'Results' },
+  ];
+
+  return (
+    <div>
+      <h2 className="text-sm font-semibold uppercase tracking-wider mb-1" style={{ color: ACCENT }}>World Event</h2>
+      <p className="text-[10px] text-slate-500 mb-3">W45~48 · 24개 국가대표팀 · {we.champion ? `🏆 ${nationById(we.champion)?.name}` : we.phase}</p>
+      <div className="flex gap-1 mb-4">
+        {tabs.map(t => (
+          <button key={t.key} onClick={() => setSubTab(t.key)}
+            className={`px-3 py-1 text-xs rounded transition-colors ${subTab === t.key ? 'text-white font-bold' : 'text-slate-400 hover:text-slate-200'}`}
+            style={subTab === t.key ? { backgroundColor: ACCENT + '30', borderColor: ACCENT + '50', border: '1px solid' } : {}}
+          >{t.label}</button>
+        ))}
+      </div>
+      {subTab === 'participants' && <WEParticipantsTab we={we} elos={elos} state={state} />}
+      {subTab === 'predictions'  && <WEPredictionsTab we={we} elos={elos} />}
+      {subTab === 'groups'       && <WEGroupsTab we={we} elos={elos} />}
+      {subTab === 'knockouts'    && <WEKnockoutsTab we={we} elos={elos} />}
+      {subTab === 'results'      && <WEResultsTab we={we} elos={elos} />}
+    </div>
+  );
+}
+
+// ── WE Participants ──
+
+function WEParticipantsTab({ we, elos, state }: { we: WEState; elos: Record<string, number>; state: IntermatchState }) {
+  const [sortKey, setSortKey] = useState<'region' | 'winrate' | 'ranking' | 'seed'>('region');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
+
+  const toggleSort = (key: typeof sortKey) => {
+    if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+    else { setSortKey(key); setSortDir('asc'); }
+  };
+
+  const rankMap = new Map(state.rankings.map((r, i) => [r.nationId, i + 1]));
+
+  const sorted = useMemo(() => {
+    const arr = [...we.participants];
+    const dir = sortDir === 'asc' ? 1 : -1;
+    arr.sort((a, b) => {
+      switch (sortKey) {
+        case 'region': {
+          const order = ['EU', 'APAC', 'AMERICA', 'MEAF'];
+          const ai = a.entryPath === 'iq_wildcard' ? 4 : order.indexOf(a.region);
+          const bi = b.entryPath === 'iq_wildcard' ? 4 : order.indexOf(b.region);
+          return (ai - bi) * dir || b.w33Elo - a.w33Elo;
+        }
+        case 'winrate': {
+          const wrA = a.qualRecord.wins + a.qualRecord.losses > 0 ? a.qualRecord.wins / (a.qualRecord.wins + a.qualRecord.losses) : 0;
+          const wrB = b.qualRecord.wins + b.qualRecord.losses > 0 ? b.qualRecord.wins / (b.qualRecord.wins + b.qualRecord.losses) : 0;
+          return (wrA - wrB) * dir;
+        }
+        case 'ranking': return ((rankMap.get(a.nationId) ?? 99) - (rankMap.get(b.nationId) ?? 99)) * dir;
+        case 'seed': return (a.pot - b.pot) * dir || b.w33Elo - a.w33Elo;
+        default: return 0;
+      }
+    });
+    return arr;
+  }, [we.participants, sortKey, sortDir, rankMap]);
+
+  const SortHeader = ({ label, k }: { label: string; k: typeof sortKey }) => (
+    <th className="text-center py-1.5 cursor-pointer hover:text-slate-300" onClick={() => toggleSort(k)}>
+      {label} {sortKey === k ? (sortDir === 'asc' ? '▲' : '▼') : ''}
+    </th>
+  );
+
+  return (
+    <table className="w-full text-xs">
+      <thead>
+        <tr className="text-slate-500 border-b border-bg-border">
+          <th className="text-left py-1.5">Team</th>
+          <th className="text-center py-1.5 w-12">Abbr</th>
+          <th className="text-center py-1.5 w-20">Sets</th>
+          <SortHeader label="Set%" k="winrate" />
+          <th className="text-center py-1.5 w-14">Qual Date</th>
+          <SortHeader label="Rank" k="ranking" />
+          <SortHeader label="Seed" k="seed" />
+        </tr>
+      </thead>
+      <tbody>
+        {sorted.map(p => {
+          const n = nationById(p.nationId);
+          if (!n) return null;
+          const total = p.qualRecord.wins + p.qualRecord.losses;
+          const wr = total > 0 ? (p.qualRecord.wins / total * 100).toFixed(0) : '—';
+          const rank = rankMap.get(p.nationId) ?? '—';
+          const isWC = p.entryPath === 'iq_wildcard';
+          const bg = isWC ? 'bg-slate-500/10' : (WE_REGION_BG[p.region] ?? '');
+          return (
+            <tr key={p.nationId} className={`border-b border-bg-border/30 ${bg}`}>
+              <td className="py-1.5"><div className="flex items-center gap-2"><NatChip nationId={p.nationId} /><span className="text-slate-300">{n.name}</span></div></td>
+              <td className="py-1.5 text-center text-slate-400">{n.abbr}</td>
+              <td className="py-1.5 text-center"><span className="text-status-up">{p.qualRecord.wins}</span>-<span className="text-status-down">{p.qualRecord.losses}</span></td>
+              <td className="py-1.5 text-center text-slate-300">{wr}%</td>
+              <td className="py-1.5 text-center text-slate-500">{p.qualDate}</td>
+              <td className="py-1.5 text-center text-slate-300 font-mono">{rank}</td>
+              <td className="py-1.5 text-center font-bold" style={{ color: ACCENT }}>Pot {p.pot}{isWC ? ' (WC)' : ''}</td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  );
+}
+
+// ── WE Predictions ──
+
+function WEPredictionsTab({ we, elos }: { we: WEState; elos: Record<string, number> }) {
+  const odds = useMemo(() => {
+    const ids = we.participants.map(p => p.nationId);
+    return calcNatChampOdds(ids, elos);
+  }, [we.participants, elos]);
+
+  const sorted = [...we.participants].sort((a, b) => (odds[a.nationId] ?? 999) - (odds[b.nationId] ?? 999));
+
+  return (
+    <table className="w-full text-xs">
+      <thead>
+        <tr className="text-slate-500 border-b border-bg-border">
+          <th className="text-left py-1.5 w-6">#</th>
+          <th className="text-left py-1.5">Team</th>
+          <th className="text-center py-1.5 w-16">Elo</th>
+          <th className="text-center py-1.5 w-20">Odds</th>
+        </tr>
+      </thead>
+      <tbody>
+        {sorted.map((p, i) => {
+          const n = nationById(p.nationId);
+          if (!n) return null;
+          const o = odds[p.nationId] ?? 999;
+          return (
+            <tr key={p.nationId} className={`border-b border-bg-border/30 ${i === 0 ? 'bg-yellow-500/5' : ''}`}>
+              <td className="py-1.5 text-slate-500 font-mono">{i + 1}</td>
+              <td className="py-1.5"><div className="flex items-center gap-2"><NatChip nationId={p.nationId} /><span className="text-slate-300">{n.name}</span></div></td>
+              <td className="py-1.5 text-center text-slate-400 font-mono">{Math.round(elos[p.nationId] ?? p.w33Elo)}</td>
+              <td className={`py-1.5 text-center font-mono font-bold ${o < 5 ? 'text-yellow-400' : o < 15 ? 'text-slate-300' : 'text-slate-500'}`}>{o.toFixed(2)}</td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  );
+}
+
+// ── WE Groups ──
+
+function WEGroupCard({ group: g, liveAdvancing }: { group: NatGroup; liveAdvancing: Set<string> }) {
+  const [showMatches, setShowMatches] = useState(false);
+  const sorted = sortGroupRecords(g.records);
+  const playedMatches = g.matches.filter(m => m.winner);
+
+  return (
+    <div className="bg-bg-card rounded-lg p-3">
+      <div className="flex items-center justify-between mb-2">
+        <h4 className="text-xs font-bold text-slate-300">{g.label} <span className="text-slate-500 font-normal">MD {g.matchdaysCompleted}/{g.matchdaysTotal}</span></h4>
+        {playedMatches.length > 0 && (
+          <button onClick={() => setShowMatches(!showMatches)}
+            className="text-[10px] text-slate-500 hover:text-slate-300 transition-colors">
+            {showMatches ? 'Hide Results' : 'Match Results'}
+          </button>
+        )}
+      </div>
+      <table className="w-full text-[11px]">
+        <thead><tr className="text-slate-500 border-b border-bg-border/50">
+          <th className="text-left py-1 w-4">#</th><th className="text-left py-1">Team</th>
+          <th className="text-center py-1 w-6">W</th><th className="text-center py-1 w-6">L</th>
+          <th className="text-center py-1 w-8">SD</th><th className="text-center py-1 w-10">ScD</th>
+        </tr></thead>
+        <tbody>
+          {sorted.map((r, i) => {
+            const adv = i < 2;
+            const isThird = i === 2 && liveAdvancing.has(r.nationId);
+            const sd = r.setsFor - r.setsAgainst;
+            const scd = r.momFor - r.momAgainst;
+            return (
+              <tr key={r.nationId} className={`border-b border-bg-border/20 ${adv ? 'bg-blue-500/10' : isThird ? 'bg-yellow-500/10' : ''}`}>
+                <td className="py-1 text-slate-500">{i + 1}</td>
+                <td className="py-1"><NatChip nationId={r.nationId} /></td>
+                <td className="py-1 text-center text-status-up">{r.wins}</td>
+                <td className="py-1 text-center text-status-down">{r.losses}</td>
+                <td className={`py-1 text-center ${sd >= 0 ? 'text-status-up' : 'text-status-down'}`}>{sd >= 0 ? '+' : ''}{sd}</td>
+                <td className={`py-1 text-center ${scd >= 0 ? 'text-slate-400' : 'text-slate-500'}`}>{scd >= 0 ? '+' : ''}{scd}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+
+      {showMatches && playedMatches.length > 0 && (
+        <div className="mt-2 pt-2 border-t border-bg-border/30 space-y-1">
+          {playedMatches.map(m => {
+            const isUpset = m.oddsA > 0 && m.oddsB > 0 && (
+              (m.winner === m.teamA && m.oddsA > m.oddsB) ||
+              (m.winner === m.teamB && m.oddsB > m.oddsA)
+            );
+            return (
+              <div key={m.id} className="flex items-center gap-1.5 text-[10px]">
+                <span className="text-slate-600 w-8 text-right font-mono">MD{m.matchday}</span>
+                <div className={`flex-1 flex items-center gap-1 ${m.winner === m.teamA ? 'text-white font-bold' : 'text-slate-500'}`}>
+                  <NatChip nationId={m.teamA} />
+                </div>
+                <span className="font-mono text-slate-300 w-7 text-center">{m.scoreA}-{m.scoreB}</span>
+                <div className={`flex-1 flex items-center gap-1 ${m.winner === m.teamB ? 'text-white font-bold' : 'text-slate-500'}`}>
+                  <NatChip nationId={m.teamB} />
+                </div>
+                {isUpset && <span className="text-red-400 text-[9px] font-bold">!</span>}
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function WEGroupsTab({ we, elos }: { we: WEState; elos: Record<string, number> }) {
+  const labels = ['A','B','C','D','E','F'];
+  const w33Elos = new Map(we.participants.map(p => [p.nationId, p.w33Elo]));
+  const pMap = new Map(we.participants.map(p => [p.nationId, p]));
+
+  const regionBg = (nationId: string) => {
+    const p = pMap.get(nationId);
+    if (!p) return '';
+    if (p.entryPath === 'iq_wildcard') return 'bg-slate-500/20';
+    return WE_REGION_BG[p.region] ?? '';
+  };
+
+  const liveThirds = useMemo(() => {
+    const thirds: Array<{ record: NatGroupRecord; groupLabel: string }> = [];
+    for (const g of we.groups) {
+      const sorted = sortGroupRecords(g.records);
+      if (sorted.length >= 3) {
+        thirds.push({ record: sorted[2], groupLabel: g.id.replace('WE_', '') });
+      }
+    }
+    thirds.sort((a, b) => {
+      const ra = a.record, rb = b.record;
+      if (rb.wins !== ra.wins) return rb.wins - ra.wins;
+      const sdA = ra.setsFor - ra.setsAgainst, sdB = rb.setsFor - rb.setsAgainst;
+      if (sdB !== sdA) return sdB - sdA;
+      const scdA = ra.momFor - ra.momAgainst, scdB = rb.momFor - rb.momAgainst;
+      if (scdB !== scdA) return scdB - scdA;
+      return rb.momFor - ra.momFor;
+    });
+    return thirds;
+  }, [we.groups]);
+
+  const liveAdvancing = we.advancingThirds.length > 0
+    ? new Set(we.advancingThirds)
+    : new Set(liveThirds.slice(0, 4).map(t => t.record.nationId));
+
+  return (
+    <div className="space-y-6">
+      <div className="overflow-x-auto">
+        <table className="w-full text-xs">
+          <thead>
+            <tr className="text-slate-500 border-b border-bg-border">
+              <th className="py-1.5 w-12"></th>
+              {labels.map(l => <th key={l} className="text-center py-1.5 font-bold text-slate-300">Group {l}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {[0,1,2,3].map(seed => (
+              <tr key={seed} className="border-b border-bg-border/30">
+                <td className="py-2 text-center text-slate-500 font-bold text-[10px]">Pot {seed + 1}</td>
+                {we.groups.map((g, gi) => {
+                  const teamId = g.teams[seed];
+                  const n = teamId ? nationById(teamId) : null;
+                  const elo = teamId ? Math.round(w33Elos.get(teamId) ?? 0) : 0;
+                  return (
+                    <td key={gi} className={`py-2 text-center ${teamId ? regionBg(teamId) : ''}`}>
+                      {n ? (
+                        <div>
+                          <NatChip nationId={teamId} />
+                          <div className="text-[10px] text-slate-500 mt-0.5">{elo}</div>
+                        </div>
+                      ) : '—'}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="grid grid-cols-3 gap-4">
+        {we.groups.map(g => (
+          <WEGroupCard key={g.id} group={g} liveAdvancing={liveAdvancing} />
+        ))}
+      </div>
+
+      {liveThirds.length > 0 && (
+        <div className="bg-bg-card rounded-lg p-3">
+          <h4 className="text-xs font-bold text-slate-300 mb-2">3rd Place Ranking</h4>
+          <table className="w-full text-[11px]">
+            <thead><tr className="text-slate-500 border-b border-bg-border/50">
+              <th className="text-left py-1 w-4">#</th><th className="text-left py-1">Team</th>
+              <th className="text-center py-1 w-10">Group</th>
+              <th className="text-center py-1 w-6">W</th><th className="text-center py-1 w-6">L</th>
+              <th className="text-center py-1 w-8">SD</th><th className="text-center py-1 w-12">Status</th>
+            </tr></thead>
+            <tbody>
+              {liveThirds.map((t, i) => {
+                const adv = liveAdvancing.has(t.record.nationId);
+                const scd = t.record.setsFor - t.record.setsAgainst;
+                return (
+                  <tr key={t.record.nationId} className={`border-b border-bg-border/20 ${adv ? 'bg-green-500/10' : ''}`}>
+                    <td className="py-1 text-slate-500">{i + 1}</td>
+                    <td className="py-1"><NatChip nationId={t.record.nationId} /></td>
+                    <td className="py-1 text-center text-slate-400">{t.groupLabel}</td>
+                    <td className="py-1 text-center text-status-up">{t.record.wins}</td>
+                    <td className="py-1 text-center text-status-down">{t.record.losses}</td>
+                    <td className={`py-1 text-center ${scd >= 0 ? 'text-status-up' : 'text-status-down'}`}>{scd >= 0 ? '+' : ''}{scd}</td>
+                    <td className={`py-1 text-center text-[10px] font-bold ${adv ? 'text-green-400' : 'text-slate-600'}`}>{adv ? 'ADVANCE' : 'OUT'}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          {we.thirdPlaceKey && <p className="text-[10px] text-slate-500 mt-1">Qualified 3rd-place groups: {we.thirdPlaceKey}</p>}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── WE Knockouts (tournament bracket) ──
+
+function WEKnockoutsTab({ we, elos }: { we: WEState; elos: Record<string, number> }) {
+  if (we.knockoutMatches.length === 0) {
+    return <div className="text-slate-600 text-sm text-center py-8">조별리그 완료 후 대진 생성</div>;
+  }
+
+  const ko = we.knockoutMatches;
+  const r16 = ko.slice(0, 8);
+  const qf = ko.slice(8, 12);
+  const sf = ko.slice(12, 14);
+  const gf = ko[14];
+
+  const BSlot = ({ m }: { m: NatBracketMatch }) => {
+    const row = (team: string | null, score: number, isWinner: boolean) => {
+      const n = team ? nationById(team) : null;
+      return (
+        <div className={`flex items-center justify-between px-2 py-1 ${isWinner ? 'bg-blue-500/10 font-bold text-white' : 'text-slate-400'}`}>
+          <div className="flex items-center gap-1.5 min-w-0">
+            {n ? <NatChip nationId={team!} /> : <span className="text-slate-600 text-[10px]">TBD</span>}
+          </div>
+          <span className="font-mono text-xs ml-2">
+            {m.winner ? score : (m.teamA && m.teamB && team === m.teamA ? m.oddsA.toFixed(2) : m.teamA && m.teamB && team === m.teamB ? m.oddsB.toFixed(2) : '')}
+          </span>
+        </div>
+      );
+    };
+    return (
+      <div className="border border-bg-border rounded bg-bg-card" style={{ width: 155 }}>
+        {row(m.teamA, m.scoreA, m.winner === m.teamA)}
+        <div className="border-t border-bg-border/50" />
+        {row(m.teamB, m.scoreB, m.winner === m.teamB)}
+      </div>
+    );
+  };
+
+  const colGap = 40;
+  const matchH = 44;
+  const r16Gap = 8;
+  const qfGap = matchH + r16Gap;
+  const sfGap = matchH * 3 + r16Gap * 3;
+
+  return (
+    <div>
+      {we.champion && (
+        <div className="rounded-lg border p-3 mb-4 flex items-center gap-3" style={{ borderColor: ACCENT + '50', backgroundColor: ACCENT + '08' }}>
+          <span className="text-xl">🏆</span>
+          <div>
+            <div className="text-[10px] uppercase font-bold" style={{ color: ACCENT }}>World Champion</div>
+            <div className="flex items-center gap-2">
+              <NatChip nationId={we.champion} />
+              <span className="text-slate-300 text-sm">{nationById(we.champion)?.name}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="overflow-x-auto pb-4">
+        <div className="flex items-start" style={{ gap: colGap, minWidth: 800 }}>
+          {/* R16 */}
+          <div className="flex-shrink-0">
+            <div className="text-[10px] font-bold text-slate-400 uppercase mb-2">Round of 16</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: r16Gap }}>
+              {r16.map(m => <BSlot key={m.id} m={m} />)}
+            </div>
+          </div>
+          {/* QF */}
+          <div className="flex-shrink-0" style={{ paddingTop: (matchH + r16Gap) / 2 }}>
+            <div className="text-[10px] font-bold text-slate-400 uppercase mb-2">Quarterfinals</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: qfGap }}>
+              {qf.map(m => <BSlot key={m.id} m={m} />)}
+            </div>
+          </div>
+          {/* SF */}
+          <div className="flex-shrink-0" style={{ paddingTop: (matchH * 3 + r16Gap * 3) / 2 }}>
+            <div className="text-[10px] font-bold text-slate-400 uppercase mb-2">Semifinals</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: sfGap }}>
+              {sf.map(m => <BSlot key={m.id} m={m} />)}
+            </div>
+          </div>
+          {/* GF */}
+          <div className="flex-shrink-0" style={{ paddingTop: (matchH * 7 + r16Gap * 7) / 2 }}>
+            <div className="text-[10px] font-bold text-slate-400 uppercase mb-2">Final</div>
+            {gf && <BSlot m={gf} />}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── WE Results ──
+
+function WEResultsTab({ we, elos }: { we: WEState; elos: Record<string, number> }) {
+  const pMap = new Map(we.participants.map(p => [p.nationId, p]));
+
+  const getRegion = (nationId: string) => nationById(nationId)?.region ?? pMap.get(nationId)?.region ?? '';
+
+  const survivalData = useMemo(() => {
+    const ko = we.knockoutMatches;
+    const regions = ['EU', 'APAC', 'AMERICA', 'MEAF'];
+
+    const gsTeams = we.participants.map(p => p.nationId);
+    const r16Teams = ko.slice(0, 8).flatMap(m => [m.teamA, m.teamB]).filter(Boolean) as string[];
+    const qfTeams = ko.slice(8, 12).flatMap(m => [m.teamA, m.teamB]).filter(Boolean) as string[];
+    const sfTeams = ko.slice(12, 14).flatMap(m => [m.teamA, m.teamB]).filter(Boolean) as string[];
+    const fTeams = ko[14] ? [ko[14].teamA, ko[14].teamB].filter(Boolean) as string[] : [];
+
+    const count = (teams: string[], region: string) => teams.filter(id => getRegion(id) === region);
+
+    return regions.map(region => ({
+      region,
+      gs: count(gsTeams, region),
+      r16: count(r16Teams, region),
+      qf: count(qfTeams, region),
+      sf: count(sfTeams, region),
+      f: count(fTeams, region),
+    }));
+  }, [we]);
+
+  const [hoverTeams, setHoverTeams] = useState<string[] | null>(null);
+
+  const SurvivalCell = ({ teams }: { teams: string[] }) => (
+    <td className="py-1.5 text-center relative"
+      onMouseEnter={() => setHoverTeams(teams)}
+      onMouseLeave={() => setHoverTeams(null)}
+    >
+      <span className={`font-mono cursor-default ${teams.length > 0 ? 'text-slate-200' : 'text-slate-600'}`}>{teams.length}</span>
+    </td>
+  );
+
+  return (
+    <div className="space-y-6">
+      {we.finalRankings.length > 0 && (
+        <div>
+          <h3 className="text-xs font-bold text-slate-300 mb-3">Final Rankings</h3>
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="text-slate-500 border-b border-bg-border">
+                <th className="text-left py-1.5 w-6">#</th>
+                <th className="text-left py-1.5">Team</th>
+                <th className="text-center py-1.5 w-16">Group</th>
+                <th className="text-center py-1.5 w-16">KO Result</th>
+                <th className="text-center py-1.5 w-14">Elo Change</th>
+              </tr>
+            </thead>
+            <tbody>
+              {we.finalRankings.map(r => {
+                const n = nationById(r.nationId);
+                if (!n) return null;
+                const groupRec = we.groups.flatMap(g => g.records).find(rr => rr.nationId === r.nationId);
+                const groupLabel = we.groups.find(g => g.teams.includes(r.nationId))?.label ?? '—';
+                const koStage = r.rank === 1 ? '🏆 Champion' : r.rank === 2 ? 'Finalist' :
+                  r.rank <= 4 ? 'SF' : r.rank <= 8 ? 'QF' : r.rank <= 16 ? 'R16' : '—';
+                return (
+                  <tr key={r.nationId} className={`border-b border-bg-border/30 ${r.rank === 1 ? 'bg-yellow-500/5' : ''}`}>
+                    <td className="py-1.5 text-slate-500 font-mono">{r.rank}</td>
+                    <td className="py-1.5"><div className="flex items-center gap-2"><NatChip nationId={r.nationId} /><span className="text-slate-300">{n.name}</span></div></td>
+                    <td className="py-1.5 text-center text-slate-400">{groupLabel} {groupRec ? `${groupRec.wins}W-${groupRec.losses}L` : ''}</td>
+                    <td className="py-1.5 text-center text-slate-400">{koStage}</td>
+                    <td className={`py-1.5 text-center font-mono font-bold ${r.eloChange >= 0 ? 'text-status-up' : 'text-status-down'}`}>{r.eloChange >= 0 ? '+' : ''}{r.eloChange}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      <div>
+        <h3 className="text-xs font-bold text-slate-300 mb-3">Regional Survival</h3>
+        <table className="w-full text-xs">
+          <thead>
+            <tr className="text-slate-500 border-b border-bg-border">
+              <th className="text-left py-1.5 w-20"></th>
+              <th className="text-center py-1.5 w-14">GS</th>
+              <th className="text-center py-1.5 w-14">Ro16</th>
+              <th className="text-center py-1.5 w-14">QF</th>
+              <th className="text-center py-1.5 w-14">SF</th>
+              <th className="text-center py-1.5 w-14">F</th>
+            </tr>
+          </thead>
+          <tbody>
+            {survivalData.map(d => (
+              <tr key={d.region} className="border-b border-bg-border/30">
+                <td className="py-1.5 font-bold text-slate-300">{d.region}</td>
+                <SurvivalCell teams={d.gs} />
+                <SurvivalCell teams={d.r16} />
+                <SurvivalCell teams={d.qf} />
+                <SurvivalCell teams={d.sf} />
+                <SurvivalCell teams={d.f} />
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {hoverTeams && hoverTeams.length > 0 && (
+          <div className="mt-2 flex gap-1.5 flex-wrap p-2 bg-bg-card rounded border border-bg-border">
+            {hoverTeams.map(id => <NatChip key={id} nationId={id} />)}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+
 // ─── Main Intermatch page ─────────────────────────────────────────────────────
 
 const SIDEBAR_ITEMS: Array<{ id: SidebarItem; label: string; section: 'ranking' | 'qualifier' | 'tournament' }> = [
@@ -669,7 +1232,7 @@ export function Intermatch() {
         {active === 'IQ'      && <IQTab state={intermatchState} />}
         {active === 'EEC'     && <BracketTab event={intermatchState.eec} title="European Esports Championship" subtitle="유럽 WE 직행 8개국 · Bo5 싱글 엘리미네이션 · W31~32" elos={intermatchState.nationElos} />}
         {active === 'TPC'     && <BracketTab event={intermatchState.tpc} title="Trans-Pacific Championship" subtitle="APAC 6 + Americas 4 + MEAF 1 = 11개국 · 플레이인 + Bo5 SE · W31~32" elos={intermatchState.nationElos} />}
-        {active === 'WE'      && <PlaceholderTab title="World Event (W45~48)" />}
+        {active === 'WE'      && <WETab we={intermatchState.we} elos={intermatchState.nationElos} state={intermatchState} />}
       </div>
     </div>
   );

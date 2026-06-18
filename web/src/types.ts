@@ -215,6 +215,8 @@ export interface NatGroupRecord {
   losses: number;
   setsFor: number;
   setsAgainst: number;
+  momFor: number;
+  momAgainst: number;
 }
 
 export interface NatGroup {
@@ -278,6 +280,28 @@ export interface SideEventState {
   completed: boolean;
 }
 
+export interface WEParticipant {
+  nationId: string;
+  region: string;
+  entryPath: 'direct' | 'iq_wildcard';
+  pot: 1 | 2 | 3 | 4;
+  w33Elo: number;
+  qualRecord: { wins: number; losses: number };
+  qualDate: string;
+}
+
+export interface WEState {
+  participants: WEParticipant[];
+  groups: NatGroup[];
+  thirdPlaceRanking: NatGroupRecord[];
+  advancingThirds: string[];
+  thirdPlaceKey: string;
+  knockoutMatches: NatBracketMatch[];
+  champion: string | null;
+  phase: 'pre' | 'groups' | 'draw' | 'r16' | 'qf' | 'sf' | 'final' | 'completed';
+  finalRankings: Array<{ nationId: string; rank: number; eloChange: number }>;
+}
+
 export interface IntermatchState {
   season: number;
   europe: WEQualRegion;
@@ -287,6 +311,7 @@ export interface IntermatchState {
   iq: { matches: IQMatch[]; weQualified: string[]; completed: boolean } | null;
   eec: SideEventState | null;
   tpc: SideEventState | null;
+  we: WEState | null;
   rankings: Array<{ nationId: string; elo: number }>;
   nationElos: Record<string, number>;
 }

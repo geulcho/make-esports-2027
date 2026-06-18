@@ -2,6 +2,7 @@ import type {
   NationalTeam, Club,
   IntermatchState, WEQualRegion, MEAFQualState, SideEventState,
   NatGroup, NatGroupRecord, NatGroupMatch, NatBracketMatch,
+  WEParticipant, WEState,
 } from '../types';
 import { allNations, nationsByRegion, nationsByAmericasSub } from '../data/nations';
 import { simulateMatch } from './combat';
@@ -118,7 +119,7 @@ function generateSRR(teamIds: string[]): [string, string][][] {
 // ─── Group creation ───────────────────────────────────────────────────────────
 
 function makeGroupRecord(nationId: string): NatGroupRecord {
-  return { nationId, wins: 0, losses: 0, setsFor: 0, setsAgainst: 0 };
+  return { nationId, wins: 0, losses: 0, setsFor: 0, setsAgainst: 0, momFor: 0, momAgainst: 0 };
 }
 
 function createGroup(id: string, label: string, teamIds: string[], matchdaysTotal: number): NatGroup {
@@ -209,11 +210,11 @@ function initAmericas(): WEQualRegion {
 
 // ─── Initialization ───────────────────────────────────────────────────────────
 
-export function initIntermatch(season: number): IntermatchState {
+export function initIntermatch(season: number, prevElos?: Record<string, number>): IntermatchState {
   const nationElos: Record<string, number> = {};
-  for (const n of allNations) nationElos[n.id] = n.elo_rating;
-  const rankings = allNations
-    .map(n => ({ nationId: n.id, elo: n.elo_rating }))
+  for (const n of allNations) nationElos[n.id] = prevElos?.[n.id] ?? n.elo_rating;
+  const rankings = Object.entries(nationElos)
+    .map(([nationId, elo]) => ({ nationId, elo }))
     .sort((a, b) => b.elo - a.elo);
   return {
     season,
@@ -230,6 +231,7 @@ export function initIntermatch(season: number): IntermatchState {
     iq: null,
     eec: null,
     tpc: null,
+    we: null,
     rankings,
     nationElos,
   };
@@ -237,13 +239,15 @@ export function initIntermatch(season: number): IntermatchState {
 
 // ─── Group match simulation ───────────────────────────────────────────────────
 
-function simGroupMatch(match: NatGroupMatch, meta: string[], elos: Record<string, number>): { played: NatGroupMatch; eloChangeA: number } {
-  if (match.winner) return { played: match, eloChangeA: 0 };
+function simGroupMatch(match: NatGroupMatch, meta: string[], elos: Record<string, number>): { played: NatGroupMatch; eloChangeA: number; momA: number; momB: number } {
+  if (match.winner) return { played: match, eloChangeA: 0, momA: 0, momB: 0 };
   const nA = natMap.get(match.teamA), nB = natMap.get(match.teamB);
-  if (!nA || !nB) return { played: match, eloChangeA: 0 };
+  if (!nA || !nB) return { played: match, eloChangeA: 0, momA: 0, momB: 0 };
   const cA = natToClub(nA, getNatElo(nA.id, elos));
   const cB = natToClub(nB, getNatElo(nB.id, elos));
   const r = simulateMatch(cA, cB, meta, 2); // Bo3
+  let momA = 0, momB = 0;
+  for (const set of r.sets) { momA += set.momA; momB += set.momB; }
   return {
     played: {
       ...match,
@@ -252,10 +256,11 @@ function simGroupMatch(match: NatGroupMatch, meta: string[], elos: Record<string
       winner: r.scoreA > r.scoreB ? match.teamA : match.teamB,
     },
     eloChangeA: r.eloChangeA,
+    momA, momB,
   };
 }
 
-function advanceGroupMatchday(group: NatGroup, targetMD: number, meta: string[], elos: Record<string, number>): NatGroup {
+function advanceGroupMatchday(group: NatGroup, targetMD: number, meta: string[], elos: Record<string, number>, kMul = 1): NatGroup {
   if (group.matchdaysCompleted >= targetMD || group.completed) return group;
 
   let matches = [...group.matches];
@@ -266,12 +271,12 @@ function advanceGroupMatchday(group: NatGroup, targetMD: number, meta: string[],
     const mdMatches = matches.filter(m => m.matchday === md && !m.winner);
     for (const orig of mdMatches) {
       const idx = matches.findIndex(m => m.id === orig.id);
-      const { played, eloChangeA } = simGroupMatch(orig, meta, elos);
+      const { played, eloChangeA, momA, momB } = simGroupMatch(orig, meta, elos);
       matches = [...matches]; matches[idx] = played;
       if (played.winner) {
-        // Apply Elo changes
-        elos[played.teamA] = (elos[played.teamA] ?? 1000) + eloChangeA;
-        elos[played.teamB] = (elos[played.teamB] ?? 1000) - eloChangeA;
+        const scaledElo = Math.round(eloChangeA * kMul);
+        elos[played.teamA] = (elos[played.teamA] ?? 1000) + scaledElo;
+        elos[played.teamB] = (elos[played.teamB] ?? 1000) - scaledElo;
         const loser = played.winner === played.teamA ? played.teamB : played.teamA;
         const wScore = played.winner === played.teamA ? played.scoreA : played.scoreB;
         const lScore = played.winner === played.teamA ? played.scoreB : played.scoreA;
@@ -279,6 +284,10 @@ function advanceGroupMatchday(group: NatGroup, targetMD: number, meta: string[],
         const rL = recMap.get(loser);
         if (rW) { rW.wins++; rW.setsFor += wScore; rW.setsAgainst += lScore; }
         if (rL) { rL.losses++; rL.setsFor += lScore; rL.setsAgainst += wScore; }
+        const rA = recMap.get(played.teamA);
+        const rB = recMap.get(played.teamB);
+        if (rA) { rA.momFor += momA; rA.momAgainst += momB; }
+        if (rB) { rB.momFor += momB; rB.momAgainst += momA; }
       }
     }
   }
@@ -294,7 +303,7 @@ function advanceGroupMatchday(group: NatGroup, targetMD: number, meta: string[],
 
 // ─── Bracket simulation helper ────────────────────────────────────────────────
 
-function simBracketMatch(m: NatBracketMatch, meta: string[], elos: Record<string, number>): NatBracketMatch {
+function simBracketMatch(m: NatBracketMatch, meta: string[], elos: Record<string, number>, kMul = 1, winnerOnly = false): NatBracketMatch {
   if (m.winner || !m.teamA || !m.teamB) return m;
   const nA = natMap.get(m.teamA), nB = natMap.get(m.teamB);
   if (!nA || !nB) return m;
@@ -302,9 +311,14 @@ function simBracketMatch(m: NatBracketMatch, meta: string[], elos: Record<string
   const cA = natToClub(nA, getNatElo(nA.id, elos));
   const cB = natToClub(nB, getNatElo(nB.id, elos));
   const r = simulateMatch(cA, cB, meta, winsNeeded);
-  // Apply Elo changes
-  elos[m.teamA] = (elos[m.teamA] ?? nA.elo_rating) + r.eloChangeA;
-  elos[m.teamB] = (elos[m.teamB] ?? nB.elo_rating) - r.eloChangeA;
+  const scaledElo = Math.round(r.eloChangeA * kMul);
+  if (winnerOnly) {
+    if (scaledElo > 0) elos[m.teamA] = (elos[m.teamA] ?? nA.elo_rating) + scaledElo;
+    else elos[m.teamB] = (elos[m.teamB] ?? nB.elo_rating) + Math.abs(scaledElo);
+  } else {
+    elos[m.teamA] = (elos[m.teamA] ?? nA.elo_rating) + scaledElo;
+    elos[m.teamB] = (elos[m.teamB] ?? nB.elo_rating) - scaledElo;
+  }
   return {
     ...m,
     scoreA: r.scoreA, scoreB: r.scoreB,
@@ -338,8 +352,8 @@ function generateRegionalPO(region: WEQualRegion, meta: string[], elos: Record<s
     const na3 = naSorted[2]?.nationId, na4 = naSorted[3]?.nationId;
     const sa3 = saSorted[2]?.nationId, sa4 = saSorted[3]?.nationId;
     const matches: NatBracketMatch[] = [];
-    if (na3 && sa4) matches.push(simBracketMatch(makeBracketMatch('AMER_PO_0', 'American PO', na3, sa4, 'Bo5', elos), meta, elos));
-    if (sa3 && na4) matches.push(simBracketMatch(makeBracketMatch('AMER_PO_1', 'American PO', sa3, na4, 'Bo5', elos), meta, elos));
+    if (na3 && sa4) matches.push(simBracketMatch(makeBracketMatch('AMER_PO_0', 'American PO', na3, sa4, 'Bo5', elos), meta, elos, 1.2));
+    if (sa3 && na4) matches.push(simBracketMatch(makeBracketMatch('AMER_PO_1', 'American PO', sa3, na4, 'Bo5', elos), meta, elos, 1.2));
     const iqQ = matches.filter(m => m.winner).map(m => m.winner!);
     return { ...region, playoffMatches: matches, iqQualified: iqQ, phase: 'completed' };
   }
@@ -366,7 +380,7 @@ function generateRegionalPO(region: WEQualRegion, meta: string[], elos: Record<s
 
   const prefix = region.regionId === 'EU' ? 'EU_PO' : 'APAC_PO';
   const matches = pairs.map(([a, b], i) =>
-    simBracketMatch(makeBracketMatch(`${prefix}_${i}`, `${region.regionId} Playoff`, a, b, 'Bo5', elos), meta, elos),
+    simBracketMatch(makeBracketMatch(`${prefix}_${i}`, `${region.regionId} Playoff`, a, b, 'Bo5', elos), meta, elos, 1.2),
   );
   const iqQ = matches.filter(m => m.winner).map(m => m.winner!);
   return { ...region, playoffMatches: matches, iqQualified: iqQ, phase: 'completed' };
@@ -541,6 +555,23 @@ export function autoAdvanceIntermatch(
     s = { ...s, tpc: advanceTPC(s.tpc, targetDate, meta, elos) };
   }
 
+  // ── WE: W45-48 ──
+  if (week >= 45 && !s.we && s.iq?.completed) {
+    const participants = collectWEParticipants(s, elos);
+    if (participants.length === 24) {
+      const { groups, seeded } = generateWEDraw(participants, elos);
+      s = { ...s, we: {
+        participants: seeded, groups,
+        thirdPlaceRanking: [], advancingThirds: [], thirdPlaceKey: '',
+        knockoutMatches: [], champion: null, phase: 'groups',
+        finalRankings: [],
+      }};
+    }
+  }
+  if (s.we && s.we.phase !== 'completed') {
+    s = { ...s, we: advanceWE(s.we, targetDate, meta, elos) };
+  }
+
   // Persist updated Elos + refresh rankings
   const newRankings = Object.entries(elos)
     .map(([nationId, elo]) => ({ nationId, elo: Math.round(elo) }))
@@ -617,8 +648,9 @@ function advanceIQ(
     const cA = natToClub(nA, getNatElo(nA.id, elos));
     const cB = natToClub(nB, getNatElo(nB.id, elos));
     const r = simulateMatch(cA, cB, meta, 3); // Bo5
-    elos[m.teamA] = (elos[m.teamA] ?? nA.elo_rating) + r.eloChangeA;
-    elos[m.teamB] = (elos[m.teamB] ?? nB.elo_rating) - r.eloChangeA;
+    const scaledElo = Math.round(r.eloChangeA * 1.5); // IQ: 1.5x
+    elos[m.teamA] = (elos[m.teamA] ?? nA.elo_rating) + scaledElo;
+    elos[m.teamB] = (elos[m.teamB] ?? nB.elo_rating) - scaledElo;
     matches = [...matches];
     matches[i] = {
       ...m,
@@ -680,7 +712,7 @@ function advanceEEC(eec: SideEventState, targetDate: string, meta: string[], elo
   for (let i = 0; i < Math.min(qfDone, 4); i++) {
     if (matches[i].winner) continue;
     matches = [...matches];
-    matches[i] = simBracketMatch(matches[i], meta, elos);
+    matches[i] = simBracketMatch(matches[i], meta, elos, 1.5, true);
     changed = true;
   }
 
@@ -698,7 +730,7 @@ function advanceEEC(eec: SideEventState, targetDate: string, meta: string[], elo
     for (let i = 4; i < 6; i++) {
       if (matches[i].winner || !matches[i].teamA || !matches[i].teamB) continue;
       matches = [...matches];
-      matches[i] = simBracketMatch(matches[i], meta, elos);
+      matches[i] = simBracketMatch(matches[i], meta, elos, 1.5, true);
       changed = true;
     }
   }
@@ -712,7 +744,7 @@ function advanceEEC(eec: SideEventState, targetDate: string, meta: string[], elo
   const finalReady = week > 32 || (week === 32 && dow >= 6);
   if (finalReady && !matches[6].winner && matches[6].teamA && matches[6].teamB) {
     matches = [...matches];
-    matches[6] = simBracketMatch(matches[6], meta, elos);
+    matches[6] = simBracketMatch(matches[6], meta, elos, 1.5, true);
     changed = true;
   }
 
@@ -771,14 +803,14 @@ function advanceTPC(tpc: SideEventState, targetDate: string, meta: string[], elo
     // SF1, SF2
     for (let i = 0; i < 2; i++) {
       if (!pi[i].winner && pi[i].teamA && pi[i].teamB) {
-        pi = [...pi]; pi[i] = simBracketMatch(pi[i], meta, elos);
+        pi = [...pi]; pi[i] = simBracketMatch(pi[i], meta, elos, 1.5, true);
       }
     }
     // Feed → Play-In Final
     if (pi[0].winner && !pi[2].teamA) { pi = [...pi]; pi[2] = { ...pi[2], teamA: pi[0].winner }; }
     if (pi[1].winner && !pi[2].teamB) { pi = [...pi]; pi[2] = { ...pi[2], teamB: pi[1].winner }; recalcBracketOdds(pi, 2, elos); }
     if (!pi[2].winner && pi[2].teamA && pi[2].teamB) {
-      pi = [...pi]; pi[2] = simBracketMatch(pi[2], meta, elos);
+      pi = [...pi]; pi[2] = simBracketMatch(pi[2], meta, elos, 1.5, true);
     }
     // Feed play-in winner → QF1 slot 8 (teamB)
     if (pi[2].winner && !main[0].teamB) {
@@ -793,14 +825,14 @@ function advanceTPC(tpc: SideEventState, targetDate: string, meta: string[], elo
   if (qf12Ready) {
     for (let i = 0; i < 2; i++) {
       if (!main[i].winner && main[i].teamA && main[i].teamB) {
-        main = [...main]; main[i] = simBracketMatch(main[i], meta, elos);
+        main = [...main]; main[i] = simBracketMatch(main[i], meta, elos, 1.5, true);
       }
     }
   }
   if (qf34Ready) {
     for (let i = 2; i < 4; i++) {
       if (!main[i].winner && main[i].teamA && main[i].teamB) {
-        main = [...main]; main[i] = simBracketMatch(main[i], meta, elos);
+        main = [...main]; main[i] = simBracketMatch(main[i], meta, elos, 1.5, true);
       }
     }
   }
@@ -816,7 +848,7 @@ function advanceTPC(tpc: SideEventState, targetDate: string, meta: string[], elo
   if (sfReady) {
     for (let i = 4; i < 6; i++) {
       if (!main[i].winner && main[i].teamA && main[i].teamB) {
-        main = [...main]; main[i] = simBracketMatch(main[i], meta, elos);
+        main = [...main]; main[i] = simBracketMatch(main[i], meta, elos, 1.5, true);
       }
     }
   }
@@ -828,7 +860,7 @@ function advanceTPC(tpc: SideEventState, targetDate: string, meta: string[], elo
   // Final (W32 Sat)
   const fReady = week > TPC_FINAL.week || (week === TPC_FINAL.week && dow >= TPC_FINAL.dow);
   if (fReady && !main[6].winner && main[6].teamA && main[6].teamB) {
-    main = [...main]; main[6] = simBracketMatch(main[6], meta, elos);
+    main = [...main]; main[6] = simBracketMatch(main[6], meta, elos, 1.5, true);
   }
 
   const champion = main[6]?.winner ?? null;
@@ -852,4 +884,449 @@ export function sortGroupRecords(records: NatGroupRecord[]): NatGroupRecord[] {
     if (sdB !== sdA) return sdB - sdA;
     return b.setsFor - a.setsFor;
   });
+}
+
+// ─── WE (World Event) engine ─────────────────────────────────────────────────
+
+const WE_GROUP_SCHEDULE: Array<{ groups: string[]; md: number; week: number; dow: number }> = [
+  { groups: ['A','B'], md: 1, week: 45, dow: 0 },
+  { groups: ['C','D'], md: 1, week: 45, dow: 1 },
+  { groups: ['E','F'], md: 1, week: 45, dow: 2 },
+  { groups: ['A','B'], md: 2, week: 45, dow: 3 },
+  { groups: ['C','D'], md: 2, week: 45, dow: 4 },
+  { groups: ['E','F'], md: 2, week: 45, dow: 5 },
+  { groups: ['A','B'], md: 3, week: 45, dow: 6 },
+  { groups: ['C','D'], md: 3, week: 46, dow: 0 },
+  { groups: ['E','F'], md: 3, week: 46, dow: 1 },
+];
+
+const WE_KO_SCHEDULE: Array<{ ids: string[]; week: number; dow: number }> = [
+  { ids: ['WE_R16_1','WE_R16_2'], week: 46, dow: 3 },
+  { ids: ['WE_R16_3','WE_R16_4'], week: 46, dow: 4 },
+  { ids: ['WE_R16_5','WE_R16_6'], week: 46, dow: 5 },
+  { ids: ['WE_R16_7','WE_R16_8'], week: 46, dow: 6 },
+  { ids: ['WE_QF1'], week: 47, dow: 3 },
+  { ids: ['WE_QF2'], week: 47, dow: 4 },
+  { ids: ['WE_QF3'], week: 47, dow: 5 },
+  { ids: ['WE_QF4'], week: 47, dow: 6 },
+  { ids: ['WE_SF1'], week: 48, dow: 1 },
+  { ids: ['WE_SF2'], week: 48, dow: 3 },
+  { ids: ['WE_GF'],  week: 48, dow: 6 },
+];
+
+const THIRD_PLACE_MATRIX: Record<string, [string, string, string, string]> = {
+  'ABCD': ['C','D','A','B'],
+  'ABCE': ['C','A','B','E'],
+  'ABCF': ['C','A','B','F'],
+  'ABDE': ['D','A','B','E'],
+  'ABDF': ['D','A','B','F'],
+  'ABEF': ['E','A','B','F'],
+  'ACDE': ['C','D','A','E'],
+  'ACDF': ['C','D','A','F'],
+  'ACEF': ['C','A','F','E'],
+  'ADEF': ['D','A','F','E'],
+  'BCDE': ['C','D','B','E'],
+  'BCDF': ['C','D','B','F'],
+  'BCEF': ['E','C','B','F'],
+  'BDEF': ['E','D','B','F'],
+  'CDEF': ['C','D','F','E'],
+};
+
+function collectWEParticipants(state: IntermatchState, elos: Record<string, number>): WEParticipant[] {
+  const out: WEParticipant[] = [];
+  const add = (ids: string[], region: string, path: 'direct' | 'iq_wildcard') => {
+    for (const id of ids) {
+      const rec = findQualRecord(state, id);
+      out.push({
+        nationId: id, region, entryPath: path, pot: 1,
+        w33Elo: getNatElo(id, elos),
+        qualRecord: rec,
+        qualDate: path === 'iq_wildcard' ? 'W32' : 'W26',
+      });
+    }
+  };
+  add(state.europe.weQualified, 'EU', 'direct');
+  add(state.asiaPacific.weQualified, 'APAC', 'direct');
+  add(state.americas.weQualified, 'AMERICA', 'direct');
+  if (state.meaf.weQualified) add([state.meaf.weQualified], 'MEAF', 'direct');
+  if (state.iq) add(state.iq.weQualified, '', 'iq_wildcard');
+  for (const p of out) {
+    if (p.entryPath === 'iq_wildcard') p.region = natMap.get(p.nationId)?.region ?? '';
+  }
+  return out;
+}
+
+function findQualRecord(state: IntermatchState, nationId: string): { wins: number; losses: number } {
+  let setsW = 0, setsL = 0;
+  const regions = [state.europe, state.asiaPacific, state.americas];
+  for (const r of regions) {
+    for (const g of r.groups) {
+      const rec = g.records.find(rr => rr.nationId === nationId);
+      if (rec) { setsW += rec.setsFor; setsL += rec.setsAgainst; }
+    }
+    for (const m of r.playoffMatches) {
+      if (m.teamA === nationId) { setsW += m.scoreA; setsL += m.scoreB; }
+      else if (m.teamB === nationId) { setsW += m.scoreB; setsL += m.scoreA; }
+    }
+  }
+  if (state.eec) {
+    for (const m of state.eec.mainMatches) {
+      if (m.teamA === nationId) { setsW += m.scoreA; setsL += m.scoreB; }
+      else if (m.teamB === nationId) { setsW += m.scoreB; setsL += m.scoreA; }
+    }
+  }
+  if (state.tpc) {
+    for (const m of [...state.tpc.playInMatches, ...state.tpc.mainMatches]) {
+      if (m.teamA === nationId) { setsW += m.scoreA; setsL += m.scoreB; }
+      else if (m.teamB === nationId) { setsW += m.scoreB; setsL += m.scoreA; }
+    }
+  }
+  if (state.iq) {
+    for (const m of state.iq.matches) {
+      if (m.teamA === nationId) { setsW += m.scoreA; setsL += m.scoreB; }
+      else if (m.teamB === nationId) { setsW += m.scoreB; setsL += m.scoreA; }
+    }
+  }
+  return { wins: setsW, losses: setsL };
+}
+
+function generateWEDraw(
+  participants: WEParticipant[],
+  elos: Record<string, number>,
+): { groups: NatGroup[]; seeded: WEParticipant[] } {
+  const iqWildcards = participants.filter(p => p.entryPath === 'iq_wildcard');
+  const directs = participants.filter(p => p.entryPath === 'direct')
+    .sort((a, b) => b.w33Elo - a.w33Elo);
+
+  const pot1 = directs.slice(0, 6);
+  const pot2 = directs.slice(6, 12);
+  const pot3 = directs.slice(12, 18);
+  const pot4Direct = directs.slice(18);
+  const pot4: WEParticipant[] = [...iqWildcards, ...pot4Direct];
+
+  pot1.forEach(p => p.pot = 1);
+  pot2.forEach(p => p.pot = 2);
+  pot3.forEach(p => p.pot = 3);
+  pot4.forEach(p => p.pot = 4);
+
+  const pots = [pot1, pot2, pot3, pot4];
+  const groupLabels = ['A','B','C','D','E','F'];
+  const assigned: string[][] = groupLabels.map(() => []);
+  const assignedRegions: Map<string, string[]>[] = groupLabels.map(() => new Map());
+
+  const potIndex = [pot1, pot2, pot3, pot4];
+  for (let pi = 0; pi < pots.length; pi++) {
+    const pot = pots[pi];
+    const maxPerGroup = pi + 1;
+    let placed = false;
+    for (let attempt = 0; attempt < 200 && !placed; attempt++) {
+      const relaxRegion = attempt >= 100;
+      const shuffled = shuffle(pot);
+      const backup = assigned.map(a => [...a]);
+      const backupR = assignedRegions.map(m => new Map([...m].map(([k, v]) => [k, [...v]])));
+      let ok = true;
+
+      for (let ti = 0; ti < shuffled.length; ti++) {
+        const p = shuffled[ti];
+        const isWC = p.entryPath === 'iq_wildcard';
+        let slotFound = false;
+
+        for (let gi = ti; gi < 6 + ti; gi++) {
+          const g = gi % 6;
+          if (assigned[g].length >= maxPerGroup) continue;
+
+          if (!relaxRegion && !isWC) {
+            const regionList = assignedRegions[g].get(p.region) ?? [];
+            const directCount = regionList.filter(id =>
+              participants.find(pp => pp.nationId === id && pp.entryPath === 'direct')
+            ).length;
+            if (p.region === 'EU') {
+              if (directCount >= 2) continue;
+            } else {
+              if (directCount >= 1) continue;
+            }
+          }
+
+          assigned[g].push(p.nationId);
+          const list = assignedRegions[g].get(p.region) ?? [];
+          list.push(p.nationId);
+          assignedRegions[g].set(p.region, list);
+          slotFound = true;
+          break;
+        }
+
+        if (!slotFound) { ok = false; break; }
+      }
+
+      if (ok) {
+        placed = true;
+      } else {
+        for (let g = 0; g < 6; g++) {
+          assigned[g] = backup[g];
+          assignedRegions[g] = backupR[g];
+        }
+      }
+    }
+  }
+
+  const groups = assigned.map((teamIds, i) =>
+    createGroup(`WE_${groupLabels[i]}`, `Group ${groupLabels[i]}`, teamIds, 3),
+  );
+
+  const seeded = [...pot1, ...pot2, ...pot3, ...pot4];
+  return { groups, seeded };
+}
+
+function sortWEGroupRecords(
+  records: NatGroupRecord[],
+  matches: NatGroupMatch[],
+  w33Elos: Map<string, number>,
+): NatGroupRecord[] {
+  const sorted = [...records].sort((a, b) => {
+    if (b.wins !== a.wins) return b.wins - a.wins;
+    const sdA = a.setsFor - a.setsAgainst, sdB = b.setsFor - b.setsAgainst;
+    if (sdB !== sdA) return sdB - sdA;
+    const scdA = a.momFor - a.momAgainst, scdB = b.momFor - b.momAgainst;
+    if (scdB !== scdA) return scdB - scdA;
+    if (b.momFor !== a.momFor) return b.momFor - a.momFor;
+    const h2h = h2hResult(a.nationId, b.nationId, matches);
+    if (h2h !== 0) return h2h;
+    return (w33Elos.get(b.nationId) ?? 0) - (w33Elos.get(a.nationId) ?? 0);
+  });
+  return sorted;
+}
+
+function h2hResult(idA: string, idB: string, matches: NatGroupMatch[]): number {
+  for (const m of matches) {
+    if (!m.winner) continue;
+    if (m.teamA === idA && m.teamB === idB) return m.winner === idA ? -1 : 1;
+    if (m.teamA === idB && m.teamB === idA) return m.winner === idA ? -1 : 1;
+  }
+  return 0;
+}
+
+function resolveThirdPlace(
+  groups: NatGroup[],
+  w33Elos: Map<string, number>,
+): { ranking: NatGroupRecord[]; advancing: string[]; key: string; thirdMap: Record<string, string> } {
+  const thirds: Array<{ record: NatGroupRecord; groupLabel: string }> = [];
+  for (const g of groups) {
+    const sorted = sortWEGroupRecords(g.records, g.matches, w33Elos);
+    if (sorted.length >= 3) {
+      const label = g.id.replace('WE_', '');
+      thirds.push({ record: sorted[2], groupLabel: label });
+    }
+  }
+
+  thirds.sort((a, b) => {
+    const ra = a.record, rb = b.record;
+    if (rb.wins !== ra.wins) return rb.wins - ra.wins;
+    const sdA = ra.setsFor - ra.setsAgainst, sdB = rb.setsFor - rb.setsAgainst;
+    if (sdB !== sdA) return sdB - sdA;
+    const scdA = ra.momFor - ra.momAgainst, scdB = rb.momFor - rb.momAgainst;
+    if (scdB !== scdA) return scdB - scdA;
+    if (rb.momFor !== ra.momFor) return rb.momFor - ra.momFor;
+    return (w33Elos.get(rb.nationId) ?? 0) - (w33Elos.get(ra.nationId) ?? 0);
+  });
+
+  const advancing = thirds.slice(0, 4);
+  const key = advancing.map(t => t.groupLabel).sort().join('');
+  const matrix = THIRD_PLACE_MATRIX[key];
+
+  const thirdMap: Record<string, string> = {};
+  if (matrix) {
+    const slots = ['A','B','C','D'];
+    for (let i = 0; i < 4; i++) {
+      const srcGroup = matrix[i];
+      const third = advancing.find(t => t.groupLabel === srcGroup);
+      if (third) thirdMap[slots[i]] = third.record.nationId;
+    }
+  }
+
+  return {
+    ranking: thirds.map(t => t.record),
+    advancing: advancing.map(t => t.record.nationId),
+    key,
+    thirdMap,
+  };
+}
+
+function generateWEKnockout(
+  groups: NatGroup[],
+  thirdMap: Record<string, string>,
+  w33Elos: Map<string, number>,
+  elos: Record<string, number>,
+): NatBracketMatch[] {
+  const gRank = (groupLabel: string): NatGroupRecord[] => {
+    const g = groups.find(gg => gg.id === `WE_${groupLabel}`);
+    if (!g) return [];
+    return sortWEGroupRecords(g.records, g.matches, w33Elos);
+  };
+  const top = (label: string, rank: number) => gRank(label)[rank]?.nationId ?? null;
+
+  const matches: NatBracketMatch[] = [
+    makeBracketMatch('WE_R16_1', 'R16', top('A', 0), thirdMap['A'] ?? null, 'Bo5', elos),
+    makeBracketMatch('WE_R16_2', 'R16', top('B', 0), thirdMap['B'] ?? null, 'Bo5', elos),
+    makeBracketMatch('WE_R16_3', 'R16', top('C', 0), thirdMap['C'] ?? null, 'Bo5', elos),
+    makeBracketMatch('WE_R16_4', 'R16', top('D', 0), thirdMap['D'] ?? null, 'Bo5', elos),
+    makeBracketMatch('WE_R16_5', 'R16', top('E', 0), top('F', 1), 'Bo5', elos),
+    makeBracketMatch('WE_R16_6', 'R16', top('F', 0), top('E', 1), 'Bo5', elos),
+    makeBracketMatch('WE_R16_7', 'R16', top('A', 1), top('B', 1), 'Bo5', elos),
+    makeBracketMatch('WE_R16_8', 'R16', top('C', 1), top('D', 1), 'Bo5', elos),
+    makeBracketMatch('WE_QF1', 'QF', null, null, 'Bo5', elos),
+    makeBracketMatch('WE_QF2', 'QF', null, null, 'Bo5', elos),
+    makeBracketMatch('WE_QF3', 'QF', null, null, 'Bo5', elos),
+    makeBracketMatch('WE_QF4', 'QF', null, null, 'Bo5', elos),
+    makeBracketMatch('WE_SF1', 'SF', null, null, 'Bo5', elos),
+    makeBracketMatch('WE_SF2', 'SF', null, null, 'Bo5', elos),
+    makeBracketMatch('WE_GF',  'GF', null, null, 'Bo5', elos),
+  ];
+  return matches;
+}
+
+function feedWEBracket(matches: NatBracketMatch[], elos: Record<string, number>) {
+  const m = (id: string) => matches.find(mm => mm.id === id);
+  const feed = (srcA: string, srcB: string, target: string) => {
+    const a = m(srcA), b = m(srcB), t = m(target);
+    if (!t || t.winner) return;
+    const changed = (!t.teamA && a?.winner) || (!t.teamB && b?.winner);
+    if (a?.winner && !t.teamA) {
+      const idx = matches.findIndex(mm => mm.id === target);
+      matches[idx] = { ...matches[idx], teamA: a.winner };
+    }
+    if (b?.winner && !t.teamB) {
+      const idx = matches.findIndex(mm => mm.id === target);
+      matches[idx] = { ...matches[idx], teamB: b.winner };
+    }
+    if (changed) {
+      const idx = matches.findIndex(mm => mm.id === target);
+      const upd = matches[idx];
+      if (upd.teamA && upd.teamB) {
+        recalcBracketOdds(matches, idx, elos);
+      }
+    }
+  };
+  feed('WE_R16_1', 'WE_R16_2', 'WE_QF1');
+  feed('WE_R16_3', 'WE_R16_4', 'WE_QF2');
+  feed('WE_R16_5', 'WE_R16_6', 'WE_QF3');
+  feed('WE_R16_7', 'WE_R16_8', 'WE_QF4');
+  feed('WE_QF1',   'WE_QF2',   'WE_SF1');
+  feed('WE_QF3',   'WE_QF4',   'WE_SF2');
+  feed('WE_SF1',   'WE_SF2',   'WE_GF');
+}
+
+function advanceWE(
+  we: WEState,
+  targetDate: string,
+  meta: string[],
+  elos: Record<string, number>,
+): WEState {
+  const week = getWeekNum(targetDate);
+  const dow = getDayOfWeek(targetDate);
+  let s = { ...we };
+
+  if (s.phase === 'groups') {
+    let groups = s.groups.map(g => ({ ...g }));
+    for (const slot of WE_GROUP_SCHEDULE) {
+      if (week > slot.week || (week === slot.week && dow >= slot.dow)) {
+        for (const gl of slot.groups) {
+          const gi = groups.findIndex(g => g.id === `WE_${gl}`);
+          if (gi >= 0 && groups[gi].matchdaysCompleted < slot.md) {
+            groups[gi] = advanceGroupMatchday(groups[gi], slot.md, meta, elos, 2);
+          }
+        }
+      }
+    }
+    s = { ...s, groups };
+    const allDone = groups.every(g => g.completed);
+    if (allDone && (week > 46 || (week === 46 && dow >= 2))) {
+      s = { ...s, phase: 'draw' };
+    }
+  }
+
+  if (s.phase === 'draw') {
+    const w33Elos = new Map(s.participants.map(p => [p.nationId, p.w33Elo]));
+    const { ranking, advancing, key, thirdMap } = resolveThirdPlace(s.groups, w33Elos);
+    const ko = generateWEKnockout(s.groups, thirdMap, w33Elos, elos);
+    s = { ...s, thirdPlaceRanking: ranking, advancingThirds: advancing, thirdPlaceKey: key, knockoutMatches: ko, phase: 'r16' };
+  }
+
+  if (s.phase === 'r16' || s.phase === 'qf' || s.phase === 'sf' || s.phase === 'final') {
+    let ko = [...s.knockoutMatches];
+    for (const slot of WE_KO_SCHEDULE) {
+      if (week > slot.week || (week === slot.week && dow >= slot.dow)) {
+        for (const id of slot.ids) {
+          const idx = ko.findIndex(m => m.id === id);
+          if (idx >= 0 && !ko[idx].winner && ko[idx].teamA && ko[idx].teamB) {
+            ko = [...ko];
+            ko[idx] = simBracketMatch(ko[idx], meta, elos, 3, true);
+            feedWEBracket(ko, elos);
+          }
+        }
+      }
+    }
+
+    const r16Done = ko.slice(0, 8).every(m => !!m.winner);
+    const qfDone = ko.slice(8, 12).every(m => !!m.winner);
+    const sfDone = ko.slice(12, 14).every(m => !!m.winner);
+    const gfDone = !!ko[14]?.winner;
+
+    let phase = s.phase;
+    if (gfDone) phase = 'completed';
+    else if (sfDone) phase = 'final';
+    else if (qfDone) phase = 'sf';
+    else if (r16Done) phase = 'qf';
+    else phase = 'r16';
+
+    const champion = ko[14]?.winner ?? null;
+    let finalRankings = s.finalRankings;
+    if (gfDone && finalRankings.length === 0) {
+      finalRankings = buildWEFinalRankings(s, ko, elos);
+    }
+
+    s = { ...s, knockoutMatches: ko, phase, champion, finalRankings };
+  }
+
+  return s;
+}
+
+function buildWEFinalRankings(
+  we: WEState,
+  ko: NatBracketMatch[],
+  elos: Record<string, number>,
+): Array<{ nationId: string; rank: number; eloChange: number }> {
+  const rankings: Array<{ nationId: string; rank: number }> = [];
+  const placed = new Set<string>();
+
+  const loserOf = (m: NatBracketMatch) => m.winner === m.teamA ? m.teamB : m.teamA;
+
+  if (ko[14]?.winner) { rankings.push({ nationId: ko[14].winner, rank: 1 }); placed.add(ko[14].winner); }
+  const gfL = loserOf(ko[14]);
+  if (gfL) { rankings.push({ nationId: gfL, rank: 2 }); placed.add(gfL); }
+
+  const sfLosers = [loserOf(ko[12]), loserOf(ko[13])].filter(Boolean) as string[];
+  sfLosers.forEach((id, i) => { if (!placed.has(id)) { rankings.push({ nationId: id, rank: 3 + i }); placed.add(id); }});
+
+  const qfLosers = [loserOf(ko[8]), loserOf(ko[9]), loserOf(ko[10]), loserOf(ko[11])].filter(Boolean) as string[];
+  qfLosers.forEach((id, i) => { if (!placed.has(id)) { rankings.push({ nationId: id, rank: 5 + i }); placed.add(id); }});
+
+  const r16Losers = ko.slice(0, 8).map(loserOf).filter(Boolean) as string[];
+  r16Losers.forEach((id, i) => { if (!placed.has(id)) { rankings.push({ nationId: id, rank: 9 + i }); placed.add(id); }});
+
+  const nonAdvThirds = we.thirdPlaceRanking.filter(r => !we.advancingThirds.includes(r.nationId));
+  nonAdvThirds.forEach((r, i) => { if (!placed.has(r.nationId)) { rankings.push({ nationId: r.nationId, rank: 17 + i }); placed.add(r.nationId); }});
+
+  const w33Elos = new Map(we.participants.map(p => [p.nationId, p.w33Elo]));
+  for (const g of we.groups) {
+    const sorted = sortWEGroupRecords(g.records, g.matches, w33Elos);
+    if (sorted.length >= 4) {
+      const fourth = sorted[3].nationId;
+      if (!placed.has(fourth)) { rankings.push({ nationId: fourth, rank: rankings.length + 1 }); placed.add(fourth); }
+    }
+  }
+
+  return rankings.map(r => ({
+    ...r,
+    eloChange: Math.round((elos[r.nationId] ?? 0) - (we.participants.find(p => p.nationId === r.nationId)?.w33Elo ?? 0)),
+  }));
 }

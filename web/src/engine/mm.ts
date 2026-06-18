@@ -199,7 +199,7 @@ export function calcMMOdds(eloA: number, eloB: number) {
 
 export function calcChampionshipOdds(participants: MMParticipant[]): Record<string, number> {
   if (participants.length === 0) return {};
-  const shares = participants.map(p => ({ id: p.clubId, share: Math.pow(10, p.w16Elo / 400) }));
+  const shares = participants.map(p => ({ id: p.clubId, share: Math.pow(10, p.w16Elo / 200) }));
   const total = shares.reduce((s, x) => s + x.share, 0);
   const result: Record<string, number> = {};
   for (const s of shares) {

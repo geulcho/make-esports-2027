@@ -415,6 +415,63 @@ const L_DE_SUMMER_PO_SLOTS: MatchSlot[] = [
   { weekNum: 37, dow: 6 }, // W37 Sun  GF
 ];
 
+// ─── L_SEA explicit schedule ─────────────────────────────────────────────────
+// 12 teams, Bo3 SRR (11 rounds), Fri/Sat/Sun (Sat/Sun only on cup weeks).
+// Spring reg: W1-6, W9-10 (22 sessions). Summer reg: W21-24, W27-30 (22 sessions).
+// Playoffs: 8-team DE, identical to L_NEU/L_WEU bracket (12 slots).
+
+const L_SEA_SPRING_SLOTS: MatchSlot[] = [
+  { weekNum: 1,  dow: 4 }, { weekNum: 1,  dow: 5 }, { weekNum: 1,  dow: 6 }, // W1  Fri/Sat/Sun
+  { weekNum: 2,  dow: 4 }, { weekNum: 2,  dow: 5 }, { weekNum: 2,  dow: 6 }, // W2  Fri/Sat/Sun
+  { weekNum: 3,  dow: 4 }, { weekNum: 3,  dow: 5 }, { weekNum: 3,  dow: 6 }, // W3  Fri/Sat/Sun
+  { weekNum: 4,  dow: 4 }, { weekNum: 4,  dow: 5 }, { weekNum: 4,  dow: 6 }, // W4  Fri/Sat/Sun
+  { weekNum: 5,  dow: 5 }, { weekNum: 5,  dow: 6 },                           // W5  Sat/Sun (cup week)
+  { weekNum: 6,  dow: 4 }, { weekNum: 6,  dow: 5 }, { weekNum: 6,  dow: 6 }, // W6  Fri/Sat/Sun
+  { weekNum: 9,  dow: 5 }, { weekNum: 9,  dow: 6 },                           // W9  Sat/Sun (cup week after IM)
+  { weekNum: 10, dow: 4 }, { weekNum: 10, dow: 5 }, { weekNum: 10, dow: 6 }, // W10 Fri/Sat/Sun
+];
+
+const L_SEA_SPRING_PO_SLOTS: MatchSlot[] = [
+  { weekNum: 11, dow: 3 }, // W11 Thu  ub1+ub2 (2×Bo3)
+  { weekNum: 11, dow: 4 }, // W11 Fri  ub3+ub4 (2×Bo3)
+  { weekNum: 11, dow: 5 }, // W11 Sat  ub5 (Bo5)
+  { weekNum: 11, dow: 6 }, // W11 Sun  ub6 (Bo5)
+  { weekNum: 12, dow: 1 }, // W12 Tue  lb1 (Bo5)
+  { weekNum: 12, dow: 2 }, // W12 Wed  lb2 (Bo5)
+  { weekNum: 12, dow: 3 }, // W12 Thu  lb3 (Bo5)
+  { weekNum: 12, dow: 4 }, // W12 Fri  lb4 (Bo5)
+  { weekNum: 12, dow: 5 }, // W12 Sat  ubf (Bo5)
+  { weekNum: 12, dow: 6 }, // W12 Sun  lb5 (Bo5)
+  { weekNum: 13, dow: 5 }, // W13 Sat  lbf (Bo5)
+  { weekNum: 13, dow: 6 }, // W13 Sun  gf  (Bo5)
+];
+
+const L_SEA_SUMMER_SLOTS: MatchSlot[] = [
+  { weekNum: 21, dow: 4 }, { weekNum: 21, dow: 5 }, { weekNum: 21, dow: 6 }, // W21 Fri/Sat/Sun
+  { weekNum: 22, dow: 4 }, { weekNum: 22, dow: 5 }, { weekNum: 22, dow: 6 }, // W22 Fri/Sat/Sun (cup week, Fri allowed)
+  { weekNum: 23, dow: 4 }, { weekNum: 23, dow: 5 }, { weekNum: 23, dow: 6 }, // W23 Fri/Sat/Sun
+  { weekNum: 24, dow: 5 }, { weekNum: 24, dow: 6 },                           // W24 Sat/Sun (cup week)
+  { weekNum: 27, dow: 4 }, { weekNum: 27, dow: 5 }, { weekNum: 27, dow: 6 }, // W27 Fri/Sat/Sun
+  { weekNum: 28, dow: 5 }, { weekNum: 28, dow: 6 },                           // W28 Sat/Sun (cup week)
+  { weekNum: 29, dow: 4 }, { weekNum: 29, dow: 5 }, { weekNum: 29, dow: 6 }, // W29 Fri/Sat/Sun
+  { weekNum: 30, dow: 4 }, { weekNum: 30, dow: 5 }, { weekNum: 30, dow: 6 }, // W30 Fri/Sat/Sun (cup week, Fri allowed)
+];
+
+const L_SEA_SUMMER_PO_SLOTS: MatchSlot[] = [
+  { weekNum: 33, dow: 3 }, // W33 Thu  ub1+ub2
+  { weekNum: 33, dow: 4 }, // W33 Fri  ub3+ub4
+  { weekNum: 33, dow: 5 }, // W33 Sat  ub5
+  { weekNum: 33, dow: 6 }, // W33 Sun  ub6
+  { weekNum: 34, dow: 1 }, // W34 Tue  lb1
+  { weekNum: 34, dow: 2 }, // W34 Wed  lb2
+  { weekNum: 34, dow: 3 }, // W34 Thu  lb3
+  { weekNum: 34, dow: 4 }, // W34 Fri  lb4
+  { weekNum: 34, dow: 5 }, // W34 Sat  ubf
+  { weekNum: 34, dow: 6 }, // W34 Sun  lb5
+  { weekNum: 35, dow: 5 }, // W35 Sat  lbf
+  { weekNum: 35, dow: 6 }, // W35 Sun  gf
+];
+
 // ─── L_TR explicit schedule ───────────────────────────────────────────────────
 // 8 teams, Bo1 DRR (14 rounds), Sat+Sun only, 4 Bo1/day.
 // Spring reg: W1-6 + W9. Summer reg: W21-24 + W28-30.
@@ -678,6 +735,15 @@ export const LEAGUE_SCHEDULE_DEFS: Record<string, LeagueScheduleDef> = {
       { id: 'spring_playoffs', label: 'Spring Playoffs', type: 'playoffs', scope: 'bracket',     slots: L_DE_SPRING_PO_SLOTS },
       { id: 'summer',          label: 'Summer Regular',  type: 'drr',     scope: 'full_league', slots: L_DE_SUMMER_SLOTS    },
       { id: 'summer_playoffs', label: 'Summer Playoffs', type: 'playoffs', scope: 'bracket',     slots: L_DE_SUMMER_PO_SLOTS },
+    ],
+  },
+  L_SEA: {
+    leagueId: 'L_SEA',
+    phases: [
+      { id: 'spring',          label: 'Spring Regular',  type: 'srr',     scope: 'full_league', slots: L_SEA_SPRING_SLOTS    },
+      { id: 'spring_playoffs', label: 'Spring Playoffs', type: 'playoffs', scope: 'bracket',     slots: L_SEA_SPRING_PO_SLOTS },
+      { id: 'summer',          label: 'Summer Regular',  type: 'srr',     scope: 'full_league', slots: L_SEA_SUMMER_SLOTS    },
+      { id: 'summer_playoffs', label: 'Summer Playoffs', type: 'playoffs', scope: 'bracket',     slots: L_SEA_SUMMER_PO_SLOTS },
     ],
   },
   L_TR: {

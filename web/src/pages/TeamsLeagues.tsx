@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Star } from 'lucide-react';
 import { useStore } from '../store/store';
@@ -6,11 +6,13 @@ import { leagueConfigs, clubsByLeague, clubsByDivision, clubById, leagueConfigBy
 import { TierBadge } from '../components/ui/TierBadge';
 import { TeamDot } from '../components/ui/TeamDot';
 import { SeriesScore } from '../components/ui/SeriesScore';
-import type { TeamRecord, BracketMatch, QualifierState, PlayoffSeries, PlayoffState, LeagueSimState } from '../types';
+import type { TeamRecord, BracketMatch, QualifierState, PlayoffSeries, PlayoffState, LeagueSimState, PhaseResult } from '../types';
 import { meafRanksFromSplit } from '../engine/bracket';
+import { computeStreaks, computeRankChanges, buildRankProgression, runMonteCarlo, getAllRoundsForSplit, type PredictionResult } from '../engine/leagueAnalytics';
+import { getSRRRounds, getDRRRounds, getLKRSpringRounds, getLKRSummerRounds, getLCNHalfRounds } from '../engine/matchSchedule';
 
 const REGIONS = ['APAC', 'EMEA', 'AMER'];
-type TabKey = 'standings' | 'qualifier' | 'playoffs' | 'results' | 'teams' | 'season_review';
+type TabKey = 'predictions' | 'standings' | 'progressions' | 'qualifier' | 'playoffs' | 'results' | 'teams' | 'season_review';
 
 const REGION_CUP: Record<string, { id: string; label: string; color: string }> = {
   APAC: { id: 'APEX', label: 'APEX', color: 'text-amber-400 hover:text-amber-300' },
@@ -75,7 +77,11 @@ const PHASE_BADGES: Record<string, { label: string; cls: string }> = {
 
 // ─── Standings table ──────────────────────────────────────────────────────────
 
-function StandingsTable({ records }: { records: TeamRecord[] }) {
+function StandingsTable({ records, streaks, rankChanges }: {
+  records: TeamRecord[];
+  streaks?: Map<string, { type: 'W' | 'L'; count: number }>;
+  rankChanges?: Map<string, number>;
+}) {
   return (
     <table className="w-full text-sm">
       <thead>
@@ -87,6 +93,8 @@ function StandingsTable({ records }: { records: TeamRecord[] }) {
           <th className="text-center py-2 w-10">L</th>
           <th className="text-center py-2 w-14">SD</th>
           <th className="text-center py-2 w-14">ScD</th>
+          <th className="text-center py-2 w-10">Strk</th>
+          <th className="text-center py-2 w-10">+/-</th>
         </tr>
       </thead>
       <tbody>
@@ -95,6 +103,8 @@ function StandingsTable({ records }: { records: TeamRecord[] }) {
           if (!club) return null;
           const sd  = rec.setsFor - rec.setsAgainst;
           const scd = rec.momFor  - rec.momAgainst;
+          const streak = streaks?.get(rec.clubId);
+          const rc = rankChanges?.get(rec.clubId) ?? 0;
           return (
             <tr key={rec.clubId} className="border-b border-bg-border/50 hover:bg-bg-hover">
               <td className="py-2 text-slate-500 text-xs">{idx + 1}</td>
@@ -113,18 +123,28 @@ function StandingsTable({ records }: { records: TeamRecord[] }) {
               <td className={`py-2 text-center text-xs ${scd >= 0 ? 'text-slate-400' : 'text-slate-500'}`}>
                 {scd >= 0 ? '+' : ''}{scd}
               </td>
+              <td className={`py-2 text-center text-xs font-bold ${streak?.type === 'W' ? 'text-status-up' : streak?.type === 'L' ? 'text-status-down' : 'text-slate-600'}`}>
+                {streak ? `${streak.type}${streak.count}` : '—'}
+              </td>
+              <td className={`py-2 text-center text-xs font-bold ${rc > 0 ? 'text-status-up' : rc < 0 ? 'text-status-down' : 'text-slate-600'}`}>
+                {rc > 0 ? `▲${rc}` : rc < 0 ? `▼${Math.abs(rc)}` : '—'}
+              </td>
             </tr>
           );
         })}
         {records.length === 0 && (
-          <tr><td colSpan={7} className="py-8 text-center text-slate-500">Simulate a phase to see standings</td></tr>
+          <tr><td colSpan={9} className="py-8 text-center text-slate-500">Simulate a phase to see standings</td></tr>
         )}
       </tbody>
     </table>
   );
 }
 
-function StandingsTableNEUWEU({ records }: { records: TeamRecord[] }) {
+function StandingsTableNEUWEU({ records, streaks, rankChanges }: {
+  records: TeamRecord[];
+  streaks?: Map<string, { type: 'W' | 'L'; count: number }>;
+  rankChanges?: Map<string, number>;
+}) {
   return (
     <table className="w-full text-sm">
       <thead>
@@ -136,6 +156,8 @@ function StandingsTableNEUWEU({ records }: { records: TeamRecord[] }) {
           <th className="text-center py-2 w-10">L</th>
           <th className="text-center py-2 w-14">ScD</th>
           <th className="text-center py-2 w-14">ScG</th>
+          <th className="text-center py-2 w-10">Strk</th>
+          <th className="text-center py-2 w-10">+/-</th>
         </tr>
       </thead>
       <tbody>
@@ -143,6 +165,8 @@ function StandingsTableNEUWEU({ records }: { records: TeamRecord[] }) {
           const club = clubById(rec.clubId);
           if (!club) return null;
           const scd = rec.momFor - rec.momAgainst;
+          const streak = streaks?.get(rec.clubId);
+          const rc = rankChanges?.get(rec.clubId) ?? 0;
           return (
             <tr key={rec.clubId} className="border-b border-bg-border/50 hover:bg-bg-hover">
               <td className="py-2 text-slate-500 text-xs">{idx + 1}</td>
@@ -159,11 +183,17 @@ function StandingsTableNEUWEU({ records }: { records: TeamRecord[] }) {
                 {scd >= 0 ? '+' : ''}{scd}
               </td>
               <td className="py-2 text-center text-xs text-slate-400">{rec.momFor}</td>
+              <td className={`py-2 text-center text-xs font-bold ${streak?.type === 'W' ? 'text-status-up' : streak?.type === 'L' ? 'text-status-down' : 'text-slate-600'}`}>
+                {streak ? `${streak.type}${streak.count}` : '—'}
+              </td>
+              <td className={`py-2 text-center text-xs font-bold ${rc > 0 ? 'text-status-up' : rc < 0 ? 'text-status-down' : 'text-slate-600'}`}>
+                {rc > 0 ? `▲${rc}` : rc < 0 ? `▼${Math.abs(rc)}` : '—'}
+              </td>
             </tr>
           );
         })}
         {records.length === 0 && (
-          <tr><td colSpan={7} className="py-8 text-center text-slate-500">Simulate a phase to see standings</td></tr>
+          <tr><td colSpan={9} className="py-8 text-center text-slate-500">Simulate a phase to see standings</td></tr>
         )}
       </tbody>
     </table>
@@ -988,6 +1018,11 @@ function LCNFullPlayoffBracket({ po, state }: { po: PlayoffState; state?: League
   );
 }
 
+// ─── L_SEA Season Review ──────────────────────────────────────────────────────
+
+const SEA_SPRING_PO_PTS = [9, 7, 5, 3, 2, 2, 1, 1, 0, 0, 0, 0];
+const SEA_SUMMER_PO_PTS = [21, 11, 8, 6, 4, 4, 1, 1, 0, 0, 0, 0];
+
 // ─── L_KR Season Review ───────────────────────────────────────────────────────
 
 const LKR_SPRING_PTS = [9, 7, 5, 3, 1, 1, 0, 0, 0, 0, 0, 0];
@@ -1094,6 +1129,108 @@ function LKRSeasonReview({ state }: { state: LeagueSimState }) {
             const sd       = rec ? rec.setsFor - rec.setsAgainst : null;
             const isChamp  = summerRanks.get(c.clubId)?.stage === 'champion';
             const badges   = lkrBadgeMap[c.clubId] ?? [];
+            return (
+              <tr key={c.clubId} className={`border-b border-bg-border/50 hover:bg-bg-hover ${isChamp ? 'bg-tier-s/5' : ''}`}>
+                <td className="py-2 text-slate-500 text-xs font-mono">{rank}</td>
+                <td className="py-2">
+                  <Link to={`/teams/${club.id}`} className="flex items-center gap-2 hover:text-tier-s">
+                    <TeamDot club={club} showAbbr={false} />
+                    <span className={isChamp ? 'text-tier-s font-bold' : 'text-slate-200'}>{club.name}</span>
+                    {isChamp && <span className="text-sm leading-none">🏆</span>}
+                  </Link>
+                </td>
+                <td className="py-2 text-center text-xs text-slate-400">{c.sPts > 0 ? c.sPts : <span className="text-slate-600">—</span>}</td>
+                <td className="py-2 text-center text-xs text-slate-400">{c.uPts > 0 ? c.uPts : <span className="text-slate-600">—</span>}</td>
+                <td className="py-2 text-center text-xs font-bold text-white">{c.total > 0 ? c.total : <span className="text-slate-500">0</span>}</td>
+                <td className="py-2 text-center text-xs text-status-up">{rec?.setsFor ?? '—'}</td>
+                <td className="py-2 text-center text-xs text-status-down">{rec?.setsAgainst ?? '—'}</td>
+                <td className={`py-2 text-center text-xs ${sd != null && sd >= 0 ? 'text-status-up' : 'text-status-down'}`}>
+                  {sd != null ? `${sd >= 0 ? '+' : ''}${sd}` : '—'}
+                </td>
+                <td className="py-2">
+                  <div className="flex gap-1 flex-wrap">
+                    {badges.map(b => (
+                      <span key={b} className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${b === 'WT' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' : 'bg-tier-a/10 text-tier-a border-tier-a/20'}`}>{b}</span>
+                    ))}
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+// ─── L_SEA Season Review ──────────────────────────────────────────────────────
+
+function SEASeasonReview({ state }: { state: LeagueSimState }) {
+  const cupStates = useStore(s => s.cupStates);
+  const allClubs = clubsByLeague('L_SEA');
+
+  const springReg  = state.springStandings ?? [];
+  const summerReg  = state.fullLeagueState?.standings ?? state.standings;
+  const springPO   = state.springPlayoffs;
+  const summerPO   = state.playoffs;
+
+  const springRanks = neuWEURanksFromPO(springPO, springReg);
+  const summerRanks = neuWEURanksFromPO(summerPO, summerReg);
+
+  const recordMap = new Map<string, { wins: number; losses: number; setsFor: number; setsAgainst: number }>();
+  for (const r of springReg) recordMap.set(r.clubId, { wins: r.wins, losses: r.losses, setsFor: r.setsFor, setsAgainst: r.setsAgainst });
+  for (const r of summerReg) {
+    const ex = recordMap.get(r.clubId);
+    if (ex) recordMap.set(r.clubId, { wins: ex.wins + r.wins, losses: ex.losses + r.losses, setsFor: ex.setsFor + r.setsFor, setsAgainst: ex.setsAgainst + r.setsAgainst });
+    else     recordMap.set(r.clubId, { wins: r.wins, losses: r.losses, setsFor: r.setsFor, setsAgainst: r.setsAgainst });
+  }
+
+  const combined = allClubs.map(club => {
+    const sRank = springRanks.get(club.id)?.rank ?? allClubs.length;
+    const uRank = summerRanks.get(club.id)?.rank ?? allClubs.length;
+    const sPts  = SEA_SPRING_PO_PTS[sRank - 1] ?? 0;
+    const uPts  = SEA_SUMMER_PO_PTS[uRank - 1] ?? 0;
+    return { clubId: club.id, sPts, uPts, total: sPts + uPts, summerRank: uRank };
+  });
+  combined.sort((a, b) => b.total !== a.total ? b.total - a.total : a.summerRank - b.summerRank);
+
+  const seaOrderedIds = combined.map(c => c.clubId);
+  const seaCupChampions = {
+    APEX: cupStates['APEX']?.champion,
+    EGT:  cupStates['EGT']?.champion,
+    COPA: cupStates['COPA']?.champion,
+  };
+  const seaBadgeMap = computeLeagueBadges('L_SEA', seaOrderedIds, seaCupChampions);
+
+  return (
+    <div>
+      {springReg.length === 0 && <p className="text-xs text-amber-500/80 mb-3 px-1">Spring not yet played — showing summer only</p>}
+      {(!!state.playoffs && !state.playoffs.completed) && (
+        <p className="text-xs text-amber-500/80 mb-3 px-1">Season in progress — rankings reflect current standings</p>
+      )}
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="text-xs text-slate-500 border-b border-bg-border">
+            <th className="text-left py-2 w-6">#</th>
+            <th className="text-left py-2">Team</th>
+            <th className="text-center py-2 w-14">Spr Pts</th>
+            <th className="text-center py-2 w-14">Sum Pts</th>
+            <th className="text-center py-2 w-14">Total</th>
+            <th className="text-center py-2 w-12">SW</th>
+            <th className="text-center py-2 w-12">SL</th>
+            <th className="text-center py-2 w-14">SD</th>
+            <th className="text-left py-2 w-24">Int'l</th>
+          </tr>
+        </thead>
+        <tbody>
+          {combined.map((c, idx) => {
+            const club = clubById(c.clubId);
+            if (!club) return null;
+            const rank    = idx + 1;
+            const rec     = recordMap.get(c.clubId);
+            const sd      = rec ? rec.setsFor - rec.setsAgainst : null;
+            const isChamp = summerRanks.get(c.clubId)?.stage === 'champion';
+            const badges  = seaBadgeMap[c.clubId] ?? [];
             return (
               <tr key={c.clubId} className={`border-b border-bg-border/50 hover:bg-bg-hover ${isChamp ? 'bg-tier-s/5' : ''}`}>
                 <td className="py-2 text-slate-500 text-xs font-mono">{rank}</td>
@@ -2720,6 +2857,303 @@ function TWJPSeasonReview({ leagueId, state }: { leagueId: string; state: League
   );
 }
 
+// ─── Predictions Tab ─────────────────────────────────────────────────────────
+
+function PredictionsTab({
+  leagueId, state, currentSplit,
+}: {
+  leagueId: string;
+  state: LeagueSimState;
+  currentSplit: 'spring' | 'summer' | 'first_half' | 'second_half' | 'default';
+}) {
+  const completedRounds = useStore(s => s.completedRounds);
+
+  const predictions = useMemo((): PredictionResult[] => {
+    const standings = state.fullLeagueState?.standings ?? state.standings;
+    if (standings.length === 0) return [];
+
+    const allRounds = getAllRoundsForSplit(leagueId, currentSplit);
+    const storeKey = `${leagueId}::${currentSplit}`;
+    const completed = completedRounds[storeKey] ?? 0;
+    const remaining = allRounds.slice(completed);
+
+    if (remaining.length === 0) return [];
+    return runMonteCarlo(leagueId, standings, remaining, 500);
+  }, [leagueId, state, currentSplit, completedRounds]);
+
+  if (predictions.length === 0) {
+    return <p className="text-center text-slate-500 py-12 text-sm">Not enough data for predictions</p>;
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="bg-bg-card rounded-lg p-4">
+        <h3 className="text-sm font-bold text-slate-300 mb-3">Championship Odds</h3>
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="text-xs text-slate-500 border-b border-bg-border">
+              <th className="text-left py-2 w-6">#</th>
+              <th className="text-left py-2">Team</th>
+              <th className="text-center py-2 w-16">Elo</th>
+              <th className="text-center py-2 w-20">Prob</th>
+              <th className="text-center py-2 w-20">Odds</th>
+            </tr>
+          </thead>
+          <tbody>
+            {predictions.map((p, i) => {
+              const club = clubById(p.clubId);
+              if (!club) return null;
+              const rec = (state.fullLeagueState?.standings ?? state.standings).find(r => r.clubId === p.clubId);
+              return (
+                <tr key={p.clubId} className={`border-b border-bg-border/50 hover:bg-bg-hover ${i === 0 ? 'bg-tier-s/5' : ''}`}>
+                  <td className="py-2 text-slate-500 text-xs font-mono">{i + 1}</td>
+                  <td className="py-2">
+                    <Link to={`/teams/${club.id}`} className="flex items-center gap-2 hover:text-tier-s">
+                      <TeamDot club={club} showAbbr={false} />
+                      <span className="text-slate-200">{club.name}</span>
+                    </Link>
+                  </td>
+                  <td className="py-2 text-center text-xs text-slate-400 font-mono">{Math.round(rec?.elo ?? club.elo_rating)}</td>
+                  <td className="py-2 text-center text-xs text-tier-s font-bold">
+                    {(p.championshipProb * 100).toFixed(1)}%
+                  </td>
+                  <td className="py-2 text-center text-xs text-slate-400 font-mono">
+                    {p.championshipOdds >= 100 ? '—' : p.championshipOdds.toFixed(2)}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="bg-bg-card rounded-lg p-4">
+        <h3 className="text-sm font-bold text-slate-300 mb-3">WT Qualification Odds</h3>
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="text-xs text-slate-500 border-b border-bg-border">
+              <th className="text-left py-2 w-6">#</th>
+              <th className="text-left py-2">Team</th>
+              <th className="text-center py-2 w-20">Prob</th>
+              <th className="text-center py-2 w-20">Odds</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[...predictions].sort((a, b) => b.wtProb - a.wtProb).map((p, i) => {
+              const club = clubById(p.clubId);
+              if (!club) return null;
+              return (
+                <tr key={p.clubId} className={`border-b border-bg-border/50 hover:bg-bg-hover ${p.wtProb > 0.5 ? 'bg-purple-500/5' : ''}`}>
+                  <td className="py-2 text-slate-500 text-xs font-mono">{i + 1}</td>
+                  <td className="py-2">
+                    <Link to={`/teams/${club.id}`} className="flex items-center gap-2 hover:text-tier-s">
+                      <TeamDot club={club} showAbbr={false} />
+                      <span className="text-slate-200">{club.name}</span>
+                    </Link>
+                  </td>
+                  <td className="py-2 text-center text-xs text-purple-400 font-bold">
+                    {(p.wtProb * 100).toFixed(1)}%
+                  </td>
+                  <td className="py-2 text-center text-xs text-slate-400 font-mono">
+                    {p.wtOdds >= 100 ? '—' : p.wtOdds.toFixed(2)}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+// ─── Progressions Tab (SVG line chart) ────────────────────────────────────────
+
+function RankLineChart({
+  leagueId, results, teamIds, divisionId, split, label,
+}: {
+  leagueId: string;
+  results: PhaseResult[];
+  teamIds: string[];
+  divisionId: string | null;
+  split: 'spring' | 'summer' | 'first_half' | 'second_half' | 'default';
+  label?: string;
+}) {
+  const [hoveredTeam, setHoveredTeam] = useState<string | null>(null);
+
+  const data = useMemo(
+    () => buildRankProgression(leagueId, results, teamIds, divisionId, split),
+    [leagueId, results, teamIds, divisionId, split],
+  );
+
+  if (data.weeks.length < 2) {
+    return label
+      ? <div><h4 className="text-xs font-bold text-slate-400 mb-2">{label}</h4><p className="text-xs text-slate-500 py-4">Not enough weeks for chart</p></div>
+      : null;
+  }
+
+  const numTeams = teamIds.length;
+  const numWeeks = data.weeks.length;
+
+  const padL = 52, padR = 16, padT = 24, padB = 28;
+  const chartW = Math.max(400, numWeeks * 56);
+  const chartH = Math.max(200, numTeams * 24 + padT + padB);
+  const plotW = chartW - padL - padR;
+  const plotH = chartH - padT - padB;
+
+  const x = (i: number) => padL + (i / (numWeeks - 1)) * plotW;
+  const y = (rank: number) => padT + ((rank - 1) / (numTeams - 1)) * plotH;
+
+  const sortedTeams = [...data.matrix.entries()]
+    .sort((a, b) => {
+      const lastA = a[1][a[1].length - 1] ?? 99;
+      const lastB = b[1][b[1].length - 1] ?? 99;
+      return lastA - lastB;
+    });
+
+  return (
+    <div>
+      {label && <h4 className="text-xs font-bold text-slate-400 mb-2">{label}</h4>}
+      <div className="flex gap-4">
+        <div className="flex-1 overflow-x-auto">
+          <svg width={chartW} height={chartH} className="block">
+            {Array.from({ length: numTeams }, (_, i) => (
+              <line key={i} x1={padL} x2={chartW - padR} y1={y(i + 1)} y2={y(i + 1)}
+                stroke="rgba(148,163,184,0.08)" strokeWidth={1} />
+            ))}
+
+            {data.weeks.map((w, i) => (
+              <text key={w} x={x(i)} y={chartH - 8} textAnchor="middle"
+                className="fill-slate-500" fontSize={10} fontFamily="monospace">
+                W{w}
+              </text>
+            ))}
+
+            {Array.from({ length: numTeams }, (_, i) => (
+              <text key={i} x={padL - 8} y={y(i + 1) + 3.5} textAnchor="end"
+                className="fill-slate-500" fontSize={10} fontFamily="monospace">
+                {i + 1}
+              </text>
+            ))}
+
+            {sortedTeams.map(([clubId, ranks]) => {
+              const club = clubById(clubId);
+              const lineColor = club?.colors.text ?? '#94a3b8';
+              const bgColor = club?.colors.bg ?? '#334155';
+              const isHovered = hoveredTeam === clubId;
+              const isDimmed = hoveredTeam !== null && !isHovered;
+              const points = ranks.map((r, i) => `${x(i)},${y(r)}`).join(' ');
+              return (
+                <g key={clubId}
+                  onMouseEnter={() => setHoveredTeam(clubId)}
+                  onMouseLeave={() => setHoveredTeam(null)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <polyline
+                    points={points}
+                    fill="none"
+                    stroke={lineColor}
+                    strokeWidth={isHovered ? 3 : 1.5}
+                    opacity={isDimmed ? 0.15 : 1}
+                    strokeLinejoin="round"
+                  />
+                  {ranks.map((r, i) => (
+                    <circle key={i} cx={x(i)} cy={y(r)} r={isHovered ? 5 : 3}
+                      fill={lineColor} stroke={bgColor} strokeWidth={isHovered ? 2 : 1.5}
+                      opacity={isDimmed ? 0.15 : 1} />
+                  ))}
+                  {isHovered && ranks.length > 0 && (
+                    <text x={x(ranks.length - 1) + 8} y={y(ranks[ranks.length - 1]) + 3.5}
+                      fill={lineColor} fontSize={10} fontWeight="bold">
+                      {club?.abbr ?? clubId}
+                    </text>
+                  )}
+                </g>
+              );
+            })}
+          </svg>
+        </div>
+
+        <div className="flex-shrink-0 w-36 space-y-0.5 pt-4 overflow-y-auto max-h-80">
+          {sortedTeams.map(([clubId]) => {
+            const club = clubById(clubId);
+            if (!club) return null;
+            const isHovered = hoveredTeam === clubId;
+            return (
+              <div
+                key={clubId}
+                className={`flex items-center gap-1.5 px-1.5 py-0.5 rounded text-xs cursor-pointer transition-opacity ${
+                  hoveredTeam !== null && !isHovered ? 'opacity-30' : 'opacity-100'
+                }`}
+                onMouseEnter={() => setHoveredTeam(clubId)}
+                onMouseLeave={() => setHoveredTeam(null)}
+              >
+                <span
+                  className="w-3 h-3 rounded-full flex-shrink-0 border-2"
+                  style={{ background: club.colors.text, borderColor: club.colors.bg }}
+                />
+                <span className={`truncate ${isHovered ? 'text-white font-bold' : 'text-slate-400'}`}>
+                  {club.abbr}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ProgressionsTab({
+  leagueId, state, divisionId, currentSplit, hasDivisions, lc,
+}: {
+  leagueId: string;
+  state: LeagueSimState;
+  divisionId: string | null;
+  currentSplit: 'spring' | 'summer' | 'first_half' | 'second_half' | 'default';
+  hasDivisions: boolean;
+  lc: { divisions?: string[] } | undefined;
+}) {
+  const firstHalfResults = state.divisionStates?.['ALL']?.results ?? state.results;
+  const secondHalfResults = state.fullLeagueState?.results ?? [];
+
+  const isDivLeague = currentSplit === 'first_half' || currentSplit === 'second_half'
+    || !!state.divisionStates;
+
+  const getTeamIds = (div: string | null) => {
+    if (div) return clubsByDivision(leagueId, div).map(c => c.id);
+    return clubsByLeague(leagueId).map(c => c.id);
+  };
+
+  const splitResults = useMemo((): PhaseResult[] => {
+    if (currentSplit === 'spring') {
+      return state.springResults ?? state.fullLeagueState?.results ?? state.results;
+    }
+    if (currentSplit === 'summer') {
+      return state.fullLeagueState?.results ?? [];
+    }
+    if (currentSplit === 'second_half') return secondHalfResults;
+    if (isDivLeague) return firstHalfResults;
+    return state.results;
+  }, [state, currentSplit, isDivLeague, firstHalfResults, secondHalfResults]);
+
+  return (
+    <div className="space-y-6">
+      {isDivLeague && hasDivisions && divisionId === null ? (
+        <>
+          {lc?.divisions?.map(div => (
+            <RankLineChart key={div} leagueId={leagueId} results={splitResults}
+              teamIds={getTeamIds(div)} divisionId={div} split={currentSplit} label={`${div} Division`} />
+          ))}
+        </>
+      ) : (
+        <RankLineChart leagueId={leagueId} results={splitResults}
+          teamIds={getTeamIds(divisionId)} divisionId={divisionId} split={currentSplit} />
+      )}
+    </div>
+  );
+}
+
 // ─── L_MEAF ───────────────────────────────────────────────────────────────────
 
 function MEAFStandingsTable({ records }: { records: TeamRecord[] }) {
@@ -3220,7 +3654,20 @@ export function TeamsLeagues() {
   const isTR          = activeLeague === 'L_TR';
   const isTWJP        = activeLeague === 'L_TW' || activeLeague === 'L_JP';
   const isMEAF        = activeLeague === 'L_MEAF';
-  const hasPlayoffs   = !!state?.playoffs || ((isLKR || isNEUWEU || isDE || isBRSA || isTR || isTWJP) && !!state?.springPlayoffs) || isMEAF;
+  const isSEA         = activeLeague === 'L_SEA';
+  const hasPlayoffs   = !!state?.playoffs || ((isLKR || isNEUWEU || isDE || isBRSA || isTR || isTWJP || isSEA) && !!state?.springPlayoffs) || isMEAF;
+  const isSplitLeague = isLKR || isNEUWEU || isDE || isBRSA || isTR || isTWJP || isSEA;
+
+  const [viewSplit, setViewSplit] = useState<'spring' | 'summer'>('spring');
+
+  useEffect(() => {
+    const phase = state?.currentPhase ?? '';
+    if (phase.startsWith('summer') || phase === 'complete') setViewSplit('summer');
+    else if (phase.startsWith('spring')) setViewSplit('spring');
+  }, [state?.currentPhase]);
+
+  const hasSpringData = isSplitLeague && (!!state?.springStandings || state?.currentPhase?.startsWith('spring'));
+  const hasSummerData = isSplitLeague && (state?.currentPhase?.startsWith('summer') || state?.currentPhase === 'complete' || state?.currentPhase === 'spring_playoffs_done');
 
   // Auto-switch tab when entering qualifier or playoff phase
   useEffect(() => {
@@ -3249,10 +3696,17 @@ export function TeamsLeagues() {
 
   function getStandingsToShow(): TeamRecord[] {
     if (!state) return [];
+    if (isSplitLeague) {
+      if (viewSplit === 'spring') {
+        return state.springStandings ?? state.fullLeagueState?.standings ?? state.standings;
+      }
+      if (hasSummerData) {
+        return state.fullLeagueState?.standings ?? state.standings;
+      }
+      return [];
+    }
     const phase = state.currentPhase;
-    if (phase === 'second_half' || phase === 'playoffs' || phase === 'complete' ||
-        phase === 'summer' || phase === 'summer_playoffs' ||
-        phase === 'spring_playoffs_done') {
+    if (phase === 'second_half' || phase === 'playoffs' || phase === 'complete') {
       if (activeDivision) {
         return (state.fullLeagueState ?? state).standings.filter(r => r.divisionId === activeDivision);
       }
@@ -3264,10 +3718,51 @@ export function TeamsLeagues() {
 
   const phaseBadge = state?.currentPhase ? PHASE_BADGES[state.currentPhase] : null;
 
+  const currentSplit = useMemo(() => {
+    const phase = state?.currentPhase ?? 'default';
+    if (phase.startsWith('spring')) return 'spring' as const;
+    if (phase.startsWith('summer') || phase === 'complete') return 'summer' as const;
+    if (phase === 'first_half' || phase === 'qualifier' || phase === 'qualifier_done') return 'first_half' as const;
+    if (phase === 'second_half' || phase === 'playoffs') return 'second_half' as const;
+    return 'default' as const;
+  }, [state?.currentPhase]);
+
+  const activeSplit = isSplitLeague ? viewSplit : currentSplit;
+
+  const activeSplitResults = useMemo((): PhaseResult[] => {
+    if (!state) return [];
+    if (isSplitLeague) {
+      if (viewSplit === 'spring') {
+        return state.springResults ?? state.fullLeagueState?.results ?? state.results;
+      }
+      return state.fullLeagueState?.results ?? [];
+    }
+    const phase = state.currentPhase;
+    if (phase === 'second_half') return state.fullLeagueState?.results ?? [];
+    return state.results;
+  }, [state, isSplitLeague, viewSplit]);
+
+  const streaks = useMemo(() => {
+    if (!state || isMEAF) return undefined;
+    return computeStreaks(activeSplitResults, activeDivision);
+  }, [activeSplitResults, activeDivision, isMEAF, state]);
+
+  const rankChanges = useMemo(() => {
+    if (!state || isMEAF) return undefined;
+    const standings = getStandingsToShow();
+    if (standings.length === 0) return undefined;
+    return computeRankChanges(activeLeague, standings, activeSplitResults, activeDivision, activeSplit);
+  }, [activeLeague, state, activeSplitResults, activeDivision, activeSplit, isMEAF]);
+
   const hasSeasonReview = !!state && state.standings.length > 0;
+  const showPredictions = !!state && !isMEAF && state.standings.length > 0 && state.currentPhase !== 'complete';
+
+  const showProgressions = !!state && !isMEAF && state.standings.length > 0;
 
   const TABS: { key: TabKey; label: string; show: boolean }[] = [
+    { key: 'predictions',    label: 'Predictions',    show: showPredictions },
     { key: 'standings',     label: 'Standings',      show: true },
+    { key: 'progressions',  label: 'Progressions',   show: showProgressions },
     { key: 'qualifier',     label: 'MM Qualifier',   show: hasQualifier },
     { key: 'playoffs',      label: 'Playoffs',       show: hasPlayoffs },
     { key: 'results',       label: 'Results',        show: true },
@@ -3379,6 +3874,43 @@ export function TeamsLeagues() {
 
         <div className="flex-1 overflow-auto p-4">
 
+          {/* Split toggle for spring/summer leagues */}
+          {isSplitLeague && (activeTab === 'standings' || activeTab === 'progressions' || activeTab === 'predictions') && (
+            <div className="flex gap-2 mb-4">
+              <button
+                onClick={() => setViewSplit('spring')}
+                disabled={!hasSpringData}
+                className={`px-3 py-1 text-xs rounded border transition-colors ${
+                  viewSplit === 'spring'
+                    ? 'bg-green-500/20 text-green-300 border-green-500/30 font-bold'
+                    : hasSpringData
+                      ? 'text-slate-400 border-bg-border hover:text-slate-200 hover:border-slate-500'
+                      : 'text-slate-600 border-bg-border/30 cursor-not-allowed'
+                }`}
+              >
+                🌸 Spring
+              </button>
+              <button
+                onClick={() => setViewSplit('summer')}
+                disabled={!hasSummerData}
+                className={`px-3 py-1 text-xs rounded border transition-colors ${
+                  viewSplit === 'summer'
+                    ? 'bg-amber-500/20 text-amber-300 border-amber-500/30 font-bold'
+                    : hasSummerData
+                      ? 'text-slate-400 border-bg-border hover:text-slate-200 hover:border-slate-500'
+                      : 'text-slate-600 border-bg-border/30 cursor-not-allowed'
+                }`}
+              >
+                ☀️ Summer
+              </button>
+            </div>
+          )}
+
+          {/* Predictions */}
+          {activeTab === 'predictions' && state && !isMEAF && (
+            <PredictionsTab leagueId={activeLeague} state={state} currentSplit={activeSplit} />
+          )}
+
           {/* Standings */}
           {activeTab === 'standings' && (
             hasDivisions && activeDivision === null && (state?.currentPhase === 'first_half' || state?.currentPhase === 'qualifier' || state?.currentPhase === 'qualifier_done') ? (
@@ -3389,17 +3921,29 @@ export function TeamsLeagues() {
                       <h3 className="text-sm font-bold text-slate-300">{div} Division</h3>
                       <span className="text-xs text-slate-500">{clubsByDivision(activeLeague, div).length} teams</span>
                     </div>
-                    <StandingsTable records={state?.divisionStates?.[div]?.standings ?? []} />
+                    <StandingsTable records={state?.divisionStates?.[div]?.standings ?? []} streaks={streaks} rankChanges={rankChanges} />
                   </div>
                 ))}
               </div>
             ) : (isNEUWEU || isDE || isTR) ? (
-              <StandingsTableNEUWEU records={getStandingsToShow()} />
+              <StandingsTableNEUWEU records={getStandingsToShow()} streaks={streaks} rankChanges={rankChanges} />
             ) : isMEAF ? (
               <MEAFStandingsTable records={getStandingsToShow()} />
             ) : (
-              <StandingsTable records={getStandingsToShow()} />
+              <StandingsTable records={getStandingsToShow()} streaks={streaks} rankChanges={rankChanges} />
             )
+          )}
+
+          {/* Progressions */}
+          {activeTab === 'progressions' && state && !isMEAF && (
+            <ProgressionsTab
+              leagueId={activeLeague}
+              state={state}
+              divisionId={activeDivision}
+              currentSplit={activeSplit}
+              hasDivisions={hasDivisions}
+              lc={lc}
+            />
           )}
 
           {/* MM Qualifier */}
@@ -3413,7 +3957,7 @@ export function TeamsLeagues() {
           {activeTab === 'playoffs' && (
             isLKR || isBRSA ? (
               state ? <LKRPlayoffsTab state={state} /> : null
-            ) : isNEUWEU || isTR ? (
+            ) : isNEUWEU || isTR || isSEA ? (
               state ? <NEUWEUPlayoffsTab state={state} /> : null
             ) : isTWJP ? (
               state ? <TWJPPlayoffsTab state={state} /> : null
@@ -3467,6 +4011,8 @@ export function TeamsLeagues() {
           {activeTab === 'season_review' && state && (
             isLKR
               ? <LKRSeasonReview state={state} />
+              : isSEA
+                ? <SEASeasonReview state={state} />
               : isNEUWEU
                 ? <NEUWEUSeasonReview leagueId={activeLeague} state={state} />
               : isDE

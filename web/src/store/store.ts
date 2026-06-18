@@ -93,7 +93,8 @@ function advanceTo(
     cr = {};
     cups = initAllCups(sh, targetSeason, clubMap);
     mm = initMM(targetSeason);
-    im = initIntermatch(targetSeason);
+    const prevNatElos = im.nationElos;
+    im = initIntermatch(targetSeason, prevNatElos);
   }
 
   const meta = metaPeriod(targetDate) !== metaPeriod(currentDate) ? pickMeta() : currentMeta;
@@ -203,7 +204,7 @@ export const useStore = create<Store>()(
       },
     }),
     {
-      name: 'make-esports-store-v19',
+      name: 'make-esports-store-v20',
       partialize: state => ({
         gameDate: state.gameDate,
         activeMeta: state.activeMeta,

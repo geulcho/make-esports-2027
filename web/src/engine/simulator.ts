@@ -610,7 +610,7 @@ const L_NEUWEU_PO_TOTAL  = 12;
 // Bo1 리그 타이브레이커: 승수 → ScD(momFor-momAgainst) → ScG(momFor) → 상대전적
 // Bo1에서 setsFor = wins 이므로 setsFor 기반 ScD/ScG는 의미 없음.
 // 실질 점수 차는 매치 내 MoM(momFor/momAgainst)으로 계산한다.
-function sortStandingsNEUWEU(standings: TeamRecord[], results: PhaseResult[]): TeamRecord[] {
+export function sortStandingsNEUWEU(standings: TeamRecord[], results: PhaseResult[]): TeamRecord[] {
   // 상대전적: 그룹 내 직접 대결 승수 집계
   const h2h = new Map<string, Map<string, number>>();
   for (const pr of results) {
@@ -1283,6 +1283,142 @@ function advanceTWJP(
   return s;
 }
 
+// ─── L_SEA phase-aware advance ────────────────────────────────────────────────
+//
+// Two-split structure:
+//   spring (W1-6, W9-10, 22 Bo3 SRR sub-rounds) → spring_playoffs (W11-13, 12 slots, 8-team DE)
+//   summer (W21-24, W27-30, 22 Bo3 SRR sub-rounds) → summer_playoffs (W33-35, 12 slots, 8-team DE)
+// Regular season: 12-team SRR (11 rounds × 6 matches), split [3, 3] → 22 sub-rounds.
+// Playoffs identical to L_NEU/L_WEU: UBR1 Bo3, all other rounds Bo5.
+
+const L_SEA_REG_TOTAL = 22;
+const L_SEA_PO_TOTAL  = 12;
+
+const _seaRoundsCache = new Map<string, [string, string][][]>();
+function getSEARounds(leagueId: string): [string, string][][] {
+  if (_seaRoundsCache.has(leagueId)) return _seaRoundsCache.get(leagueId)!;
+  const srr = getSRRRounds(leagueId, null); // 11 rounds × 6 matches each
+  const sub: [string, string][][] = [];
+  for (const round of srr) {
+    sub.push(round.slice(0, 3)); // session A: 3 matches
+    sub.push(round.slice(3));    // session B: 3 matches
+  }
+  _seaRoundsCache.set(leagueId, sub);
+  return sub;
+}
+
+function advanceSEA(
+  state: LeagueSimState,
+  completed: Record<string, number>,
+  target: Record<string, number>,
+  meta: string[],
+  clubMap: Map<string, Club>,
+): LeagueSimState {
+  const id = state.leagueId;
+  let s = { ...state };
+
+  // ── Phase 1: Spring regular (W1-6, W9-10, 22 Bo3 SRR sub-rounds) ──────────
+  const skSp = `${id}::spring`;
+  const cSp  = completed[skSp] ?? 0;
+  const tSp  = Math.min(target[skSp] ?? cSp, L_SEA_REG_TOTAL);
+
+  {
+    let fl: FullLeagueSim = s.fullLeagueState ?? { standings: [], results: [] };
+    if (cSp === 0 && fl.standings.length === 0) {
+      fl = { standings: clubsByLeague(id).map(c => makeRecord(c, null)), results: [] };
+    }
+    if (tSp > cSp) {
+      const rounds = getSEARounds(id);
+      const sim = simulateRoundsForGroup(fl.standings, fl.results, cSp, tSp, meta, clubMap, rounds, null, 2);
+      fl = { standings: sim.standings, results: sim.results };
+    }
+    s = { ...s, fullLeagueState: fl, standings: fl.standings, results: fl.results, currentPhase: 'spring' };
+  }
+
+  const springDone = (target[skSp] ?? 0) >= L_SEA_REG_TOTAL || (completed[skSp] ?? 0) >= L_SEA_REG_TOTAL;
+  if (!springDone) return s;
+
+  // ── Phase 2: Spring playoffs (W11-13, 12 slots, 8-team DE) ────────────────
+  const skSpP = `${id}::spring_playoffs`;
+  const cSpP  = completed[skSpP] ?? 0;
+  const tSpP  = Math.min(target[skSpP] ?? cSpP, L_SEA_PO_TOTAL);
+
+  if ((tSpP > 0 || cSpP > 0) && !s.springStandings) {
+    const springFl = s.fullLeagueState!;
+    let po = s.playoffs;
+    if (!po) po = initNEUWEUPlayoffs(springFl.standings);
+    if (tSpP > cSpP) {
+      const poMap = new Map(springFl.standings.map(r => [r.clubId, r]));
+      po = advanceNEUWEUPlayoffToSlot(po, cSpP, tSpP, meta, clubMap, poMap);
+    }
+    s = { ...s, playoffs: po, currentPhase: po.completed ? 'spring_playoffs_done' : 'spring_playoffs' };
+  }
+
+  const springPODone = (target[skSpP] ?? 0) >= L_SEA_PO_TOTAL || (completed[skSpP] ?? 0) >= L_SEA_PO_TOTAL;
+  if (!springPODone) return s;
+
+  // Archive spring
+  if (!s.springStandings) {
+    s = {
+      ...s,
+      springStandings: s.fullLeagueState?.standings ?? [],
+      springResults:   s.fullLeagueState?.results   ?? [],
+      springPlayoffs:  s.playoffs,
+      springChampion:  s.playoffs?.champion ?? null,
+      playoffs:        undefined,
+    };
+  }
+
+  // ── Phase 3: Summer regular (W21-24, W27-30, 22 Bo3 SRR sub-rounds) ───────
+  const skSu = `${id}::summer`;
+  const cSu  = completed[skSu] ?? 0;
+  const tSu  = Math.min(target[skSu] ?? cSu, L_SEA_REG_TOTAL);
+
+  if (tSu > 0 || cSu > 0) {
+    let fl: FullLeagueSim = s.fullLeagueState ?? { standings: [], results: [] };
+    if (cSu === 0) {
+      const springFinal = s.springStandings ?? clubsByLeague(id).map(c => makeRecord(c, null));
+      fl = {
+        standings: springFinal.map(r => ({ ...r, wins: 0, losses: 0, setsFor: 0, setsAgainst: 0, momFor: 0, momAgainst: 0 })),
+        results: [],
+      };
+    }
+    if (tSu > cSu) {
+      const rounds = getSEARounds(id);
+      const sim = simulateRoundsForGroup(fl.standings, fl.results, cSu, tSu, meta, clubMap, rounds, null, 2);
+      fl = { standings: sim.standings, results: sim.results };
+    }
+    s = {
+      ...s,
+      fullLeagueState: fl,
+      standings: fl.standings,
+      results: [...(s.springResults ?? []), ...fl.results],
+      currentPhase: 'summer',
+    };
+  }
+
+  const summerDone = (target[skSu] ?? 0) >= L_SEA_REG_TOTAL || (completed[skSu] ?? 0) >= L_SEA_REG_TOTAL;
+  if (!summerDone) return s;
+
+  // ── Phase 4: Summer playoffs (W33-35, 12 slots, 8-team DE) ────────────────
+  const skSuP = `${id}::summer_playoffs`;
+  const cSuP  = completed[skSuP] ?? 0;
+  const tSuP  = Math.min(target[skSuP] ?? cSuP, L_SEA_PO_TOTAL);
+
+  if (tSuP > 0 || cSuP > 0) {
+    const summerFl = s.fullLeagueState!;
+    let po = s.playoffs;
+    if (!po) po = initNEUWEUPlayoffs(summerFl.standings);
+    if (tSuP > cSuP) {
+      const poMap = new Map(summerFl.standings.map(r => [r.clubId, r]));
+      po = advanceNEUWEUPlayoffToSlot(po, cSuP, tSuP, meta, clubMap, poMap);
+    }
+    s = { ...s, playoffs: po, currentPhase: po.completed ? 'complete' : 'summer_playoffs' };
+  }
+
+  return s;
+}
+
 // ─── L_MEAF ───────────────────────────────────────────────────────────────────
 
 const MEAF_SPLIT_TOTAL = 8;
@@ -1439,6 +1575,7 @@ export function advanceLeagueToRound(
     if (state.leagueId === 'L_DE' || state.leagueId === 'L_EEU' || state.leagueId === 'L_SEU' || state.leagueId === 'L_RU') return advanceDE(state, completedMap, targetMap, meta, clubMap);
     if (state.leagueId === 'L_BR' || state.leagueId === 'L_SA') return advanceBRSA(state, completedMap, targetMap, meta, clubMap);
     if (state.leagueId === 'L_TW' || state.leagueId === 'L_JP') return advanceTWJP(state, completedMap, targetMap, meta, clubMap);
+    if (state.leagueId === 'L_SEA') return advanceSEA(state, completedMap, targetMap, meta, clubMap);
     if (state.leagueId === 'L_MEAF') return advanceMEAF(state, completedMap, targetMap, meta, clubMap);
   }
 
