@@ -80,6 +80,7 @@ export function simulateMatch(
   clubB: Club,
   meta: string[],
   winsNeeded = 2,
+  kMultiplier = 1,
 ): MatchResult {
   const pA = 1 / (1 + Math.pow(10, (clubB.elo_rating - clubA.elo_rating) / 400));
   const pB = 1 - pA;
@@ -97,7 +98,7 @@ export function simulateMatch(
   }
 
   const result = scoreA > scoreB ? 1 : 0;
-  const K = 32;
+  const K = 32 * kMultiplier;
   const eloChange = Math.round(K * (result - pA));
 
   return {

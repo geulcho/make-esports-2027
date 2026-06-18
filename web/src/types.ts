@@ -380,6 +380,7 @@ export interface WTState {
   season: number;
   leagueCoefficients: Array<{ leagueId: string; rank: number; points: number }>;
   participants: WTParticipant[];
+  frozenParticipants: WTParticipant[];  // snapshot at init for Participants/Predictions tabs
   groups: WTGroup[];
   knockoutMatches: WTKnockoutMatch[];
   champion: string | null;

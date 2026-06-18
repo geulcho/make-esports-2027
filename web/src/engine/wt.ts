@@ -291,7 +291,7 @@ function simGroupMatch(m: WTGroupMatch, meta: string[], eloMap: Map<string, numb
   if (!bA || !bB) return { played: m, eloA: 0 };
   const cA = { ...bA, elo_rating: eloMap.get(m.teamA) ?? bA.elo_rating };
   const cB = { ...bB, elo_rating: eloMap.get(m.teamB) ?? bB.elo_rating };
-  const r = simulateMatch(cA, cB, meta, 1); // Bo1
+  const r = simulateMatch(cA, cB, meta, 1, 2); // WT groups: 2x K
   return {
     played: {
       ...m,
@@ -425,9 +425,11 @@ function simKOMatch(m: WTKnockoutMatch, meta: string[], eloMap: Map<string, numb
   if (!bA || !bB) return m;
   const cA = { ...bA, elo_rating: eloMap.get(m.teamA) ?? bA.elo_rating };
   const cB = { ...bB, elo_rating: eloMap.get(m.teamB) ?? bB.elo_rating };
-  const r = simulateMatch(cA, cB, meta, 3); // Bo5
-  eloMap.set(m.teamA, (eloMap.get(m.teamA) ?? 1200) + r.eloChangeA);
-  eloMap.set(m.teamB, (eloMap.get(m.teamB) ?? 1200) - r.eloChangeA);
+  const r = simulateMatch(cA, cB, meta, 3, 4); // WT KO: 4x K
+  // No Elo loss for losers in WT knockout
+  const winnerGain = Math.max(0, r.scoreA > r.scoreB ? r.eloChangeA : -r.eloChangeA);
+  const winnerId = r.scoreA > r.scoreB ? m.teamA : m.teamB;
+  eloMap.set(winnerId, (eloMap.get(winnerId) ?? 1200) + winnerGain);
   return {
     ...m,
     scoreA: r.scoreA, scoreB: r.scoreB,
@@ -477,6 +479,7 @@ export function initWT(season: number): WTState {
     season,
     leagueCoefficients: [],
     participants: [],
+    frozenParticipants: [],
     groups: [],
     knockoutMatches: [],
     champion: null,
@@ -506,6 +509,7 @@ export function autoAdvanceWT(
       ...state,
       leagueCoefficients: coefficients.map(c => ({ leagueId: c.leagueId, rank: c.rank, points: c.points })),
       participants,
+      frozenParticipants: participants.map(p => ({ ...p })),
       groups,
       phase: 'groups_first',
     };

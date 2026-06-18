@@ -192,7 +192,7 @@ function simCupMatch(
   const ca = clubMap.get(m.teamA);
   const cb = clubMap.get(m.teamB);
   if (!ca || !cb) return m;
-  const r = simulateMatch(ca, cb, meta, winsNeeded);
+  const r = simulateMatch(ca, cb, meta, winsNeeded, 1.5);
   return {
     ...m,
     scoreA: r.scoreA,

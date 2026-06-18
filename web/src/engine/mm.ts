@@ -301,7 +301,7 @@ function simMatch(
   if (!baseA || !baseB) return { played: match, eloChangeA: 0 };
   const ca = { ...baseA, elo_rating: pA?.w16Elo ?? baseA.elo_rating };
   const cb = { ...baseB, elo_rating: pB?.w16Elo ?? baseB.elo_rating };
-  const r = simulateMatch(ca, cb, meta, winsNeeded(match.format));
+  const r = simulateMatch(ca, cb, meta, winsNeeded(match.format), 2); // MM Swiss: 2x K
   return {
     played: {
       ...match,
@@ -495,7 +495,7 @@ export function advanceMMSingleMatch(
       if (!baseA || !baseB) return state;
       const ca = { ...baseA, elo_rating: pA?.w16Elo ?? baseA.elo_rating };
       const cb = { ...baseB, elo_rating: pB?.w16Elo ?? baseB.elo_rating };
-      const r = simulateMatch(ca, cb, meta, 3); // Bo5
+      const r = simulateMatch(ca, cb, meta, 3, 3); // MM KO: 3x K
       const winner = r.scoreA > r.scoreB ? km.teamA! : km.teamB!;
       const played: MMKnockoutMatch = {
         ...km,
@@ -503,13 +503,12 @@ export function advanceMMSingleMatch(
         oddsA: r.oddsA, oddsB: r.oddsB,
         winner,
       };
-      // Apply Elo change to participants
+      // MM KO: no Elo loss for losers
+      const winnerEloGain = Math.max(0, km.teamA === winner ? r.eloChangeA : -r.eloChangeA);
       let s2 = applyKnockoutResult(state, km.slot, played);
-      const eloW = km.teamA === winner ? r.eloChangeA : -r.eloChangeA;
       s2 = { ...s2, participants: s2.participants.map(p => {
-        if (p.clubId === winner) return { ...p, w16Elo: p.w16Elo + eloW };
-        if (p.clubId === (winner === km.teamA ? km.teamB! : km.teamA!)) return { ...p, w16Elo: p.w16Elo - eloW };
-        return p;
+        if (p.clubId === winner) return { ...p, w16Elo: p.w16Elo + winnerEloGain };
+        return p; // loser: no change
       })};
       return s2;
     }

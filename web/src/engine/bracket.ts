@@ -66,7 +66,7 @@ export function advanceQualifierToSlot(
     const cb = club(match.teamB);
     if (!ca || !cb) continue;
 
-    const result = simulateMatch(ca, cb, meta, winsNeeded);
+    const result = simulateMatch(ca, cb, meta, winsNeeded, 1.25);
     m[slot] = {
       ...match,
       result,

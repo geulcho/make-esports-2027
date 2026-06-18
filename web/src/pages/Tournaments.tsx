@@ -562,8 +562,9 @@ function ResultsTab({ mm }: { mm: MMState }) {
 function WTParticipantsTab({ wt }: { wt: WTState }) {
   const [sortKey, setSortKey] = useState<'winRate' | 'elo' | 'pot'>('pot');
   const [sortAsc, setSortAsc] = useState(true);
+  const data = wt.frozenParticipants.length > 0 ? wt.frozenParticipants : wt.participants;
 
-  if (wt.participants.length === 0) {
+  if (data.length === 0) {
     return <div className="text-slate-500 text-sm text-center py-16">W38 이후 WT 참가팀 확정 예정</div>;
   }
 
@@ -572,7 +573,7 @@ function WTParticipantsTab({ wt }: { wt: WTState }) {
     else { setSortKey(key); setSortAsc(key === 'pot'); }
   };
 
-  const sorted = [...wt.participants].sort((a, b) => {
+  const sorted = [...data].sort((a, b) => {
     let diff = 0;
     if (sortKey === 'pot') diff = a.seedPool - b.seedPool || b.elo - a.elo;
     else if (sortKey === 'elo') diff = b.elo - a.elo;
@@ -636,8 +637,9 @@ function WTParticipantsTab({ wt }: { wt: WTState }) {
 }
 
 function WTPredictionsTab({ wt }: { wt: WTState }) {
-  if (wt.participants.length === 0) return <div className="text-slate-500 text-sm text-center py-16">참가팀 확정 후 배당 생성</div>;
-  const shares = wt.participants.map(p => ({ id: p.clubId, share: Math.pow(10, p.elo / 400) }));
+  const data = wt.frozenParticipants.length > 0 ? wt.frozenParticipants : wt.participants;
+  if (data.length === 0) return <div className="text-slate-500 text-sm text-center py-16">참가팀 확정 후 배당 생성</div>;
+  const shares = data.map(p => ({ id: p.clubId, share: Math.pow(10, p.elo / 400) }));
   const total = shares.reduce((s, x) => s + x.share, 0);
   const odds = shares.map(s => ({ id: s.id, odds: Math.round(Math.max(1.01, 0.90 / (s.share / total)) * 100) / 100 }))
     .sort((a, b) => a.odds - b.odds);
@@ -654,7 +656,7 @@ function WTPredictionsTab({ wt }: { wt: WTState }) {
         </tr></thead>
         <tbody>
           {odds.map((o, i) => {
-            const p = wt.participants.find(pp => pp.clubId === o.id)!;
+            const p = data.find(pp => pp.clubId === o.id)!;
             const club = clubById(o.id);
             return (
               <tr key={o.id} className="border-b border-bg-border/30 hover:bg-bg-hover/30">
@@ -1035,7 +1037,16 @@ function WTReviewTab({ wt }: { wt: WTState }) {
               {survivalData.map(s => (
                 <tr key={s.lid} className="border-b border-bg-border/20">
                   <td className="py-1 text-slate-300">{LEAGUE_NAMES[s.lid]}</td>
-                  <td className="py-1 text-center text-slate-400">{s.gs}</td>
+                  <td className="py-1 text-center text-slate-400 relative cursor-help"
+                    onMouseEnter={() => setHoverCell(`${s.lid}::gs`)}
+                    onMouseLeave={() => setHoverCell(null)}>
+                    {s.gs}
+                    {hoverCell === `${s.lid}::gs` && (
+                      <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-1 bg-bg-panel border border-bg-border rounded p-1.5 shadow-lg flex gap-1 whitespace-nowrap">
+                        {pByLeague(s.lid).map(p => <TeamChip key={p.clubId} clubId={p.clubId} small />)}
+                      </div>
+                    )}
+                  </td>
                   {(['r16', 'qf', 'sf', 'f'] as const).map(stage => {
                     const teams = stage === 'r16' ? s.r16 : stage === 'qf' ? s.qf : stage === 'sf' ? s.sf : s.f;
                     const cellKey = `${s.lid}::${stage}`;
