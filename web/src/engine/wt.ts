@@ -292,11 +292,14 @@ function simGroupMatch(m: WTGroupMatch, meta: string[], eloMap: Map<string, numb
   const cA = { ...bA, elo_rating: eloMap.get(m.teamA) ?? bA.elo_rating };
   const cB = { ...bB, elo_rating: eloMap.get(m.teamB) ?? bB.elo_rating };
   const r = simulateMatch(cA, cB, meta, 1, 2); // WT groups: 2x K
+  // Bo1: store actual MoM score from the single set
+  const momA = r.sets[0]?.momA ?? 0;
+  const momB = r.sets[0]?.momB ?? 0;
   return {
     played: {
       ...m,
-      scoreA: r.scoreA > r.scoreB ? 1 : 0,
-      scoreB: r.scoreB > r.scoreA ? 1 : 0,
+      scoreA: momA,
+      scoreB: momB,
       winner: r.scoreA > r.scoreB ? m.teamA : m.teamB,
       oddsA: r.oddsA, oddsB: r.oddsB,
     },
@@ -324,8 +327,11 @@ function advanceGroupToDay(group: WTGroup, targetDay: number, meta: string[], el
       const loser = played.winner === played.teamA ? played.teamB : played.teamA;
       const rW = recMap.get(played.winner);
       const rL = recMap.get(loser);
-      if (rW) { rW.wins++; rW.scoreFor++; }
-      if (rL) { rL.losses++; rL.scoreAgainst++; }
+      // Accumulate MoM scores for ScD
+      const wScore = played.winner === played.teamA ? played.scoreA : played.scoreB;
+      const lScore = played.winner === played.teamA ? played.scoreB : played.scoreA;
+      if (rW) { rW.wins++; rW.scoreFor += wScore; rW.scoreAgainst += lScore; }
+      if (rL) { rL.losses++; rL.scoreFor += lScore; rL.scoreAgainst += wScore; }
     }
   }
 
