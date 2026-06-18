@@ -285,10 +285,12 @@ function drawGroups(participants: WTParticipant[]): WTGroup[] {
 
 // ─── Group stage simulation ───────────────────────────────────────────────────
 
-function simGroupMatch(m: WTGroupMatch, meta: string[]): { played: WTGroupMatch; eloA: number } {
+function simGroupMatch(m: WTGroupMatch, meta: string[], eloMap: Map<string, number>): { played: WTGroupMatch; eloA: number } {
   if (m.winner) return { played: m, eloA: 0 };
-  const cA = clubMap.get(m.teamA), cB = clubMap.get(m.teamB);
-  if (!cA || !cB) return { played: m, eloA: 0 };
+  const bA = clubMap.get(m.teamA), bB = clubMap.get(m.teamB);
+  if (!bA || !bB) return { played: m, eloA: 0 };
+  const cA = { ...bA, elo_rating: eloMap.get(m.teamA) ?? bA.elo_rating };
+  const cB = { ...bB, elo_rating: eloMap.get(m.teamB) ?? bB.elo_rating };
   const r = simulateMatch(cA, cB, meta, 1); // Bo1
   return {
     played: {
@@ -302,7 +304,7 @@ function simGroupMatch(m: WTGroupMatch, meta: string[]): { played: WTGroupMatch;
   };
 }
 
-function advanceGroupToDay(group: WTGroup, targetDay: number, meta: string[]): WTGroup {
+function advanceGroupToDay(group: WTGroup, targetDay: number, meta: string[], eloMap: Map<string, number>): WTGroup {
   let matches = [...group.matches];
   let records = group.records.map(r => ({ ...r }));
   const recMap = new Map(records.map(r => [r.clubId, r]));
@@ -313,9 +315,12 @@ function advanceGroupToDay(group: WTGroup, targetDay: number, meta: string[]): W
   for (let md = group.matchdaysCompleted + 1; md <= maxMD; md++) {
     const m = matches[md - 1];
     if (!m || m.winner) continue;
-    const { played, eloA } = simGroupMatch(m, meta);
+    const { played, eloA } = simGroupMatch(m, meta, eloMap);
     matches = [...matches]; matches[md - 1] = played;
     if (played.winner) {
+      // Apply Elo change
+      eloMap.set(played.teamA, (eloMap.get(played.teamA) ?? 1200) + eloA);
+      eloMap.set(played.teamB, (eloMap.get(played.teamB) ?? 1200) - eloA);
       const loser = played.winner === played.teamA ? played.teamB : played.teamA;
       const rW = recMap.get(played.winner);
       const rL = recMap.get(loser);
@@ -375,7 +380,7 @@ export function sortWTGroupRecords(records: WTGroupRecord[]): WTGroupRecord[] {
   });
 }
 
-function generateKnockout(groups: WTGroup[]): WTKnockoutMatch[] {
+function generateKnockout(groups: WTGroup[], eloMap: Map<string, number>): WTKnockoutMatch[] {
   const gMap = new Map(groups.map(g => [g.id, g]));
   const winner = (gId: string) => sortWTGroupRecords(gMap.get(gId)?.records ?? [])[0]?.clubId ?? null;
   const runner = (gId: string) => sortWTGroupRecords(gMap.get(gId)?.records ?? [])[1]?.clubId ?? null;
@@ -383,7 +388,7 @@ function generateKnockout(groups: WTGroup[]): WTKnockoutMatch[] {
   const mk = (id: string, stage: WTKnockoutMatch['stage'], half: 'upper'|'lower'|null, a: string|null, b: string|null): WTKnockoutMatch => {
     let oddsA = 0, oddsB = 0;
     if (a && b) {
-      const o = calcOdds(clubMap.get(a)?.elo_rating ?? 1200, clubMap.get(b)?.elo_rating ?? 1200);
+      const o = calcOdds(eloMap.get(a) ?? 1200, eloMap.get(b) ?? 1200);
       oddsA = o.oddsA; oddsB = o.oddsB;
     }
     return { id, stage, bracketHalf: half, teamA: a, teamB: b, scoreA: 0, scoreB: 0, winner: null, oddsA, oddsB };
@@ -414,11 +419,15 @@ function generateKnockout(groups: WTGroup[]): WTKnockoutMatch[] {
 
 // ─── Knockout advancement ─────────────────────────────────────────────────────
 
-function simKOMatch(m: WTKnockoutMatch, meta: string[]): WTKnockoutMatch {
+function simKOMatch(m: WTKnockoutMatch, meta: string[], eloMap: Map<string, number>): WTKnockoutMatch {
   if (m.winner || !m.teamA || !m.teamB) return m;
-  const cA = clubMap.get(m.teamA), cB = clubMap.get(m.teamB);
-  if (!cA || !cB) return m;
+  const bA = clubMap.get(m.teamA), bB = clubMap.get(m.teamB);
+  if (!bA || !bB) return m;
+  const cA = { ...bA, elo_rating: eloMap.get(m.teamA) ?? bA.elo_rating };
+  const cB = { ...bB, elo_rating: eloMap.get(m.teamB) ?? bB.elo_rating };
   const r = simulateMatch(cA, cB, meta, 3); // Bo5
+  eloMap.set(m.teamA, (eloMap.get(m.teamA) ?? 1200) + r.eloChangeA);
+  eloMap.set(m.teamB, (eloMap.get(m.teamB) ?? 1200) - r.eloChangeA);
   return {
     ...m,
     scoreA: r.scoreA, scoreB: r.scoreB,
@@ -427,7 +436,7 @@ function simKOMatch(m: WTKnockoutMatch, meta: string[]): WTKnockoutMatch {
   };
 }
 
-function feedKnockout(matches: WTKnockoutMatch[]): WTKnockoutMatch[] {
+function feedKnockout(matches: WTKnockoutMatch[], eloMap: Map<string, number>): WTKnockoutMatch[] {
   const ms = [...matches];
   const get = (id: string) => ms.find(m => m.id === id);
   const set = (id: string, field: 'teamA' | 'teamB', val: string) => {
@@ -435,10 +444,7 @@ function feedKnockout(matches: WTKnockoutMatch[]): WTKnockoutMatch[] {
     if (idx >= 0 && !ms[idx][field]) {
       ms[idx] = { ...ms[idx], [field]: val };
       if (ms[idx].teamA && ms[idx].teamB) {
-        const o = calcOdds(
-          clubMap.get(ms[idx].teamA!)?.elo_rating ?? 1200,
-          clubMap.get(ms[idx].teamB!)?.elo_rating ?? 1200,
-        );
+        const o = calcOdds(eloMap.get(ms[idx].teamA!) ?? 1200, eloMap.get(ms[idx].teamB!) ?? 1200);
         ms[idx] = { ...ms[idx], oddsA: o.oddsA, oddsB: o.oddsB };
       }
     }
@@ -508,24 +514,24 @@ export function autoAdvanceWT(
   if (week < 39) return state;
   let s = { ...state };
 
+  // Build mutable Elo map from participants
+  const eloMap = new Map(s.participants.map(p => [p.clubId, p.elo]));
+
   // Group stage auto-advance
   if (s.phase === 'groups_first' || s.phase === 'groups_second') {
     const globalDay = wtGlobalDay(targetDate);
     if (globalDay > 0) {
       const newGroups = s.groups.map((g, gi) => {
-        // First half (days 1-6): all groups advance MD by 2 per day
-        // Second half (days 7-14): group i completes on day 7+i
         const groupFinalDay = 7 + gi;
         const effectiveDay = Math.min(globalDay, groupFinalDay);
-        return advanceGroupToDay(g, effectiveDay, meta);
+        return advanceGroupToDay(g, effectiveDay, meta, eloMap);
       });
       const allDone = newGroups.every(g => g.completed);
       const phase = allDone ? 'knockout_r16' as const : (globalDay <= 6 ? 'groups_first' as const : 'groups_second' as const);
       s = { ...s, groups: newGroups, phase };
 
-      // Generate knockout bracket when groups complete
       if (allDone && s.knockoutMatches.length === 0) {
-        s = { ...s, knockoutMatches: generateKnockout(newGroups) };
+        s = { ...s, knockoutMatches: generateKnockout(newGroups, eloMap) };
       }
     }
   }
@@ -535,37 +541,29 @@ export function autoAdvanceWT(
     let ko = [...s.knockoutMatches];
     let changed = false;
 
-    // R16
     for (let i = 0; i < 8; i++) {
       if (!ko[i].winner && ko[i].teamA && ko[i].teamB && wtKnockoutReady(targetDate, 'R16', i)) {
-        ko = [...ko]; ko[i] = simKOMatch(ko[i], meta);
-        changed = true;
+        ko = [...ko]; ko[i] = simKOMatch(ko[i], meta, eloMap); changed = true;
       }
     }
-    // QF
     for (let i = 0; i < 4; i++) {
       const idx = 8 + i;
       if (!ko[idx].winner && ko[idx].teamA && ko[idx].teamB && wtKnockoutReady(targetDate, 'QF', i)) {
-        ko = [...ko]; ko[idx] = simKOMatch(ko[idx], meta);
-        changed = true;
+        ko = [...ko]; ko[idx] = simKOMatch(ko[idx], meta, eloMap); changed = true;
       }
     }
-    // SF
     for (let i = 0; i < 2; i++) {
       const idx = 12 + i;
       if (!ko[idx].winner && ko[idx].teamA && ko[idx].teamB && wtKnockoutReady(targetDate, 'SF', i)) {
-        ko = [...ko]; ko[idx] = simKOMatch(ko[idx], meta);
-        changed = true;
+        ko = [...ko]; ko[idx] = simKOMatch(ko[idx], meta, eloMap); changed = true;
       }
     }
-    // GF
     if (!ko[14].winner && ko[14].teamA && ko[14].teamB && wtKnockoutReady(targetDate, 'GF', 0)) {
-      ko = [...ko]; ko[14] = simKOMatch(ko[14], meta);
-      changed = true;
+      ko = [...ko]; ko[14] = simKOMatch(ko[14], meta, eloMap); changed = true;
     }
 
     if (changed) {
-      ko = feedKnockout(ko);
+      ko = feedKnockout(ko, eloMap);
       const champion = ko[14]?.winner ?? null;
       const phase = champion ? 'completed' as const :
         ko.slice(0, 8).every(m => m.winner) ? (
@@ -576,6 +574,11 @@ export function autoAdvanceWT(
       s = { ...s, knockoutMatches: ko, champion, phase };
     }
   }
+
+  // Write back Elo changes to participants
+  s = { ...s, participants: s.participants.map(p => ({
+    ...p, elo: eloMap.get(p.clubId) ?? p.elo,
+  }))};
 
   return s;
 }

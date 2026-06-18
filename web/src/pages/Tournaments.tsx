@@ -560,57 +560,77 @@ function ResultsTab({ mm }: { mm: MMState }) {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 function WTParticipantsTab({ wt }: { wt: WTState }) {
+  const [sortKey, setSortKey] = useState<'winRate' | 'elo' | 'pot'>('pot');
+  const [sortAsc, setSortAsc] = useState(true);
+
   if (wt.participants.length === 0) {
     return <div className="text-slate-500 text-sm text-center py-16">W38 이후 WT 참가팀 확정 예정</div>;
   }
-  const byPool = [1, 2, 3, 4].map(p => wt.participants.filter(t => t.seedPool === p).sort((a, b) => b.elo - a.elo));
+
+  const toggleSort = (key: typeof sortKey) => {
+    if (sortKey === key) setSortAsc(!sortAsc);
+    else { setSortKey(key); setSortAsc(key === 'pot'); }
+  };
+
+  const sorted = [...wt.participants].sort((a, b) => {
+    let diff = 0;
+    if (sortKey === 'pot') diff = a.seedPool - b.seedPool || b.elo - a.elo;
+    else if (sortKey === 'elo') diff = b.elo - a.elo;
+    else {
+      const rA = a.seasonSetsWon / Math.max(1, a.seasonSetsWon + a.seasonSetsLost);
+      const rB = b.seasonSetsWon / Math.max(1, b.seasonSetsWon + b.seasonSetsLost);
+      diff = rB - rA;
+    }
+    return sortAsc ? diff : -diff;
+  });
+
+  const sortIcon = (key: typeof sortKey) => sortKey === key ? (sortAsc ? '▼' : '▲') : '';
+  const thCls = 'py-1 px-2 cursor-pointer hover:text-slate-200 select-none';
+
   return (
     <div>
       <h2 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: GOLD }}>WT Participants (32)</h2>
-      {[1, 2, 3, 4].map(pool => (
-        <div key={pool} className="mb-5">
-          <div className="text-xs font-bold mb-2" style={{ color: GOLD }}>Pot {pool}</div>
-          <table className="w-full text-xs mb-2">
-            <thead>
-              <tr className="border-b border-bg-border text-slate-500">
-                <th className="text-left py-1 px-2 w-12">시드</th>
-                <th className="text-left py-1 px-2">팀</th>
-                <th className="text-left py-1 px-2">리그</th>
-                <th className="text-center py-1 px-2">세트 승</th>
-                <th className="text-center py-1 px-2">세트 패</th>
-                <th className="text-center py-1 px-2">승률</th>
-                <th className="text-center py-1 px-2">Elo</th>
-                <th className="text-left py-1 px-2">컵 성적</th>
+      <table className="w-full text-xs">
+        <thead><tr className="border-b border-bg-border text-slate-500">
+          <th className="text-left py-1 px-2 w-10">시드</th>
+          <th className="text-left py-1 px-2">팀</th>
+          <th className="text-left py-1 px-2">리그</th>
+          <th className="text-center py-1 px-2">세트 승</th>
+          <th className="text-center py-1 px-2">세트 패</th>
+          <th className={thCls + ' text-center'} onClick={() => toggleSort('winRate')}>승률 {sortIcon('winRate')}</th>
+          <th className={thCls + ' text-center'} onClick={() => toggleSort('elo')}>Elo {sortIcon('elo')}</th>
+          <th className={thCls + ' text-center w-12'} onClick={() => toggleSort('pot')}>Pot {sortIcon('pot')}</th>
+          <th className="text-left py-1 px-2">컵 성적</th>
+        </tr></thead>
+        <tbody>
+          {sorted.map(p => {
+            const club = clubById(p.clubId);
+            const wr = p.seasonSetsWon + p.seasonSetsLost > 0
+              ? ((p.seasonSetsWon / (p.seasonSetsWon + p.seasonSetsLost)) * 100).toFixed(1) : '-';
+            const isChamp = p.cupResult.includes('우승');
+            return (
+              <tr key={p.clubId} className="border-b border-bg-border/30 hover:bg-bg-hover/30">
+                <td className="py-1 px-2 font-bold text-slate-400">{p.seedTag}</td>
+                <td className="py-1 px-2">
+                  <span className="inline-flex items-center px-1.5 rounded text-[11px] font-bold h-5"
+                    style={{ backgroundColor: club?.colors.bg, color: club?.colors.text }}>
+                    {club?.abbr ?? p.clubId}
+                  </span>
+                </td>
+                <td className="py-1 px-2 text-slate-500">{LEAGUE_NAMES[p.leagueId]}</td>
+                <td className="py-1 px-2 text-center text-emerald-400">{p.seasonSetsWon}</td>
+                <td className="py-1 px-2 text-center text-red-400">{p.seasonSetsLost}</td>
+                <td className="py-1 px-2 text-center text-slate-300">{wr}%</td>
+                <td className="py-1 px-2 text-center text-slate-300 font-mono">{Math.round(p.elo)}</td>
+                <td className="py-1 px-2 text-center font-bold" style={{ color: GOLD }}>{p.seedPool}</td>
+                <td className={`py-1 px-2 text-[10px] ${isChamp ? 'font-bold' : 'text-slate-400'}`} style={isChamp ? { color: GOLD } : {}}>
+                  {p.cupResult}
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {byPool[pool - 1].map(p => {
-                const club = clubById(p.clubId);
-                const winRate = p.seasonSetsWon + p.seasonSetsLost > 0
-                  ? ((p.seasonSetsWon / (p.seasonSetsWon + p.seasonSetsLost)) * 100).toFixed(1)
-                  : '-';
-                return (
-                  <tr key={p.clubId} className="border-b border-bg-border/30 hover:bg-bg-hover/30">
-                    <td className="py-1 px-2 font-bold text-slate-400">{p.seedTag}</td>
-                    <td className="py-1 px-2">
-                      <span className="inline-flex items-center px-1.5 rounded text-[11px] font-bold h-5"
-                        style={{ backgroundColor: club?.colors.bg, color: club?.colors.text }}>
-                        {club?.abbr ?? p.clubId}
-                      </span>
-                    </td>
-                    <td className="py-1 px-2 text-slate-500">{LEAGUE_NAMES[p.leagueId] ?? p.leagueId}</td>
-                    <td className="py-1 px-2 text-center text-emerald-400">{p.seasonSetsWon}</td>
-                    <td className="py-1 px-2 text-center text-red-400">{p.seasonSetsLost}</td>
-                    <td className="py-1 px-2 text-center text-slate-300">{winRate}%</td>
-                    <td className="py-1 px-2 text-center text-slate-300 font-mono">{Math.round(p.elo)}</td>
-                    <td className="py-1 px-2 text-slate-400 text-[10px]">{p.cupResult}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      ))}
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 }
@@ -662,8 +682,24 @@ function WTPredictionsTab({ wt }: { wt: WTState }) {
 }
 
 function WTGroupsTab({ wt }: { wt: WTState }) {
+  const [showResults, setShowResults] = useState<string | null>(null);
+
   if (wt.groups.length === 0) return <div className="text-slate-500 text-sm text-center py-16">조추첨 대기 중</div>;
   const pMap = new Map(wt.participants.map(p => [p.clubId, p]));
+  const allDone = wt.groups.every(g => g.completed);
+
+  // Group placement for draw grid coloring
+  const placementOf = (teamId: string, g: WTGroup): number => {
+    if (!g.completed) return 99;
+    const sorted = sortWTGroupRecords(g.records);
+    return sorted.findIndex(r => r.clubId === teamId) + 1;
+  };
+  const drawCellBg = (place: number): string => {
+    if (!allDone) return '';
+    if (place <= 2) return 'bg-amber-500/15';
+    if (place === 3) return 'bg-purple-500/15';
+    return 'bg-red-500/10';
+  };
 
   return (
     <div>
@@ -683,8 +719,9 @@ function WTGroupsTab({ wt }: { wt: WTState }) {
                   const teamId = g.teams.find(id => pMap.get(id)?.seedPool === pool);
                   const p = teamId ? pMap.get(teamId) : null;
                   const club = teamId ? clubById(teamId) : null;
+                  const place = teamId ? placementOf(teamId, g) : 99;
                   return (
-                    <td key={g.id} className="py-1.5 px-2 text-center">
+                    <td key={g.id} className={`py-1.5 px-2 text-center ${drawCellBg(place)}`}>
                       {club ? (
                         <div className="flex items-center justify-center gap-1">
                           <span className="inline-flex items-center px-1.5 rounded text-[10px] font-bold h-5"
@@ -708,48 +745,79 @@ function WTGroupsTab({ wt }: { wt: WTState }) {
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4">
         {wt.groups.map(g => {
           const sorted = sortWTGroupRecords(g.records);
+          const isOpen = showResults === g.id;
+          const playedMatches = g.matches.filter(m => m.winner);
           return (
             <div key={g.id}>
               <div className="flex items-center justify-between mb-1">
                 <span className="text-xs font-bold text-slate-300">Group {g.id}</span>
-                <span className="text-[10px] text-slate-600">MD {g.matchdaysCompleted}/12</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] text-slate-600">MD {g.matchdaysCompleted}/12</span>
+                  {playedMatches.length > 0 && (
+                    <button
+                      onClick={() => setShowResults(isOpen ? null : g.id)}
+                      className="text-[9px] px-1.5 py-0.5 rounded border border-bg-border text-slate-400 hover:text-slate-200 hover:border-slate-400"
+                    >
+                      {isOpen ? '순위표' : 'Match Results'}
+                    </button>
+                  )}
+                </div>
               </div>
-              <table className="w-full text-xs">
-                <thead><tr className="border-b border-bg-border text-slate-600">
-                  <th className="w-5 py-0.5">#</th>
-                  <th className="text-left py-0.5">팀</th>
-                  <th className="text-center py-0.5 w-6">W</th>
-                  <th className="text-center py-0.5 w-6">L</th>
-                  <th className="text-center py-0.5 w-8">SD</th>
-                </tr></thead>
-                <tbody>
-                  {sorted.map((rec, idx) => {
-                    const club = clubById(rec.clubId);
-                    const diff = rec.scoreFor - rec.scoreAgainst;
-                    const rowCls = idx === 0 || idx === 1
-                      ? 'border-l-2 border-l-amber-500 bg-amber-500/5'
-                      : idx === 2
-                      ? 'border-l-2 border-l-purple-400 bg-purple-400/5'
-                      : '';
+              {isOpen ? (
+                <div className="text-[10px] space-y-0.5 max-h-40 overflow-y-auto">
+                  {playedMatches.map(m => {
+                    const winA = m.winner === m.teamA;
+                    const cA = clubById(m.teamA), cB = clubById(m.teamB);
                     return (
-                      <tr key={rec.clubId} className={`border-b border-bg-border/20 ${rowCls}`}>
-                        <td className={`text-center py-0.5 ${idx <= 1 ? 'text-amber-400 font-bold' : idx === 2 ? 'text-purple-400 font-bold' : 'text-slate-500'}`}>{idx + 1}</td>
-                        <td className="py-0.5">
-                          <span className="inline-flex items-center px-1 rounded text-[10px] font-bold h-4"
-                            style={{ backgroundColor: club?.colors.bg, color: club?.colors.text }}>
-                            {club?.abbr}
-                          </span>
-                        </td>
-                        <td className="text-center py-0.5 text-emerald-400">{rec.wins}</td>
-                        <td className="text-center py-0.5 text-red-400">{rec.losses}</td>
-                        <td className={`text-center py-0.5 font-bold ${diff > 0 ? 'text-emerald-400' : diff < 0 ? 'text-red-400' : 'text-slate-500'}`}>
-                          {diff > 0 ? '+' : ''}{diff}
-                        </td>
-                      </tr>
+                      <div key={m.id} className="flex items-center gap-1 py-0.5">
+                        <span className="w-4 text-slate-600 text-[9px]">M{m.matchday}</span>
+                        <span className={`inline-flex items-center px-1 rounded font-bold h-4 text-[9px] ${winA ? 'ring-1 ring-emerald-500' : ''}`}
+                          style={{ backgroundColor: cA?.colors.bg, color: cA?.colors.text }}>{cA?.abbr}</span>
+                        <span className={`font-bold ${winA ? 'text-emerald-400' : 'text-slate-600'}`}>{m.scoreA}</span>
+                        <span className="text-slate-700">:</span>
+                        <span className={`font-bold ${!winA ? 'text-emerald-400' : 'text-slate-600'}`}>{m.scoreB}</span>
+                        <span className={`inline-flex items-center px-1 rounded font-bold h-4 text-[9px] ${!winA ? 'ring-1 ring-emerald-500' : ''}`}
+                          style={{ backgroundColor: cB?.colors.bg, color: cB?.colors.text }}>{cB?.abbr}</span>
+                      </div>
                     );
                   })}
-                </tbody>
-              </table>
+                </div>
+              ) : (
+                <table className="w-full text-xs">
+                  <thead><tr className="border-b border-bg-border text-slate-600">
+                    <th className="w-5 py-0.5">#</th>
+                    <th className="text-left py-0.5">팀</th>
+                    <th className="text-center py-0.5 w-6">W</th>
+                    <th className="text-center py-0.5 w-6">L</th>
+                    <th className="text-center py-0.5 w-8">ScD</th>
+                  </tr></thead>
+                  <tbody>
+                    {sorted.map((rec, idx) => {
+                      const club = clubById(rec.clubId);
+                      const diff = rec.scoreFor - rec.scoreAgainst;
+                      const rowCls = idx <= 1
+                        ? 'border-l-2 border-l-amber-500 bg-amber-500/5'
+                        : idx === 2
+                        ? 'border-l-2 border-l-purple-400 bg-purple-400/5'
+                        : '';
+                      return (
+                        <tr key={rec.clubId} className={`border-b border-bg-border/20 ${rowCls}`}>
+                          <td className={`text-center py-0.5 ${idx <= 1 ? 'text-amber-400 font-bold' : idx === 2 ? 'text-purple-400 font-bold' : 'text-slate-500'}`}>{idx + 1}</td>
+                          <td className="py-0.5">
+                            <span className="inline-flex items-center px-1 rounded text-[10px] font-bold h-4"
+                              style={{ backgroundColor: club?.colors.bg, color: club?.colors.text }}>{club?.abbr}</span>
+                          </td>
+                          <td className="text-center py-0.5 text-emerald-400">{rec.wins}</td>
+                          <td className="text-center py-0.5 text-red-400">{rec.losses}</td>
+                          <td className={`text-center py-0.5 font-bold ${diff > 0 ? 'text-emerald-400' : diff < 0 ? 'text-red-400' : 'text-slate-500'}`}>
+                            {diff > 0 ? '+' : ''}{diff}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
             </div>
           );
         })}
@@ -758,15 +826,45 @@ function WTGroupsTab({ wt }: { wt: WTState }) {
   );
 }
 
+function WTKOCard({ km }: { km: WTKnockoutMatch }) {
+  const winA = km.winner === km.teamA;
+  const winB = km.winner === km.teamB;
+  const isUpset = km.winner !== null && ((winA && km.oddsA > km.oddsB) || (winB && km.oddsB > km.oddsA));
+  const wOdds = winA ? km.oddsA : winB ? km.oddsB : 0;
+  const upCls = (isW: boolean) => isW && isUpset
+    ? (wOdds >= 5 ? 'text-red-500 font-bold' : wOdds >= 3 ? 'text-red-400' : 'text-orange-400')
+    : 'text-slate-600';
+
+  return (
+    <div className="rounded border border-bg-border bg-bg-panel w-44">
+      {/* Team A */}
+      <div className={`flex items-center gap-1 px-2 py-1 ${winA ? 'bg-emerald-500/10' : km.winner ? 'opacity-40' : ''}`}>
+        <TeamChip clubId={km.teamA} small />
+        <span className="flex-1" />
+        {km.winner && <span className={`text-[10px] ${upCls(winA)}`}>{km.oddsA.toFixed(2)}</span>}
+        <span className={`w-4 text-center text-xs font-bold ${winA ? 'text-emerald-400' : 'text-slate-600'}`}>{km.winner ? km.scoreA : ''}</span>
+      </div>
+      <div className="border-t border-bg-border/30" />
+      {/* Team B */}
+      <div className={`flex items-center gap-1 px-2 py-1 ${winB ? 'bg-emerald-500/10' : km.winner ? 'opacity-40' : ''}`}>
+        <TeamChip clubId={km.teamB} small />
+        <span className="flex-1" />
+        {km.winner && <span className={`text-[10px] ${upCls(winB)}`}>{km.oddsB.toFixed(2)}</span>}
+        <span className={`w-4 text-center text-xs font-bold ${winB ? 'text-emerald-400' : 'text-slate-600'}`}>{km.winner ? km.scoreB : ''}</span>
+      </div>
+      {/* Pre-match odds footer */}
+      {km.teamA && km.teamB && !km.winner && (
+        <div className="border-t border-bg-border/30 px-2 py-0.5 flex justify-between text-[9px] text-slate-600">
+          <span>{km.oddsA.toFixed(2)}</span><span>odds</span><span>{km.oddsB.toFixed(2)}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function WTKnockoutsTab({ wt }: { wt: WTState }) {
   if (wt.knockoutMatches.length === 0) return <div className="text-slate-500 text-sm text-center py-16">조별리그 완료 후 대진표 생성</div>;
-
-  const stages: Array<{ stage: string; label: string; ids: string[] }> = [
-    { stage: 'R16', label: 'Round of 16', ids: ['R16_1','R16_2','R16_3','R16_4','R16_5','R16_6','R16_7','R16_8'] },
-    { stage: 'QF', label: 'Quarterfinals', ids: ['QF1','QF2','QF3','QF4'] },
-    { stage: 'SF', label: 'Semifinals', ids: ['SF1','SF2'] },
-    { stage: 'GF', label: 'Grand Final', ids: ['GF'] },
-  ];
+  const get = (id: string) => wt.knockoutMatches.find(m => m.id === id)!;
 
   return (
     <div>
@@ -781,44 +879,33 @@ function WTKnockoutsTab({ wt }: { wt: WTState }) {
         </div>
       )}
       <div className="overflow-x-auto">
-        <div className="flex items-start gap-6 min-w-max py-2">
-          {stages.map(s => {
-            const matches = s.ids.map(id => wt.knockoutMatches.find(m => m.id === id)).filter(Boolean) as WTKnockoutMatch[];
-            return (
-              <div key={s.stage} className="flex flex-col gap-2">
-                <div className={`text-[10px] font-bold uppercase ${s.stage === 'GF' ? '' : 'text-slate-500'}`}
-                  style={s.stage === 'GF' ? { color: GOLD } : {}}>
-                  {s.label}
-                </div>
-                {matches.map(km => {
-                  const winA = km.winner === km.teamA;
-                  const winB = km.winner === km.teamB;
-                  const isUpset = km.winner !== null && ((winA && km.oddsA > km.oddsB) || (winB && km.oddsB > km.oddsA));
-                  const wOdds = winA ? km.oddsA : km.oddsB;
-                  return (
-                    <div key={km.id} className="rounded border border-bg-border bg-bg-panel p-2 w-48">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-[9px] font-bold text-slate-600">{km.id.replace('_', ' ')}</span>
-                        {km.teamA && km.teamB && !km.winner && (
-                          <span className="text-[9px] text-slate-600">{km.oddsA.toFixed(2)} / {km.oddsB.toFixed(2)}</span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-1 mb-0.5">
-                        {km.winner && <span className={`w-6 text-[10px] ${winA && isUpset ? (wOdds >= 5 ? 'text-red-500 font-bold' : wOdds >= 3 ? 'text-red-400' : 'text-orange-400') : 'text-slate-600'}`}>{km.oddsA.toFixed(2)}</span>}
-                        <TeamChip clubId={km.teamA} isWinner={winA} small />
-                        <span className={`w-3 text-center text-xs font-bold ${winA ? 'text-emerald-400' : 'text-slate-600'}`}>{km.winner ? km.scoreA : ''}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        {km.winner && <span className={`w-6 text-[10px] ${winB && isUpset ? (wOdds >= 5 ? 'text-red-500 font-bold' : wOdds >= 3 ? 'text-red-400' : 'text-orange-400') : 'text-slate-600'}`}>{km.oddsB.toFixed(2)}</span>}
-                        <TeamChip clubId={km.teamB} isWinner={winB} small />
-                        <span className={`w-3 text-center text-xs font-bold ${winB ? 'text-emerald-400' : 'text-slate-600'}`}>{km.winner ? km.scoreB : ''}</span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            );
-          })}
+        <div className="flex items-start gap-4 min-w-max py-2">
+          {/* R16 column */}
+          <div>
+            <div className="text-[10px] font-bold text-slate-500 uppercase mb-2">Round of 16</div>
+            <div className="flex flex-col gap-3">
+              {['R16_1','R16_2','R16_3','R16_4','R16_5','R16_6','R16_7','R16_8'].map(id => <WTKOCard key={id} km={get(id)} />)}
+            </div>
+          </div>
+          {/* QF column */}
+          <div className="pt-8">
+            <div className="text-[10px] font-bold text-slate-500 uppercase mb-2">Quarterfinals</div>
+            <div className="flex flex-col gap-[76px]">
+              {['QF1','QF2','QF3','QF4'].map(id => <WTKOCard key={id} km={get(id)} />)}
+            </div>
+          </div>
+          {/* SF column */}
+          <div className="pt-24">
+            <div className="text-[10px] font-bold text-slate-500 uppercase mb-2">Semifinals</div>
+            <div className="flex flex-col gap-[180px]">
+              {['SF1','SF2'].map(id => <WTKOCard key={id} km={get(id)} />)}
+            </div>
+          </div>
+          {/* GF column */}
+          <div className="pt-48">
+            <div className="text-[10px] font-bold uppercase mb-2" style={{ color: GOLD }}>Grand Final</div>
+            <WTKOCard km={get('GF')} />
+          </div>
         </div>
       </div>
     </div>
@@ -826,71 +913,153 @@ function WTKnockoutsTab({ wt }: { wt: WTState }) {
 }
 
 function WTReviewTab({ wt }: { wt: WTState }) {
+  const [hoverCell, setHoverCell] = useState<string | null>(null);
+
   if (wt.phase === 'pre') return <div className="text-slate-500 text-sm text-center py-16">대회 시작 전</div>;
 
-  // Survival by league
-  const leagueMap = new Map(wt.participants.map(p => [p.clubId, p.leagueId]));
   const allLeagues = [...new Set(wt.participants.map(p => p.leagueId))];
+  const pByLeague = (lid: string) => wt.participants.filter(p => p.leagueId === lid);
 
-  const survival: Record<string, { gs: number; r16: number; qf: number; sf: number; f: number }> = {};
-  for (const lid of allLeagues) survival[lid] = { gs: 0, r16: 0, qf: 0, sf: 0, f: 0 };
+  // Stage sets for survival counting
+  const r16Set = new Set(wt.knockoutMatches.filter(m => m.stage === 'R16').flatMap(m => [m.teamA, m.teamB].filter(Boolean) as string[]));
+  const qfSet  = new Set(wt.knockoutMatches.filter(m => m.stage === 'QF').flatMap(m => [m.teamA, m.teamB].filter(Boolean) as string[]));
+  const sfSet  = new Set(wt.knockoutMatches.filter(m => m.stage === 'SF').flatMap(m => [m.teamA, m.teamB].filter(Boolean) as string[]));
+  const gfSet  = new Set(wt.knockoutMatches.filter(m => m.stage === 'GF').flatMap(m => [m.teamA, m.teamB].filter(Boolean) as string[]));
 
-  // Count survivors per stage
-  const r16Teams = new Set(wt.knockoutMatches.filter(m => m.stage === 'R16').flatMap(m => [m.teamA, m.teamB].filter(Boolean) as string[]));
-  const qfTeams  = new Set(wt.knockoutMatches.filter(m => m.stage === 'QF').flatMap(m => [m.teamA, m.teamB].filter(Boolean) as string[]));
-  const sfTeams  = new Set(wt.knockoutMatches.filter(m => m.stage === 'SF').flatMap(m => [m.teamA, m.teamB].filter(Boolean) as string[]));
-  const gfTeams  = new Set(wt.knockoutMatches.filter(m => m.stage === 'GF').flatMap(m => [m.teamA, m.teamB].filter(Boolean) as string[]));
+  const stageTeams = (lid: string, stageSet: Set<string>) => pByLeague(lid).filter(p => stageSet.has(p.clubId));
+  const survivalData = allLeagues.map(lid => ({
+    lid,
+    gs: pByLeague(lid).length,
+    r16: stageTeams(lid, r16Set),
+    qf: stageTeams(lid, qfSet),
+    sf: stageTeams(lid, sfSet),
+    f: stageTeams(lid, gfSet),
+  })).sort((a, b) => b.r16.length - a.r16.length);
 
-  for (const p of wt.participants) {
-    const lid = p.leagueId;
-    survival[lid].gs++;
-    if (r16Teams.has(p.clubId)) survival[lid].r16++;
-    if (qfTeams.has(p.clubId)) survival[lid].qf++;
-    if (sfTeams.has(p.clubId)) survival[lid].sf++;
-    if (gfTeams.has(p.clubId)) survival[lid].f++;
+  // Final rankings
+  const finalRanks: Array<{ rank: string; clubId: string }> = [];
+  const gf = wt.knockoutMatches.find(m => m.id === 'GF');
+  if (gf?.winner) {
+    finalRanks.push({ rank: '🏆 우승', clubId: gf.winner });
+    finalRanks.push({ rank: '2위 준우승', clubId: gf.winner === gf.teamA ? gf.teamB! : gf.teamA! });
+  }
+  const sfLosers = wt.knockoutMatches.filter(m => m.stage === 'SF' && m.winner).map(m => m.winner === m.teamA ? m.teamB! : m.teamA!);
+  sfLosers.forEach(id => finalRanks.push({ rank: '3~4위', clubId: id }));
+  const qfLosers = wt.knockoutMatches.filter(m => m.stage === 'QF' && m.winner).map(m => m.winner === m.teamA ? m.teamB! : m.teamA!);
+  qfLosers.forEach(id => finalRanks.push({ rank: '5~8위', clubId: id }));
+  const r16Losers = wt.knockoutMatches.filter(m => m.stage === 'R16' && m.winner).map(m => m.winner === m.teamA ? m.teamB! : m.teamA!);
+  r16Losers.forEach(id => finalRanks.push({ rank: '9~16위', clubId: id }));
+  // Group 3rd/4th
+  for (const g of wt.groups) {
+    if (!g.completed) continue;
+    const sorted = sortWTGroupRecords(g.records);
+    if (sorted[2]) finalRanks.push({ rank: '조 3위', clubId: sorted[2].clubId });
+    if (sorted[3]) finalRanks.push({ rank: '조 4위', clubId: sorted[3].clubId });
   }
 
-  // Elo changes
-  const eloChanges = wt.participants.map(p => ({
-    clubId: p.clubId,
-    leagueId: p.leagueId,
-    before: Math.round(p.preWTElo),
-    after: Math.round(p.elo),
-    change: Math.round(p.elo - p.preWTElo),
-  })).sort((a, b) => b.change - a.change);
+  const hoverTeams = hoverCell ? (() => {
+    const [lid, stage] = hoverCell.split('::');
+    const set = stage === 'r16' ? r16Set : stage === 'qf' ? qfSet : stage === 'sf' ? sfSet : gfSet;
+    return pByLeague(lid).filter(p => set.has(p.clubId)).map(p => p.clubId);
+  })() : [];
 
   return (
     <div>
-      <h2 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: GOLD }}>Review</h2>
+      <h2 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: GOLD }}>Results</h2>
 
-      {/* Survival by league */}
+      {/* Final rankings */}
+      {finalRanks.length > 0 && (
+        <div className="mb-6">
+          <table className="w-full text-xs">
+            <thead><tr className="border-b border-bg-border text-slate-500">
+              <th className="text-left py-1 px-2 w-24">순위</th>
+              <th className="text-left py-1 px-2">팀</th>
+              <th className="text-left py-1 px-2">리그</th>
+              <th className="text-center py-1 px-2">세트</th>
+              <th className="text-center py-1 px-2">승</th>
+              <th className="text-center py-1 px-2">패</th>
+              <th className="text-center py-1 px-2">득실</th>
+            </tr></thead>
+            <tbody>
+              {finalRanks.map((r, i) => {
+                const p = wt.participants.find(pp => pp.clubId === r.clubId);
+                const club = clubById(r.clubId);
+                const change = p ? Math.round(p.elo - p.preWTElo) : 0;
+                // Count WT-only sets from group + knockout matches
+                let sw = 0, sl = 0;
+                for (const g of wt.groups) for (const m of g.matches) {
+                  if (m.winner && m.teamA === r.clubId) { sw += m.scoreA; sl += m.scoreB; }
+                  else if (m.winner && m.teamB === r.clubId) { sw += m.scoreB; sl += m.scoreA; }
+                }
+                for (const km of wt.knockoutMatches) {
+                  if (km.winner && km.teamA === r.clubId) { sw += km.scoreA; sl += km.scoreB; }
+                  else if (km.winner && km.teamB === r.clubId) { sw += km.scoreB; sl += km.scoreA; }
+                }
+                const diff = sw - sl;
+                return (
+                  <tr key={r.clubId + i} className="border-b border-bg-border/30 hover:bg-bg-hover/30">
+                    <td className="py-1.5 px-2 text-slate-400 font-bold">{r.rank}</td>
+                    <td className="py-1.5 px-2">
+                      <span className="inline-flex items-center px-1.5 rounded text-[10px] font-bold h-5"
+                        style={{ backgroundColor: club?.colors.bg, color: club?.colors.text }}>{club?.abbr}</span>
+                    </td>
+                    <td className="py-1.5 px-2 text-slate-500">{LEAGUE_NAMES[p?.leagueId ?? '']}</td>
+                    <td className="py-1.5 px-2 text-center text-slate-400">{sw + sl}</td>
+                    <td className="py-1.5 px-2 text-center text-emerald-400">{sw}</td>
+                    <td className="py-1.5 px-2 text-center text-red-400">{sl}</td>
+                    <td className={`py-1.5 px-2 text-center font-bold ${diff > 0 ? 'text-emerald-400' : diff < 0 ? 'text-red-400' : 'text-slate-500'}`}>
+                      {diff > 0 ? '+' : ''}{diff}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Survival by league (with hover) */}
       <div className="mb-6">
         <h3 className="text-xs font-bold text-slate-400 uppercase mb-2">리그별 생존 현황</h3>
-        <table className="w-full text-xs">
-          <thead><tr className="border-b border-bg-border text-slate-500">
-            <th className="text-left py-1">리그</th>
-            <th className="text-center py-1 w-10">GS</th>
-            <th className="text-center py-1 w-10">R16</th>
-            <th className="text-center py-1 w-10">QF</th>
-            <th className="text-center py-1 w-10">SF</th>
-            <th className="text-center py-1 w-10">F</th>
-          </tr></thead>
-          <tbody>
-            {allLeagues.sort((a, b) => (survival[b]?.r16 ?? 0) - (survival[a]?.r16 ?? 0)).map(lid => {
-              const s = survival[lid];
-              return (
-                <tr key={lid} className="border-b border-bg-border/20">
-                  <td className="py-1 text-slate-300">{LEAGUE_NAMES[lid] ?? lid}</td>
+        <div className="relative">
+          <table className="w-full text-xs">
+            <thead><tr className="border-b border-bg-border text-slate-500">
+              <th className="text-left py-1">리그</th>
+              <th className="text-center py-1 w-10">GS</th>
+              <th className="text-center py-1 w-10">R16</th>
+              <th className="text-center py-1 w-10">QF</th>
+              <th className="text-center py-1 w-10">SF</th>
+              <th className="text-center py-1 w-10">F</th>
+            </tr></thead>
+            <tbody>
+              {survivalData.map(s => (
+                <tr key={s.lid} className="border-b border-bg-border/20">
+                  <td className="py-1 text-slate-300">{LEAGUE_NAMES[s.lid]}</td>
                   <td className="py-1 text-center text-slate-400">{s.gs}</td>
-                  <td className="py-1 text-center text-slate-300">{s.r16 || '-'}</td>
-                  <td className="py-1 text-center text-slate-300">{s.qf || '-'}</td>
-                  <td className="py-1 text-center text-amber-400">{s.sf || '-'}</td>
-                  <td className="py-1 text-center font-bold" style={{ color: GOLD }}>{s.f || '-'}</td>
+                  {(['r16', 'qf', 'sf', 'f'] as const).map(stage => {
+                    const teams = stage === 'r16' ? s.r16 : stage === 'qf' ? s.qf : stage === 'sf' ? s.sf : s.f;
+                    const cellKey = `${s.lid}::${stage}`;
+                    return (
+                      <td key={stage} className="py-1 text-center relative"
+                        onMouseEnter={() => teams.length > 0 ? setHoverCell(cellKey) : undefined}
+                        onMouseLeave={() => setHoverCell(null)}>
+                        <span className={teams.length > 0 ? (stage === 'f' ? 'font-bold cursor-help' : 'text-slate-300 cursor-help') : 'text-slate-600'}
+                          style={stage === 'f' && teams.length > 0 ? { color: GOLD } : stage === 'sf' && teams.length > 0 ? { color: '#fbbf24' } : {}}>
+                          {teams.length || '-'}
+                        </span>
+                        {hoverCell === cellKey && teams.length > 0 && (
+                          <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-1 bg-bg-panel border border-bg-border rounded p-1.5 shadow-lg flex gap-1 whitespace-nowrap">
+                            {teams.map(p => <TeamChip key={p.clubId} clubId={p.clubId} small />)}
+                          </div>
+                        )}
+                      </td>
+                    );
+                  })}
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Elo changes */}
@@ -898,28 +1067,26 @@ function WTReviewTab({ wt }: { wt: WTState }) {
         <h3 className="text-xs font-bold text-slate-400 uppercase mb-2">Elo 변동</h3>
         <table className="w-full text-xs">
           <thead><tr className="border-b border-bg-border text-slate-500">
+            <th className="text-left py-1 w-24">순위</th>
             <th className="text-left py-1">팀</th>
             <th className="text-left py-1">리그</th>
-            <th className="text-center py-1">Before</th>
-            <th className="text-center py-1">After</th>
             <th className="text-center py-1">변화</th>
           </tr></thead>
           <tbody>
-            {eloChanges.map(e => {
-              const club = clubById(e.clubId);
+            {finalRanks.map((r, i) => {
+              const p = wt.participants.find(pp => pp.clubId === r.clubId);
+              const club = clubById(r.clubId);
+              const change = p ? Math.round(p.elo - p.preWTElo) : 0;
               return (
-                <tr key={e.clubId} className="border-b border-bg-border/20">
+                <tr key={r.clubId + i} className="border-b border-bg-border/20">
+                  <td className="py-1 text-slate-500 text-[10px]">{r.rank}</td>
                   <td className="py-1">
                     <span className="inline-flex items-center px-1 rounded text-[10px] font-bold h-4"
-                      style={{ backgroundColor: club?.colors.bg, color: club?.colors.text }}>
-                      {club?.abbr}
-                    </span>
+                      style={{ backgroundColor: club?.colors.bg, color: club?.colors.text }}>{club?.abbr}</span>
                   </td>
-                  <td className="py-1 text-slate-500">{LEAGUE_NAMES[e.leagueId]}</td>
-                  <td className="py-1 text-center text-slate-400 font-mono">{e.before}</td>
-                  <td className="py-1 text-center text-slate-300 font-mono">{e.after}</td>
-                  <td className={`py-1 text-center font-bold ${e.change > 0 ? 'text-emerald-400' : e.change < 0 ? 'text-red-400' : 'text-slate-500'}`}>
-                    {e.change > 0 ? '+' : ''}{e.change}
+                  <td className="py-1 text-slate-500">{LEAGUE_NAMES[p?.leagueId ?? '']}</td>
+                  <td className={`py-1 text-center font-bold ${change > 0 ? 'text-emerald-400' : change < 0 ? 'text-red-400' : 'text-slate-500'}`}>
+                    {change > 0 ? '+' : ''}{change}
                   </td>
                 </tr>
               );
