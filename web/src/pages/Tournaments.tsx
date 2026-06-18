@@ -7,12 +7,13 @@ import {
   calcChampionshipOdds, calcMMOdds,
 } from '../engine/mm';
 import { sortWTGroupRecords } from '../engine/wt';
-import type { MMMatch, MMSubRound, MMKnockoutMatch, MMParticipant, MMState, WTState, WTParticipant, WTGroup, WTGroupRecord, WTKnockoutMatch } from '../types';
+import type { MMMatch, MMSubRound, MMKnockoutMatch, MMParticipant, MMState, WTState, WTParticipant, WTGroup, WTGroupRecord, WTKnockoutMatch, VSCState, VSCPath, VSCPathMatch, VSCKnockoutMatch } from '../types';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const LIME = '#00FF00';
 const GOLD = '#FFD700';
+const VIOLET = '#A78BFA';
 const LEAGUE_NAMES: Record<string, string> = Object.fromEntries(
   leagueConfigs.map(l => [l.id, l.name]),
 );
@@ -20,6 +21,7 @@ const LEAGUE_NAMES: Record<string, string> = Object.fromEntries(
 type TournamentId = 'mm' | 'wt' | 'vsc';
 type MMTab = 'teams' | 'swiss' | 'knockout' | 'results';
 type WTTab = 'participants' | 'predictions' | 'groups' | 'knockouts' | 'review';
+type VSCTab = 'preliminaries' | 'predictions' | 'knockouts' | 'results';
 
 // ─── Odds helpers ─────────────────────────────────────────────────────────────
 
@@ -1109,6 +1111,292 @@ function WTReviewTab({ wt }: { wt: WTState }) {
   );
 }
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// VSC TABS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const REGION_BG: Record<string, string> = { EMEA: 'bg-blue-500/10', APAC: 'bg-amber-500/10', AMER: 'bg-green-500/10' };
+
+function VSCPathCard({ path }: { path: VSCPath }) {
+  const regionBg = REGION_BG[path.region] ?? '';
+  return (
+    <div className={`rounded-lg border border-bg-border p-3 ${regionBg}`}>
+      <div className="text-xs font-bold text-slate-300 mb-2">{path.region} Path {path.id.split('_')[1]}</div>
+      {path.matches.filter(m => m.stage === 'SF').map(m => {
+        const winA = m.winner === m.teamA, winB = m.winner === m.teamB;
+        return (
+          <div key={m.id} className="flex items-center gap-1 text-xs mb-1">
+            <TeamChip clubId={m.teamA} isWinner={winA} small />
+            <span className={`w-3 text-center font-bold ${winA ? 'text-emerald-400' : 'text-slate-600'}`}>{m.winner ? m.scoreA : ''}</span>
+            <span className="text-slate-700">:</span>
+            <span className={`w-3 text-center font-bold ${winB ? 'text-emerald-400' : 'text-slate-600'}`}>{m.winner ? m.scoreB : ''}</span>
+            <TeamChip clubId={m.teamB} isWinner={winB} small />
+            {m.winner && <span className="text-[9px] text-slate-600 ml-1">{m.oddsA.toFixed(2)}/{m.oddsB.toFixed(2)}</span>}
+          </div>
+        );
+      })}
+      {/* Path Final */}
+      {path.matches.filter(m => m.stage === 'Final').map(m => {
+        const winA = m.winner === m.teamA, winB = m.winner === m.teamB;
+        return (
+          <div key={m.id} className="mt-2 pt-2 border-t border-bg-border/50">
+            <div className="text-[10px] text-slate-500 mb-1">Path Final (Bo5)</div>
+            <div className="flex items-center gap-1 text-xs">
+              <TeamChip clubId={m.teamA} isWinner={winA} small />
+              <span className={`w-3 text-center font-bold ${winA ? 'text-emerald-400' : 'text-slate-600'}`}>{m.winner ? m.scoreA : ''}</span>
+              <span className="text-slate-700">:</span>
+              <span className={`w-3 text-center font-bold ${winB ? 'text-emerald-400' : 'text-slate-600'}`}>{m.winner ? m.scoreB : ''}</span>
+              <TeamChip clubId={m.teamB} isWinner={winB} small />
+              {m.winner && <span className="text-[9px] text-slate-600 ml-1">{m.oddsA.toFixed(2)}/{m.oddsB.toFixed(2)}</span>}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function VSCPreliminariesTab({ vsc }: { vsc: VSCState }) {
+  if (vsc.paths.length === 0) return <div className="text-slate-500 text-sm text-center py-16">W38 이후 VSC 예선 대진 생성</div>;
+  const byRegion = ['EMEA', 'APAC', 'AMER'].map(r => ({
+    region: r, paths: vsc.paths.filter(p => p.region === r),
+  }));
+  return (
+    <div>
+      <h2 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: VIOLET }}>VSC Regional Qualifiers</h2>
+      {byRegion.map(({ region, paths }) => (
+        <div key={region} className="mb-6">
+          <div className="text-xs font-bold text-slate-400 mb-2">{region}</div>
+          <div className={`grid gap-3 ${paths.length <= 2 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'}`}>
+            {paths.map(p => <VSCPathCard key={p.id} path={p} />)}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function VSCPredictionsTab({ vsc }: { vsc: VSCState }) {
+  const data = vsc.frozenParticipants.length > 0 ? vsc.frozenParticipants : vsc.finalParticipants;
+  if (data.length === 0) return <div className="text-slate-500 text-sm text-center py-16">예선 + WT 조별 완료 후 배당 생성</div>;
+  const shares = data.map(p => ({ id: p.clubId, share: Math.pow(10, p.elo / 400) }));
+  const total = shares.reduce((s, x) => s + x.share, 0);
+  const odds = shares.map(s => ({ id: s.id, odds: Math.round(Math.max(1.01, 0.90 / (s.share / total)) * 100) / 100 })).sort((a, b) => a.odds - b.odds);
+  return (
+    <div>
+      <h2 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: VIOLET }}>Championship Odds</h2>
+      <table className="w-full text-xs">
+        <thead><tr className="border-b border-bg-border text-slate-500">
+          <th className="text-center py-1 w-8">#</th>
+          <th className="text-left py-1">팀</th>
+          <th className="text-left py-1">리그</th>
+          <th className="text-center py-1">Elo</th>
+          <th className="text-center py-1">자격</th>
+          <th className="text-center py-1 w-20">배당</th>
+        </tr></thead>
+        <tbody>
+          {odds.map((o, i) => {
+            const p = data.find(pp => pp.clubId === o.id)!;
+            const club = clubById(o.id);
+            return (
+              <tr key={o.id} className="border-b border-bg-border/30 hover:bg-bg-hover/30">
+                <td className="py-1 text-center text-slate-500">{i + 1}</td>
+                <td className="py-1"><span className="inline-flex items-center px-1.5 rounded text-[11px] font-bold h-5" style={{ backgroundColor: club?.colors.bg, color: club?.colors.text }}>{club?.abbr}</span></td>
+                <td className="py-1 text-slate-500">{LEAGUE_NAMES[p.leagueId]}</td>
+                <td className="py-1 text-center text-slate-300 font-mono">{Math.round(p.elo)}</td>
+                <td className="py-1 text-center"><span className={`text-[10px] px-1.5 py-0.5 rounded ${p.source === 'path' ? 'bg-purple-500/20 text-purple-300' : 'bg-amber-500/20 text-amber-300'}`}>{p.source === 'path' ? '#Path' : '#WT'}</span></td>
+                <td className="py-1 text-center"><span className={`font-bold ${o.odds <= 5 ? 'text-purple-300' : o.odds <= 15 ? 'text-slate-200' : 'text-slate-500'}`}>{o.odds.toFixed(1)}</span></td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function VSCKnockoutsTab({ vsc }: { vsc: VSCState }) {
+  if (vsc.knockoutMatches.length === 0) return <div className="text-slate-500 text-sm text-center py-16">예선 + WT 조별 완료 후 대진표 생성</div>;
+  const get = (id: string) => vsc.knockoutMatches.find(m => m.id === id)!;
+  const stages: Array<{ label: string; ids: string[] }> = [
+    { label: 'Round of 16', ids: Array.from({ length: 8 }, (_, i) => `VSC_R16_${i + 1}`) },
+    { label: 'Quarterfinals', ids: ['VSC_QF1', 'VSC_QF2', 'VSC_QF3', 'VSC_QF4'] },
+    { label: 'Semifinals', ids: ['VSC_SF1', 'VSC_SF2'] },
+    { label: 'Grand Final', ids: ['VSC_GF'] },
+  ];
+  return (
+    <div>
+      <h2 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: VIOLET }}>Knockout Stage</h2>
+      {vsc.champion && (
+        <div className="rounded-lg border p-3 mb-4 flex items-center gap-3" style={{ borderColor: VIOLET + '50', backgroundColor: VIOLET + '08' }}>
+          <span className="text-2xl">🏆</span>
+          <div><div className="text-[10px] uppercase font-bold" style={{ color: VIOLET }}>VSC Champion</div><TeamChip clubId={vsc.champion} /></div>
+        </div>
+      )}
+      <div className="overflow-x-auto">
+        <div className="flex items-start gap-4 min-w-max py-2">
+          {stages.map((s, si) => (
+            <div key={s.label} style={{ paddingTop: si === 1 ? 32 : si === 2 ? 80 : si === 3 ? 160 : 0 }}>
+              <div className={`text-[10px] font-bold uppercase mb-2 ${si === 3 ? '' : 'text-slate-500'}`} style={si === 3 ? { color: VIOLET } : {}}>{s.label}</div>
+              <div className="flex flex-col gap-3">
+                {s.ids.map(id => { const km = get(id); if (!km) return null;
+                  const winA = km.winner === km.teamA, winB = km.winner === km.teamB;
+                  const isUpset = km.winner !== null && ((winA && km.oddsA > km.oddsB) || (winB && km.oddsB > km.oddsA));
+                  const wOdds = winA ? km.oddsA : winB ? km.oddsB : 0;
+                  const upCls = (isW: boolean) => isW && isUpset ? (wOdds >= 5 ? 'text-red-500 font-bold' : wOdds >= 3 ? 'text-red-400' : 'text-orange-400') : 'text-slate-600';
+                  return (
+                    <div key={id} className="rounded border border-bg-border bg-bg-panel w-44">
+                      <div className={`flex items-center gap-1 px-2 py-1 ${winA ? 'bg-emerald-500/10' : km.winner ? 'opacity-40' : ''}`}>
+                        <TeamChip clubId={km.teamA} small /><span className="flex-1" />
+                        {km.winner && <span className={`text-[10px] ${upCls(winA)}`}>{km.oddsA.toFixed(2)}</span>}
+                        <span className={`w-4 text-center text-xs font-bold ${winA ? 'text-emerald-400' : 'text-slate-600'}`}>{km.winner ? km.scoreA : ''}</span>
+                      </div>
+                      <div className="border-t border-bg-border/30" />
+                      <div className={`flex items-center gap-1 px-2 py-1 ${winB ? 'bg-emerald-500/10' : km.winner ? 'opacity-40' : ''}`}>
+                        <TeamChip clubId={km.teamB} small /><span className="flex-1" />
+                        {km.winner && <span className={`text-[10px] ${upCls(winB)}`}>{km.oddsB.toFixed(2)}</span>}
+                        <span className={`w-4 text-center text-xs font-bold ${winB ? 'text-emerald-400' : 'text-slate-600'}`}>{km.winner ? km.scoreB : ''}</span>
+                      </div>
+                      {km.teamA && km.teamB && !km.winner && (
+                        <div className="border-t border-bg-border/30 px-2 py-0.5 flex justify-between text-[9px] text-slate-600"><span>{km.oddsA.toFixed(2)}</span><span>odds</span><span>{km.oddsB.toFixed(2)}</span></div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function VSCResultsTab({ vsc }: { vsc: VSCState }) {
+  if (vsc.phase === 'pre' || vsc.paths.length === 0) return <div className="text-slate-500 text-sm text-center py-16">대회 시작 전</div>;
+  const [hoverCell, setHoverCell] = useState<string | null>(null);
+  const allLeagues = [...new Set(vsc.finalParticipants.map(p => p.leagueId))];
+  const pByLeague = (lid: string) => vsc.finalParticipants.filter(p => p.leagueId === lid);
+
+  // Final rankings
+  const ranks: Array<{ rank: string; clubId: string }> = [];
+  const gf = vsc.knockoutMatches.find(m => m.id === 'VSC_GF');
+  if (gf?.winner) {
+    ranks.push({ rank: '🏆 우승', clubId: gf.winner });
+    ranks.push({ rank: '2위 준우승', clubId: gf.winner === gf.teamA ? gf.teamB! : gf.teamA! });
+  }
+  vsc.knockoutMatches.filter(m => m.stage === 'SF' && m.winner).forEach(m => ranks.push({ rank: '3~4위', clubId: m.winner === m.teamA ? m.teamB! : m.teamA! }));
+  vsc.knockoutMatches.filter(m => m.stage === 'QF' && m.winner).forEach(m => ranks.push({ rank: '5~8위', clubId: m.winner === m.teamA ? m.teamB! : m.teamA! }));
+  vsc.knockoutMatches.filter(m => m.stage === 'R16' && m.winner).forEach(m => ranks.push({ rank: '9~16위', clubId: m.winner === m.teamA ? m.teamB! : m.teamA! }));
+  // Path losers
+  for (const path of vsc.paths) {
+    const finalMatch = path.matches.find(m => m.stage === 'Final');
+    if (finalMatch?.winner) ranks.push({ rank: 'Path Final 탈락', clubId: finalMatch.winner === finalMatch.teamA ? finalMatch.teamB! : finalMatch.teamA! });
+    for (const sf of path.matches.filter(m => m.stage === 'SF')) {
+      if (sf.winner) ranks.push({ rank: 'Path SF 탈락', clubId: sf.winner === sf.teamA ? sf.teamB! : sf.teamA! });
+    }
+  }
+
+  // Survival
+  const r16Set = new Set(vsc.knockoutMatches.filter(m => m.stage === 'R16').flatMap(m => [m.teamA, m.teamB].filter(Boolean) as string[]));
+  const qfSet = new Set(vsc.knockoutMatches.filter(m => m.stage === 'QF').flatMap(m => [m.teamA, m.teamB].filter(Boolean) as string[]));
+  const sfSet = new Set(vsc.knockoutMatches.filter(m => m.stage === 'SF').flatMap(m => [m.teamA, m.teamB].filter(Boolean) as string[]));
+  const gfSet = new Set(vsc.knockoutMatches.filter(m => m.stage === 'GF').flatMap(m => [m.teamA, m.teamB].filter(Boolean) as string[]));
+
+  return (
+    <div>
+      <h2 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: VIOLET }}>Results</h2>
+      {ranks.length > 0 && (
+        <div className="mb-6">
+          <table className="w-full text-xs">
+            <thead><tr className="border-b border-bg-border text-slate-500">
+              <th className="text-left py-1 px-2 w-28">순위</th>
+              <th className="text-left py-1 px-2">팀</th>
+              <th className="text-left py-1 px-2">리그</th>
+              <th className="text-center py-1 px-2">세트 승</th>
+              <th className="text-center py-1 px-2">세트 패</th>
+              <th className="text-center py-1 px-2">Elo 변화</th>
+            </tr></thead>
+            <tbody>
+              {ranks.map((r, i) => {
+                const p = vsc.finalParticipants.find(pp => pp.clubId === r.clubId) ?? vsc.pathParticipants.find(pp => pp.clubId === r.clubId);
+                const club = clubById(r.clubId);
+                const fp = vsc.finalParticipants.find(pp => pp.clubId === r.clubId);
+                const change = fp ? Math.round(fp.elo - fp.preVSCElo) : 0;
+                let sw = 0, sl = 0;
+                for (const path of vsc.paths) for (const m of path.matches) {
+                  if (m.winner && m.teamA === r.clubId) { sw += m.scoreA; sl += m.scoreB; }
+                  else if (m.winner && m.teamB === r.clubId) { sw += m.scoreB; sl += m.scoreA; }
+                }
+                for (const km of vsc.knockoutMatches) {
+                  if (km.winner && km.teamA === r.clubId) { sw += km.scoreA; sl += km.scoreB; }
+                  else if (km.winner && km.teamB === r.clubId) { sw += km.scoreB; sl += km.scoreA; }
+                }
+                return (
+                  <tr key={r.clubId + i} className="border-b border-bg-border/30 hover:bg-bg-hover/30">
+                    <td className="py-1 px-2 text-slate-400 font-bold text-[10px]">{r.rank}</td>
+                    <td className="py-1 px-2"><span className="inline-flex items-center px-1.5 rounded text-[10px] font-bold h-5" style={{ backgroundColor: club?.colors.bg, color: club?.colors.text }}>{club?.abbr}</span></td>
+                    <td className="py-1 px-2 text-slate-500">{LEAGUE_NAMES[(p as any)?.leagueId ?? club?.league_id ?? '']}</td>
+                    <td className="py-1 px-2 text-center text-emerald-400">{sw}</td>
+                    <td className="py-1 px-2 text-center text-red-400">{sl}</td>
+                    <td className={`py-1 px-2 text-center font-bold ${change > 0 ? 'text-emerald-400' : change < 0 ? 'text-red-400' : 'text-slate-500'}`}>{change > 0 ? '+' : ''}{change}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+      {/* Survival by league */}
+      {vsc.finalParticipants.length > 0 && (
+        <div>
+          <h3 className="text-xs font-bold text-slate-400 uppercase mb-2">리그별 생존 현황</h3>
+          <table className="w-full text-xs">
+            <thead><tr className="border-b border-bg-border text-slate-500">
+              <th className="text-left py-1">리그</th>
+              <th className="text-center py-1 w-10">R16</th>
+              <th className="text-center py-1 w-10">QF</th>
+              <th className="text-center py-1 w-10">SF</th>
+              <th className="text-center py-1 w-10">F</th>
+            </tr></thead>
+            <tbody>
+              {allLeagues.sort((a, b) => pByLeague(b).filter(p => r16Set.has(p.clubId)).length - pByLeague(a).filter(p => r16Set.has(p.clubId)).length).map(lid => {
+                const stages = [
+                  { key: 'r16', set: r16Set }, { key: 'qf', set: qfSet }, { key: 'sf', set: sfSet }, { key: 'f', set: gfSet },
+                ];
+                return (
+                  <tr key={lid} className="border-b border-bg-border/20">
+                    <td className="py-1 text-slate-300">{LEAGUE_NAMES[lid]}</td>
+                    {stages.map(({ key, set }) => {
+                      const teams = pByLeague(lid).filter(p => set.has(p.clubId));
+                      const cellKey = `${lid}::${key}`;
+                      return (
+                        <td key={key} className="py-1 text-center relative cursor-help"
+                          onMouseEnter={() => teams.length > 0 ? setHoverCell(cellKey) : undefined}
+                          onMouseLeave={() => setHoverCell(null)}>
+                          <span className={teams.length > 0 ? (key === 'f' ? 'font-bold' : 'text-slate-300') : 'text-slate-600'}
+                            style={key === 'f' && teams.length > 0 ? { color: VIOLET } : {}}>
+                            {teams.length || '-'}
+                          </span>
+                          {hoverCell === cellKey && teams.length > 0 && (
+                            <div className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-1 bg-bg-panel border border-bg-border rounded p-1.5 shadow-lg flex gap-1 whitespace-nowrap">
+                              {teams.map(p => <TeamChip key={p.clubId} clubId={p.clubId} small />)}
+                            </div>
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
 const TOURNAMENTS: Array<{ id: TournamentId; label: string; sub: string }> = [
   { id: 'mm',  label: 'Midseason Mayhem', sub: 'W17–19' },
   { id: 'wt',  label: 'World Tournament',  sub: 'W39–43' },
@@ -1125,6 +1413,7 @@ const MM_TABS: Array<{ key: MMTab; label: string }> = [
 export function Tournaments() {
   const mmState = useStore(s => s.mmState);
   const wtState = useStore(s => s.wtState);
+  const vscState = useStore(s => s.vscState);
   const gameDate = useStore(s => s.gameDate);
   const advanceMMMatch = useStore(s => s.advanceMMMatch);
   const week = getWeekInfo(gameDate);
@@ -1133,6 +1422,7 @@ export function Tournaments() {
   const [activeTournament, setActiveTournament] = useState<TournamentId>('mm');
   const [mmTab, setMmTab] = useState<MMTab>('teams');
   const [wtTab, setWtTab] = useState<WTTab>('participants');
+  const [vscTab, setVscTab] = useState<VSCTab>('preliminaries');
 
   return (
     <div className="flex h-full">
@@ -1245,8 +1535,40 @@ export function Tournaments() {
         )}
 
         {activeTournament === 'vsc' && (
-          <div className="p-6 text-center text-slate-500 text-sm pt-16">
-            Viktor Sandberg Cup — W39–43<br />Coming soon
+          <div>
+            <div className="border-b border-bg-border px-6 pt-4 pb-0">
+              <div className="flex items-center gap-3 mb-3">
+                <h1 className="text-xl font-bold" style={{ color: VIOLET }}>Viktor Sandberg Cup</h1>
+                <span className="text-xs px-2 py-0.5 rounded border text-slate-400" style={{ borderColor: VIOLET + '30' }}>
+                  Season {week.season} · W{week.weekNum}
+                </span>
+              </div>
+              <div className="flex gap-1">
+                {([
+                  { key: 'preliminaries', label: 'Preliminaries' },
+                  { key: 'predictions', label: 'Predictions' },
+                  { key: 'knockouts', label: 'Knockouts' },
+                  { key: 'results', label: 'Results' },
+                ] as Array<{ key: VSCTab; label: string }>).map(tab => (
+                  <button
+                    key={tab.key}
+                    onClick={() => setVscTab(tab.key)}
+                    className={`px-4 py-2 text-xs font-medium rounded-t border-b-2 transition-colors ${
+                      vscTab === tab.key ? 'border-current' : 'border-transparent text-slate-500 hover:text-slate-300'
+                    }`}
+                    style={vscTab === tab.key ? { color: VIOLET, borderBottomColor: VIOLET } : {}}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="p-6">
+              {vscTab === 'preliminaries' && <VSCPreliminariesTab vsc={vscState} />}
+              {vscTab === 'predictions' && <VSCPredictionsTab vsc={vscState} />}
+              {vscTab === 'knockouts' && <VSCKnockoutsTab vsc={vscState} />}
+              {vscTab === 'results' && <VSCResultsTab vsc={vscState} />}
+            </div>
           </div>
         )}
       </div>

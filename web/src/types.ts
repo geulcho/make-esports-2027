@@ -387,6 +387,63 @@ export interface WTState {
   phase: 'pre' | 'groups_first' | 'groups_second' | 'knockout_r16' | 'knockout_qf' | 'knockout_sf' | 'knockout_gf' | 'completed';
 }
 
+// ─── Viktor Sandberg Cup (VSC) types ──────────────────────────────────────────
+
+export interface VSCPathMatch {
+  id: string;
+  stage: 'SF' | 'Final';
+  teamA: string | null;
+  teamB: string | null;
+  scoreA: number;
+  scoreB: number;
+  winner: string | null;
+  oddsA: number;
+  oddsB: number;
+  format: 'Bo3' | 'Bo5';
+}
+
+export interface VSCPath {
+  id: string;           // 'EMEA_A'..'EMEA_D', 'APAC_A','APAC_B', 'AMER_A','AMER_B'
+  region: string;       // 'EMEA' | 'APAC' | 'AMER'
+  teams: string[];      // 4 club IDs
+  matches: VSCPathMatch[];
+  winner: string | null;
+  completed: boolean;
+}
+
+export interface VSCKnockoutMatch {
+  id: string;
+  stage: 'R16' | 'QF' | 'SF' | 'GF';
+  teamA: string | null;
+  teamB: string | null;
+  scoreA: number;
+  scoreB: number;
+  winner: string | null;
+  oddsA: number;
+  oddsB: number;
+  qualTag: string;      // '#Path' or '#WT' for each team side
+}
+
+export interface VSCParticipant {
+  clubId: string;
+  leagueId: string;
+  source: 'path' | 'wt3rd';
+  sourceDetail: string;  // e.g. 'EMEA Path A', 'WT Group C 3rd'
+  elo: number;
+  preVSCElo: number;
+}
+
+export interface VSCState {
+  season: number;
+  paths: VSCPath[];
+  pathParticipants: Array<{ clubId: string; leagueId: string; region: string }>;
+  finalParticipants: VSCParticipant[];
+  frozenParticipants: VSCParticipant[];
+  knockoutMatches: VSCKnockoutMatch[];
+  champion: string | null;
+  phase: 'pre' | 'paths' | 'paths_done' | 'knockout_r16' | 'knockout_qf' | 'knockout_sf' | 'knockout_gf' | 'completed';
+}
+
 // ─── Midseason Mayhem types ───────────────────────────────────────────────────
 
 export type MMFormat = 'Bo1' | 'Bo3' | 'Bo5';
