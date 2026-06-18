@@ -298,7 +298,7 @@ export interface WEState {
   thirdPlaceKey: string;
   knockoutMatches: NatBracketMatch[];
   champion: string | null;
-  phase: 'pre' | 'groups' | 'draw' | 'r16' | 'qf' | 'sf' | 'final' | 'completed';
+  phase: 'pre' | 'groups' | 'draw' | 'r16' | 'qf' | 'sf' | 'final' | 'completed' | string;
   finalRankings: Array<{ nationId: string; rank: number; eloChange: number }>;
 }
 
@@ -314,6 +314,76 @@ export interface IntermatchState {
   we: WEState | null;
   rankings: Array<{ nationId: string; elo: number }>;
   nationElos: Record<string, number>;
+}
+
+// ─── World Tournaments (WT) types ─────────────────────────────────────────────
+
+export interface WTParticipant {
+  clubId: string;
+  leagueId: string;
+  leagueRank: number;         // league coefficient rank (1-16)
+  seedInLeague: number;       // 1, 2, 3 within league (or 0 for special)
+  seedTag: string;            // '#1' '#2' '#3' '#M' '#E' '#A' '#C'
+  seedPool: number;           // 1-4
+  elo: number;                // Elo at WT start
+  seasonSetsWon: number;
+  seasonSetsLost: number;
+  cupResult: string;          // e.g. 'MM Champion', 'APEX SF', 'EGT R16', '-'
+  preWTElo: number;           // snapshot for Review tab Elo change
+}
+
+export interface WTGroupMatch {
+  id: string;
+  groupId: string;
+  teamA: string;
+  teamB: string;
+  scoreA: number;             // 0 or 1 (Bo1)
+  scoreB: number;
+  winner: string | null;
+  oddsA: number;
+  oddsB: number;
+  matchday: number;           // 1-12 within group (DRR)
+  globalDay: number;          // 1-14 across the 14-day schedule
+}
+
+export interface WTGroupRecord {
+  clubId: string;
+  wins: number;
+  losses: number;
+  scoreFor: number;           // Bo1 → wins count as score
+  scoreAgainst: number;
+}
+
+export interface WTGroup {
+  id: string;                 // 'A'..'H'
+  teams: string[];            // 4 club IDs
+  records: WTGroupRecord[];
+  matches: WTGroupMatch[];
+  matchdaysCompleted: number; // 0-12
+  completed: boolean;
+}
+
+export interface WTKnockoutMatch {
+  id: string;                 // 'R16_1'..'R16_8', 'QF1'..'QF4', 'SF1','SF2','GF'
+  stage: 'R16' | 'QF' | 'SF' | 'GF';
+  bracketHalf: 'upper' | 'lower' | null;
+  teamA: string | null;
+  teamB: string | null;
+  scoreA: number;
+  scoreB: number;
+  winner: string | null;
+  oddsA: number;
+  oddsB: number;
+}
+
+export interface WTState {
+  season: number;
+  leagueCoefficients: Array<{ leagueId: string; rank: number; points: number }>;
+  participants: WTParticipant[];
+  groups: WTGroup[];
+  knockoutMatches: WTKnockoutMatch[];
+  champion: string | null;
+  phase: 'pre' | 'groups_first' | 'groups_second' | 'knockout_r16' | 'knockout_qf' | 'knockout_sf' | 'knockout_gf' | 'completed';
 }
 
 // ─── Midseason Mayhem types ───────────────────────────────────────────────────

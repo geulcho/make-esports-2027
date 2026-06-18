@@ -6,17 +6,20 @@ import {
   subRoundDate, knockoutMatchDate, getSubRoundDef,
   calcChampionshipOdds, calcMMOdds,
 } from '../engine/mm';
-import type { MMMatch, MMSubRound, MMKnockoutMatch, MMParticipant, MMState } from '../types';
+import { sortWTGroupRecords } from '../engine/wt';
+import type { MMMatch, MMSubRound, MMKnockoutMatch, MMParticipant, MMState, WTState, WTParticipant, WTGroup, WTGroupRecord, WTKnockoutMatch } from '../types';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const LIME = '#00FF00';
+const GOLD = '#FFD700';
 const LEAGUE_NAMES: Record<string, string> = Object.fromEntries(
   leagueConfigs.map(l => [l.id, l.name]),
 );
 
 type TournamentId = 'mm' | 'wt' | 'vsc';
 type MMTab = 'teams' | 'swiss' | 'knockout' | 'results';
+type WTTab = 'participants' | 'predictions' | 'groups' | 'knockouts' | 'review';
 
 // ─── Odds helpers ─────────────────────────────────────────────────────────────
 
@@ -552,6 +555,382 @@ function ResultsTab({ mm }: { mm: MMState }) {
 
 // ─── Main Tournaments page ────────────────────────────────────────────────────
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// WT TABS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function WTParticipantsTab({ wt }: { wt: WTState }) {
+  if (wt.participants.length === 0) {
+    return <div className="text-slate-500 text-sm text-center py-16">W38 이후 WT 참가팀 확정 예정</div>;
+  }
+  const byPool = [1, 2, 3, 4].map(p => wt.participants.filter(t => t.seedPool === p).sort((a, b) => b.elo - a.elo));
+  return (
+    <div>
+      <h2 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: GOLD }}>WT Participants (32)</h2>
+      {[1, 2, 3, 4].map(pool => (
+        <div key={pool} className="mb-5">
+          <div className="text-xs font-bold mb-2" style={{ color: GOLD }}>Pot {pool}</div>
+          <table className="w-full text-xs mb-2">
+            <thead>
+              <tr className="border-b border-bg-border text-slate-500">
+                <th className="text-left py-1 px-2 w-12">시드</th>
+                <th className="text-left py-1 px-2">팀</th>
+                <th className="text-left py-1 px-2">리그</th>
+                <th className="text-center py-1 px-2">세트 승</th>
+                <th className="text-center py-1 px-2">세트 패</th>
+                <th className="text-center py-1 px-2">승률</th>
+                <th className="text-center py-1 px-2">Elo</th>
+                <th className="text-left py-1 px-2">컵 성적</th>
+              </tr>
+            </thead>
+            <tbody>
+              {byPool[pool - 1].map(p => {
+                const club = clubById(p.clubId);
+                const winRate = p.seasonSetsWon + p.seasonSetsLost > 0
+                  ? ((p.seasonSetsWon / (p.seasonSetsWon + p.seasonSetsLost)) * 100).toFixed(1)
+                  : '-';
+                return (
+                  <tr key={p.clubId} className="border-b border-bg-border/30 hover:bg-bg-hover/30">
+                    <td className="py-1 px-2 font-bold text-slate-400">{p.seedTag}</td>
+                    <td className="py-1 px-2">
+                      <span className="inline-flex items-center px-1.5 rounded text-[11px] font-bold h-5"
+                        style={{ backgroundColor: club?.colors.bg, color: club?.colors.text }}>
+                        {club?.abbr ?? p.clubId}
+                      </span>
+                    </td>
+                    <td className="py-1 px-2 text-slate-500">{LEAGUE_NAMES[p.leagueId] ?? p.leagueId}</td>
+                    <td className="py-1 px-2 text-center text-emerald-400">{p.seasonSetsWon}</td>
+                    <td className="py-1 px-2 text-center text-red-400">{p.seasonSetsLost}</td>
+                    <td className="py-1 px-2 text-center text-slate-300">{winRate}%</td>
+                    <td className="py-1 px-2 text-center text-slate-300 font-mono">{Math.round(p.elo)}</td>
+                    <td className="py-1 px-2 text-slate-400 text-[10px]">{p.cupResult}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function WTPredictionsTab({ wt }: { wt: WTState }) {
+  if (wt.participants.length === 0) return <div className="text-slate-500 text-sm text-center py-16">참가팀 확정 후 배당 생성</div>;
+  const shares = wt.participants.map(p => ({ id: p.clubId, share: Math.pow(10, p.elo / 400) }));
+  const total = shares.reduce((s, x) => s + x.share, 0);
+  const odds = shares.map(s => ({ id: s.id, odds: Math.round(Math.max(1.01, 0.90 / (s.share / total)) * 100) / 100 }))
+    .sort((a, b) => a.odds - b.odds);
+  return (
+    <div>
+      <h2 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: GOLD }}>Championship Odds</h2>
+      <table className="w-full text-xs">
+        <thead><tr className="border-b border-bg-border text-slate-500">
+          <th className="text-center py-1 w-8">#</th>
+          <th className="text-left py-1">팀</th>
+          <th className="text-left py-1">리그</th>
+          <th className="text-center py-1">Elo</th>
+          <th className="text-center py-1 w-20">배당</th>
+        </tr></thead>
+        <tbody>
+          {odds.map((o, i) => {
+            const p = wt.participants.find(pp => pp.clubId === o.id)!;
+            const club = clubById(o.id);
+            return (
+              <tr key={o.id} className="border-b border-bg-border/30 hover:bg-bg-hover/30">
+                <td className="py-1 text-center text-slate-500">{i + 1}</td>
+                <td className="py-1">
+                  <span className="inline-flex items-center px-1.5 rounded text-[11px] font-bold h-5"
+                    style={{ backgroundColor: club?.colors.bg, color: club?.colors.text }}>
+                    {club?.abbr}
+                  </span>
+                </td>
+                <td className="py-1 text-slate-500">{LEAGUE_NAMES[p.leagueId]}</td>
+                <td className="py-1 text-center text-slate-300 font-mono">{Math.round(p.elo)}</td>
+                <td className="py-1 text-center">
+                  <span className={`font-bold ${o.odds <= 5 ? 'text-amber-400' : o.odds <= 15 ? 'text-slate-200' : 'text-slate-500'}`}>
+                    {o.odds.toFixed(1)}
+                  </span>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function WTGroupsTab({ wt }: { wt: WTState }) {
+  if (wt.groups.length === 0) return <div className="text-slate-500 text-sm text-center py-16">조추첨 대기 중</div>;
+  const pMap = new Map(wt.participants.map(p => [p.clubId, p]));
+
+  return (
+    <div>
+      <h2 className="text-sm font-semibold uppercase tracking-wider mb-3" style={{ color: GOLD }}>Group Draw</h2>
+      {/* Pot × Group grid */}
+      <div className="overflow-x-auto mb-6">
+        <table className="text-xs w-full">
+          <thead><tr className="border-b border-bg-border text-slate-500">
+            <th className="py-1 px-2 w-12">Pot</th>
+            {wt.groups.map(g => <th key={g.id} className="py-1 px-2 text-center">Group {g.id}</th>)}
+          </tr></thead>
+          <tbody>
+            {[1, 2, 3, 4].map(pool => (
+              <tr key={pool} className="border-b border-bg-border/30">
+                <td className="py-1.5 px-2 font-bold" style={{ color: GOLD }}>{pool}</td>
+                {wt.groups.map(g => {
+                  const teamId = g.teams.find(id => pMap.get(id)?.seedPool === pool);
+                  const p = teamId ? pMap.get(teamId) : null;
+                  const club = teamId ? clubById(teamId) : null;
+                  return (
+                    <td key={g.id} className="py-1.5 px-2 text-center">
+                      {club ? (
+                        <div className="flex items-center justify-center gap-1">
+                          <span className="inline-flex items-center px-1.5 rounded text-[10px] font-bold h-5"
+                            style={{ backgroundColor: club.colors.bg, color: club.colors.text }}>
+                            {club.abbr}
+                          </span>
+                          <span className="text-[9px] text-slate-600">{p?.seedTag}</span>
+                        </div>
+                      ) : '—'}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Group standings */}
+      <h3 className="text-xs font-bold text-slate-300 uppercase mb-3">Group Standings</h3>
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4">
+        {wt.groups.map(g => {
+          const sorted = sortWTGroupRecords(g.records);
+          return (
+            <div key={g.id}>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-bold text-slate-300">Group {g.id}</span>
+                <span className="text-[10px] text-slate-600">MD {g.matchdaysCompleted}/12</span>
+              </div>
+              <table className="w-full text-xs">
+                <thead><tr className="border-b border-bg-border text-slate-600">
+                  <th className="w-5 py-0.5">#</th>
+                  <th className="text-left py-0.5">팀</th>
+                  <th className="text-center py-0.5 w-6">W</th>
+                  <th className="text-center py-0.5 w-6">L</th>
+                  <th className="text-center py-0.5 w-8">SD</th>
+                </tr></thead>
+                <tbody>
+                  {sorted.map((rec, idx) => {
+                    const club = clubById(rec.clubId);
+                    const diff = rec.scoreFor - rec.scoreAgainst;
+                    const rowCls = idx === 0 || idx === 1
+                      ? 'border-l-2 border-l-amber-500 bg-amber-500/5'
+                      : idx === 2
+                      ? 'border-l-2 border-l-purple-400 bg-purple-400/5'
+                      : '';
+                    return (
+                      <tr key={rec.clubId} className={`border-b border-bg-border/20 ${rowCls}`}>
+                        <td className={`text-center py-0.5 ${idx <= 1 ? 'text-amber-400 font-bold' : idx === 2 ? 'text-purple-400 font-bold' : 'text-slate-500'}`}>{idx + 1}</td>
+                        <td className="py-0.5">
+                          <span className="inline-flex items-center px-1 rounded text-[10px] font-bold h-4"
+                            style={{ backgroundColor: club?.colors.bg, color: club?.colors.text }}>
+                            {club?.abbr}
+                          </span>
+                        </td>
+                        <td className="text-center py-0.5 text-emerald-400">{rec.wins}</td>
+                        <td className="text-center py-0.5 text-red-400">{rec.losses}</td>
+                        <td className={`text-center py-0.5 font-bold ${diff > 0 ? 'text-emerald-400' : diff < 0 ? 'text-red-400' : 'text-slate-500'}`}>
+                          {diff > 0 ? '+' : ''}{diff}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function WTKnockoutsTab({ wt }: { wt: WTState }) {
+  if (wt.knockoutMatches.length === 0) return <div className="text-slate-500 text-sm text-center py-16">조별리그 완료 후 대진표 생성</div>;
+
+  const stages: Array<{ stage: string; label: string; ids: string[] }> = [
+    { stage: 'R16', label: 'Round of 16', ids: ['R16_1','R16_2','R16_3','R16_4','R16_5','R16_6','R16_7','R16_8'] },
+    { stage: 'QF', label: 'Quarterfinals', ids: ['QF1','QF2','QF3','QF4'] },
+    { stage: 'SF', label: 'Semifinals', ids: ['SF1','SF2'] },
+    { stage: 'GF', label: 'Grand Final', ids: ['GF'] },
+  ];
+
+  return (
+    <div>
+      <h2 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: GOLD }}>Knockout Stage</h2>
+      {wt.champion && (
+        <div className="rounded-lg border p-3 mb-4 flex items-center gap-3" style={{ borderColor: GOLD + '50', backgroundColor: GOLD + '08' }}>
+          <span className="text-2xl">🏆</span>
+          <div>
+            <div className="text-[10px] uppercase font-bold" style={{ color: GOLD }}>WT Champion</div>
+            <TeamChip clubId={wt.champion} />
+          </div>
+        </div>
+      )}
+      <div className="overflow-x-auto">
+        <div className="flex items-start gap-6 min-w-max py-2">
+          {stages.map(s => {
+            const matches = s.ids.map(id => wt.knockoutMatches.find(m => m.id === id)).filter(Boolean) as WTKnockoutMatch[];
+            return (
+              <div key={s.stage} className="flex flex-col gap-2">
+                <div className={`text-[10px] font-bold uppercase ${s.stage === 'GF' ? '' : 'text-slate-500'}`}
+                  style={s.stage === 'GF' ? { color: GOLD } : {}}>
+                  {s.label}
+                </div>
+                {matches.map(km => {
+                  const winA = km.winner === km.teamA;
+                  const winB = km.winner === km.teamB;
+                  const isUpset = km.winner !== null && ((winA && km.oddsA > km.oddsB) || (winB && km.oddsB > km.oddsA));
+                  const wOdds = winA ? km.oddsA : km.oddsB;
+                  return (
+                    <div key={km.id} className="rounded border border-bg-border bg-bg-panel p-2 w-48">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-[9px] font-bold text-slate-600">{km.id.replace('_', ' ')}</span>
+                        {km.teamA && km.teamB && !km.winner && (
+                          <span className="text-[9px] text-slate-600">{km.oddsA.toFixed(2)} / {km.oddsB.toFixed(2)}</span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1 mb-0.5">
+                        {km.winner && <span className={`w-6 text-[10px] ${winA && isUpset ? (wOdds >= 5 ? 'text-red-500 font-bold' : wOdds >= 3 ? 'text-red-400' : 'text-orange-400') : 'text-slate-600'}`}>{km.oddsA.toFixed(2)}</span>}
+                        <TeamChip clubId={km.teamA} isWinner={winA} small />
+                        <span className={`w-3 text-center text-xs font-bold ${winA ? 'text-emerald-400' : 'text-slate-600'}`}>{km.winner ? km.scoreA : ''}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {km.winner && <span className={`w-6 text-[10px] ${winB && isUpset ? (wOdds >= 5 ? 'text-red-500 font-bold' : wOdds >= 3 ? 'text-red-400' : 'text-orange-400') : 'text-slate-600'}`}>{km.oddsB.toFixed(2)}</span>}
+                        <TeamChip clubId={km.teamB} isWinner={winB} small />
+                        <span className={`w-3 text-center text-xs font-bold ${winB ? 'text-emerald-400' : 'text-slate-600'}`}>{km.winner ? km.scoreB : ''}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function WTReviewTab({ wt }: { wt: WTState }) {
+  if (wt.phase === 'pre') return <div className="text-slate-500 text-sm text-center py-16">대회 시작 전</div>;
+
+  // Survival by league
+  const leagueMap = new Map(wt.participants.map(p => [p.clubId, p.leagueId]));
+  const allLeagues = [...new Set(wt.participants.map(p => p.leagueId))];
+
+  const survival: Record<string, { gs: number; r16: number; qf: number; sf: number; f: number }> = {};
+  for (const lid of allLeagues) survival[lid] = { gs: 0, r16: 0, qf: 0, sf: 0, f: 0 };
+
+  // Count survivors per stage
+  const r16Teams = new Set(wt.knockoutMatches.filter(m => m.stage === 'R16').flatMap(m => [m.teamA, m.teamB].filter(Boolean) as string[]));
+  const qfTeams  = new Set(wt.knockoutMatches.filter(m => m.stage === 'QF').flatMap(m => [m.teamA, m.teamB].filter(Boolean) as string[]));
+  const sfTeams  = new Set(wt.knockoutMatches.filter(m => m.stage === 'SF').flatMap(m => [m.teamA, m.teamB].filter(Boolean) as string[]));
+  const gfTeams  = new Set(wt.knockoutMatches.filter(m => m.stage === 'GF').flatMap(m => [m.teamA, m.teamB].filter(Boolean) as string[]));
+
+  for (const p of wt.participants) {
+    const lid = p.leagueId;
+    survival[lid].gs++;
+    if (r16Teams.has(p.clubId)) survival[lid].r16++;
+    if (qfTeams.has(p.clubId)) survival[lid].qf++;
+    if (sfTeams.has(p.clubId)) survival[lid].sf++;
+    if (gfTeams.has(p.clubId)) survival[lid].f++;
+  }
+
+  // Elo changes
+  const eloChanges = wt.participants.map(p => ({
+    clubId: p.clubId,
+    leagueId: p.leagueId,
+    before: Math.round(p.preWTElo),
+    after: Math.round(p.elo),
+    change: Math.round(p.elo - p.preWTElo),
+  })).sort((a, b) => b.change - a.change);
+
+  return (
+    <div>
+      <h2 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: GOLD }}>Review</h2>
+
+      {/* Survival by league */}
+      <div className="mb-6">
+        <h3 className="text-xs font-bold text-slate-400 uppercase mb-2">리그별 생존 현황</h3>
+        <table className="w-full text-xs">
+          <thead><tr className="border-b border-bg-border text-slate-500">
+            <th className="text-left py-1">리그</th>
+            <th className="text-center py-1 w-10">GS</th>
+            <th className="text-center py-1 w-10">R16</th>
+            <th className="text-center py-1 w-10">QF</th>
+            <th className="text-center py-1 w-10">SF</th>
+            <th className="text-center py-1 w-10">F</th>
+          </tr></thead>
+          <tbody>
+            {allLeagues.sort((a, b) => (survival[b]?.r16 ?? 0) - (survival[a]?.r16 ?? 0)).map(lid => {
+              const s = survival[lid];
+              return (
+                <tr key={lid} className="border-b border-bg-border/20">
+                  <td className="py-1 text-slate-300">{LEAGUE_NAMES[lid] ?? lid}</td>
+                  <td className="py-1 text-center text-slate-400">{s.gs}</td>
+                  <td className="py-1 text-center text-slate-300">{s.r16 || '-'}</td>
+                  <td className="py-1 text-center text-slate-300">{s.qf || '-'}</td>
+                  <td className="py-1 text-center text-amber-400">{s.sf || '-'}</td>
+                  <td className="py-1 text-center font-bold" style={{ color: GOLD }}>{s.f || '-'}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Elo changes */}
+      <div>
+        <h3 className="text-xs font-bold text-slate-400 uppercase mb-2">Elo 변동</h3>
+        <table className="w-full text-xs">
+          <thead><tr className="border-b border-bg-border text-slate-500">
+            <th className="text-left py-1">팀</th>
+            <th className="text-left py-1">리그</th>
+            <th className="text-center py-1">Before</th>
+            <th className="text-center py-1">After</th>
+            <th className="text-center py-1">변화</th>
+          </tr></thead>
+          <tbody>
+            {eloChanges.map(e => {
+              const club = clubById(e.clubId);
+              return (
+                <tr key={e.clubId} className="border-b border-bg-border/20">
+                  <td className="py-1">
+                    <span className="inline-flex items-center px-1 rounded text-[10px] font-bold h-4"
+                      style={{ backgroundColor: club?.colors.bg, color: club?.colors.text }}>
+                      {club?.abbr}
+                    </span>
+                  </td>
+                  <td className="py-1 text-slate-500">{LEAGUE_NAMES[e.leagueId]}</td>
+                  <td className="py-1 text-center text-slate-400 font-mono">{e.before}</td>
+                  <td className="py-1 text-center text-slate-300 font-mono">{e.after}</td>
+                  <td className={`py-1 text-center font-bold ${e.change > 0 ? 'text-emerald-400' : e.change < 0 ? 'text-red-400' : 'text-slate-500'}`}>
+                    {e.change > 0 ? '+' : ''}{e.change}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
 const TOURNAMENTS: Array<{ id: TournamentId; label: string; sub: string }> = [
   { id: 'mm',  label: 'Midseason Mayhem', sub: 'W17–19' },
   { id: 'wt',  label: 'World Tournament',  sub: 'W39–43' },
@@ -567,6 +946,7 @@ const MM_TABS: Array<{ key: MMTab; label: string }> = [
 
 export function Tournaments() {
   const mmState = useStore(s => s.mmState);
+  const wtState = useStore(s => s.wtState);
   const gameDate = useStore(s => s.gameDate);
   const advanceMMMatch = useStore(s => s.advanceMMMatch);
   const week = getWeekInfo(gameDate);
@@ -574,6 +954,7 @@ export function Tournaments() {
 
   const [activeTournament, setActiveTournament] = useState<TournamentId>('mm');
   const [mmTab, setMmTab] = useState<MMTab>('teams');
+  const [wtTab, setWtTab] = useState<WTTab>('participants');
 
   return (
     <div className="flex h-full">
@@ -646,8 +1027,42 @@ export function Tournaments() {
         )}
 
         {activeTournament === 'wt' && (
-          <div className="p-6 text-center text-slate-500 text-sm pt-16">
-            World Tournament — W39–43<br />Coming soon
+          <div>
+            <div className="border-b border-bg-border px-6 pt-4 pb-0">
+              <div className="flex items-center gap-3 mb-3">
+                <h1 className="text-xl font-bold" style={{ color: GOLD }}>World Tournaments</h1>
+                <span className="text-xs px-2 py-0.5 rounded border text-slate-400" style={{ borderColor: GOLD + '30' }}>
+                  Season {week.season} · W{week.weekNum}
+                </span>
+              </div>
+              <div className="flex gap-1">
+                {([
+                  { key: 'participants', label: 'Participants' },
+                  { key: 'predictions', label: 'Predictions' },
+                  { key: 'groups', label: 'Groups' },
+                  { key: 'knockouts', label: 'Knockouts' },
+                  { key: 'review', label: 'Review' },
+                ] as Array<{ key: WTTab; label: string }>).map(tab => (
+                  <button
+                    key={tab.key}
+                    onClick={() => setWtTab(tab.key)}
+                    className={`px-4 py-2 text-xs font-medium rounded-t border-b-2 transition-colors ${
+                      wtTab === tab.key ? 'border-current' : 'border-transparent text-slate-500 hover:text-slate-300'
+                    }`}
+                    style={wtTab === tab.key ? { color: GOLD, borderBottomColor: GOLD } : {}}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="p-6">
+              {wtTab === 'participants' && <WTParticipantsTab wt={wtState} />}
+              {wtTab === 'predictions' && <WTPredictionsTab wt={wtState} />}
+              {wtTab === 'groups' && <WTGroupsTab wt={wtState} />}
+              {wtTab === 'knockouts' && <WTKnockoutsTab wt={wtState} />}
+              {wtTab === 'review' && <WTReviewTab wt={wtState} />}
+            </div>
           </div>
         )}
 
